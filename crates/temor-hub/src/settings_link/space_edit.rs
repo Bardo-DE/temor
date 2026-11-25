@@ -2,11 +2,11 @@
 //! the window sends a [`SpaceChange`], the main window applies it to the live project through the
 //! kit's handle, the same way a Space menu's edits go.
 
-use ds::components::app::spaces::SpaceId;
 use temor_client::model::space::{AccountRef, Credential, Project, Route};
 use temor_client::model::vocab::text::{
     EnvKey, EnvValue, KeyPath, ProjectRoot, RelPath, RoutePattern,
 };
+use ui_components::components::app::spaces::SpaceId;
 
 /// A profile's variables, in order.
 pub type Variables = Vec<(EnvKey, EnvValue)>;

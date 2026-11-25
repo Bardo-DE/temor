@@ -1,5 +1,5 @@
 //! The dock badge: `com.canonical.Unity.LauncherEntry.Update`, a broadcast the desktop's dock
-//! reads for a count, a progress bar and an urgent mark. docket and ds-desktop only read it
+//! reads for a count, a progress bar and an urgent mark. actiond and ds-desktop only read it
 //! (sill's dock), so temor sends it itself.
 
 use super::bus::connect;
@@ -10,7 +10,7 @@ use zbus::zvariant::Value;
 const INTERFACE: &str = "com.canonical.Unity.LauncherEntry";
 const PATH: &str = "/com/canonical/unity/launcherentry/1";
 /// The desktop file's id, as the dock names the app.
-const APP_URI: &str = "application://org.quire.Temor.desktop";
+const APP_URI: &str = "application://org.bardo.Temor.desktop";
 
 /// The dock badge on the session bus.
 #[derive(Debug, Clone)]

@@ -1,7 +1,7 @@
 //! A link goes to the desktop portal's `OpenURI`; with no portal on the bus the call fails, so
 //! the window can fall back to its own opener.
 
-#![cfg(all(target_os = "linux", feature = "quire-desktop"))]
+#![cfg(all(target_os = "linux", feature = "desktop"))]
 
 use crate::bus::PrivateBus;
 use std::collections::HashMap;

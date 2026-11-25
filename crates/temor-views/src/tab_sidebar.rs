@@ -1,24 +1,24 @@
 //! The sidebar (PLAN §7), laid out as mailo's and Arc's are: the Space's name and Downloads at the
 //! top, the Favourites as tiles, the pinned tabs' rows and a hairline under them, the folders as
 //! Arc's are (a row that opens on its tabs and the folders in it), then New Tab and the rest; at the foot, the Space dots and one chevron that holds everything else. The name and the dots show
-//! only once there is a second Space. It is quire's `Sidebar` on the ladder's 32, each row one
+//! only once there is a second Space. It is the toolkit's `Sidebar` on the ladder's 32, each row one
 //! line. The sections' order is the model's (`hub::rows`), so a row and its ⌘1 to ⌘9 key always
 //! name the same tab. The sidebar is drawn in the Space's frame ink (`use_space_frame`), so a
-//! Space's look reaches it as it does quire's own sidebars. It shows the tabs of the Space on
+//! Space's look reaches it as it does the toolkit's own sidebars. It shows the tabs of the Space on
 //! screen.
 
 use dioxus::prelude::*;
-use ds::base::press::{PointerButton, Press};
-use ds::components::app::edge_peek::EdgePeek;
-use ds::components::chrome::sidebar::Sidebar;
-use ds::components::chrome::sidebar_model::{SidebarFill, SidebarSection};
-use ds::motion::hover_intent::HoverEvent;
-use ds::prelude::*;
-use ds::stack::hover_hub::use_hover_hub;
-use ds::style::tokens::control_size::SidebarSize;
 use temor_client::model::vocab::ids::{FolderId, TabId};
 use temor_client::model::workspace::{TabsIn, WorkspaceIn};
 use temor_panes::pane::keys::Action;
+use ui_components::base::press::{PointerButton, Press};
+use ui_components::components::app::edge_peek::EdgePeek;
+use ui_components::components::chrome::sidebar::Sidebar;
+use ui_components::components::chrome::sidebar_model::{SidebarFill, SidebarSection};
+use ui_components::motion::hover_intent::HoverEvent;
+use ui_components::prelude::*;
+use ui_components::stack::hover_hub::use_hover_hub;
+use ui_components::style::tokens::control_size::SidebarSize;
 
 use super::dnd::Dnd;
 use super::favourites::Favourites;
@@ -40,7 +40,7 @@ pub enum SideKey {
 /// The window's sidebar of tabs.
 #[component]
 #[allow(non_snake_case)]
-pub fn TabSidebar(data: SidebarData, desk: Desk, dnd: Dnd, pinned: Shown) -> Element {
+pub fn TabSidebar(data: SidebarData, desk: Desk, dnd: Dnd, pinned: bool) -> Element {
     let frame = use_space_frame();
     // The sidebar going (the window narrowed, or ⌃⌘S moved it to the edge) moves no pointer off
     // its rows, so a row's tip would stay over the pane: it closes with the sidebar.
@@ -82,13 +82,12 @@ pub fn TabSidebar(data: SidebarData, desk: Desk, dnd: Dnd, pinned: Shown) -> Ele
     loose.extend(items_of(&data.loose, false, &desk, &dnd));
     sections.push(SidebarSection::List(loose));
     // A tab in a folder is not a row of the list: its folder stands for it.
-    let cursor = every
-        .iter()
-        .find(|row| row.selection == Selection::Selected)
-        .map(|row| match top_folder_of(&data.folders, row.id) {
+    let cursor = every.iter().find(|row| row.selected).map(|row| {
+        match top_folder_of(&data.folders, row.id) {
             Some(folder) => SideKey::Folder(folder),
             None => SideKey::Tab(row.id),
-        });
+        }
+    });
     let select = {
         let desk = desk.clone();
         EventHandler::new(move |key: SideKey| match key {
@@ -103,11 +102,11 @@ pub fn TabSidebar(data: SidebarData, desk: Desk, dnd: Dnd, pinned: Shown) -> Ele
     let mut sidebar = desk.sidebar;
     rsx! {
         // Hidden, the sidebar floats over the pane from the window's edge while the pointer is
-        // there (quire's `EdgePeek`, as mailo's does), and a click on the edge pins it again.
+        // there (the toolkit's `EdgePeek`, as mailo's does), and a click on the edge pins it again.
         EdgePeek {
             label: "Sidebar",
             pinned,
-            onpin: move |()| sidebar.set(Shown::Visible),
+            onpin: move |()| sidebar.set(true),
         div { class: "temor-side", style: frame.style_attr(), oncontextmenu: space_menu_on(&desk),
             Sidebar::<SideKey> {
                 label: "Tabs",

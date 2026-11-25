@@ -1,14 +1,14 @@
-//! The Keyboard page: one row for each action that has a key, its shortcut in quire's recorder,
+//! The Keyboard page: one row for each action that has a key, its shortcut in the toolkit's recorder,
 //! Reset on a row the person changed, and Reset All. A click makes the recorder listen and the
 //! next combination is offered to the action; a refusal says why under the row, naming the action
 //! that already has the chord. Every change is kept at once in `keys.conf` (`keys_edit`); the
 //! panes and the command bar follow the file.
 
-use chordkit::Chord;
 use dioxus::prelude::*;
-use ds::components::fields::field_row::FieldRow;
-use ds::prelude::*;
+use keymap::Chord;
 use temor_panes::pane::keys::{Action, bindable};
+use ui_components::components::fields::field_row::FieldRow;
+use ui_components::prelude::*;
 
 use super::keys_edit::{KeyChange, change_keys, load_view};
 use super::{NO_LINE, SETTINGS_LINE};

@@ -6,9 +6,9 @@ use std::cell::RefCell;
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use ds::base::time::clock::sleep;
-use ds_blitz::{PixelFormat, Pixels, TextureHandle};
 use temor_panes::render::{Palette, PixelSize, Scale};
+use ui_blitz::{PixelFormat, Pixels, TextureHandle};
+use ui_components::base::time::clock::sleep;
 
 use super::probe::Probe;
 use super::tiles::Tiles;

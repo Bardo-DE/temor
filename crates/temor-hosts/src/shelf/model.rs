@@ -2,10 +2,10 @@
 
 use super::naming::candidate_name;
 use crate::transfer::Origin;
-use ds_core::time::stamp::Stamp;
 use serde::{Deserialize, Serialize};
 use temor_core::vocab::ids::{Bytes, Counter, DownloadId};
 use temor_core::vocab::text::ShelfPath;
+use ui_core::time::stamp::Stamp;
 
 /// How an item reached the shelf.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

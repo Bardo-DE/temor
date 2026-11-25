@@ -1,7 +1,7 @@
 //! What a key can ask the pane to do (PLAN §6). A closed set, so every match is checked, and
-//! the two-way map to chordkit's actions: temor owns no chords, only these names.
+//! the two-way map to the keymap's actions: temor owns no chords, only these names.
 
-use chordkit::{Action as Named, AppAction, SpaceNumber, StandardAction};
+use keymap::{Action as Named, AppAction, SpaceNumber, StandardAction};
 
 use super::settings_pane::SettingsPane;
 
@@ -150,7 +150,7 @@ const APP_SLUGS: &[(Action, &str)] = &[
     (Action::ShowStageAndConsole, "show-stage-and-console"),
 ];
 
-/// The actions that are chordkit's standard ones.
+/// The actions that are the keymap's standard ones.
 const STANDARD: &[(Action, StandardAction)] = &[
     (Action::Copy, StandardAction::Copy),
     (Action::Paste, StandardAction::Paste),
@@ -224,9 +224,9 @@ impl Action {
         }
     }
 
-    /// The chordkit action this one is bound as, or `None` for an action with no keymap entry
+    /// The keymap action this one is bound as, or `None` for an action with no keymap entry
     /// ([`Action::CloseFind`], [`Action::SettingsAt`], or a tab or Space number outside 1 to 9).
-    pub fn to_chordkit(self) -> Option<Named> {
+    pub fn to_keymap(self) -> Option<Named> {
         if let Some((_, standard)) = STANDARD.iter().find(|(ours, _)| *ours == self) {
             return Some(Named::Standard(*standard));
         }
@@ -246,10 +246,10 @@ impl Action {
         }
     }
 
-    /// The pane action a chordkit action means, or `None` for one temor does not act on (the
+    /// The pane action a keymap action means, or `None` for one temor does not act on (the
     /// keymap also carries the system's actions, such as Undo). The standard Cancel is
     /// [`Action::CloseFind`]: it closes the find bar when one is open.
-    pub fn from_chordkit(action: &Named) -> Option<Self> {
+    pub fn from_keymap(action: &Named) -> Option<Self> {
         match action {
             Named::Standard(StandardAction::Cancel) => Some(Self::CloseFind),
             Named::Standard(StandardAction::SwitchToSpace(n)) => Some(Self::SelectSpace(n.get())),
@@ -268,7 +268,6 @@ impl Action {
                     .find(|(_, candidate)| *candidate == slug)
                     .map(|(ours, _)| *ours)
             }
-            _ => None,
         }
     }
 }

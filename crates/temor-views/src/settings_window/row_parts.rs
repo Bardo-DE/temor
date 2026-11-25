@@ -2,7 +2,7 @@
 //! field that keeps its edit when the caret leaves.
 
 use dioxus::prelude::*;
-use ds::prelude::*;
+use ui_components::prelude::*;
 
 use crate::names::named;
 

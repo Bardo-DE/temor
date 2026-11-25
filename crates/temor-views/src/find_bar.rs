@@ -4,8 +4,8 @@
 //! and gives the keyboard back to the pane.
 
 use dioxus::prelude::*;
-use ds::prelude::*;
-use ds::style::tokens::control_size::ControlSize;
+use ui_components::prelude::*;
+use ui_components::style::tokens::control_size::ControlSize;
 
 use super::tool_button::ToolButton;
 
@@ -50,7 +50,7 @@ pub fn FindBar(
                     oninput: move |text: String| on_query.call(text),
                     onsubmit: move |_: String| on_step.call(StepDirection::Forward),
                     onkey: move |event: KeyboardEvent| {
-                        if event.key() == Key::Escape {
+                        if event.key() == Key::Named(NamedKey::Escape) {
                             on_close.call(());
                         }
                     },

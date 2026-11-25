@@ -11,7 +11,7 @@ use dioxus::prelude::*;
 use temor_panes::pane::keys::SettingsPane;
 use tokio::sync::watch;
 
-/// Whatever opens the Settings window: quire's event loop in the launched window, a recorder in
+/// Whatever opens the Settings window: the toolkit's event loop in the launched window, a recorder in
 /// a test.
 pub trait OpenSettings: Send + Sync + 'static {
     /// Open the Settings window, or raise it when it is open, turned to `at` when it is asked
@@ -57,7 +57,7 @@ impl SettingsAsked {
     }
 }
 
-/// Where ⌘, goes, as a root context. Without one it is quire's `open_window`.
+/// Where ⌘, goes, as a root context. Without one it is the toolkit's `open_window`.
 #[derive(Clone)]
 pub struct SettingsWindows(pub Arc<dyn OpenSettings>);
 

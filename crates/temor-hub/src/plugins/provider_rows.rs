@@ -1,8 +1,8 @@
 //! The bar takes the rows plugins offered (PLAN §7, `open.provider`). Mounted from
 //! `bar/adapter.rs` as a child module, so it reaches the model's private fields.
 
-use ds::prelude::PaletteIn;
 use temor_client::model::bar::{BarContext, BarIn, BarOut, PluginRow, bar_step};
+use ui_components::prelude::PaletteIn;
 
 use super::{BarModel, rows_of, walk};
 

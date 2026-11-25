@@ -2,7 +2,7 @@
 
 use crate::vocab::ids::AgentSessionRef;
 use crate::vocab::text::{AgentLabel, Cwd, HostAlias, ViewerRef};
-use ds_core::word::Word;
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 
 /// Whether a pane has the keyboard in the window the person is using. A notice goes out only
@@ -20,7 +20,7 @@ pub enum PaneFocus {
 pub enum PaneKind {
     /// A terminal grid.
     Terminal(TerminalPane),
-    /// The gated agent view (D8), driving a session through docket.
+    /// The gated agent view (D8), driving a session through actiond.
     AgentView(AgentSessionRef),
     /// A file shown by the viewer.
     Viewer(ViewerRef),

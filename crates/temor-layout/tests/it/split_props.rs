@@ -1,7 +1,7 @@
 //! Property tests for the split tree: reachability, split/remove inverse, equalize idempotent,
 //! resize clamped, spatial goto symmetric where the geometry allows, and exact tiling.
 
-use ds_core::word::Word;
+use base_words::Word;
 use proptest::prelude::*;
 use temor_core::vocab::ids::PaneId;
 use temor_layout::split::{

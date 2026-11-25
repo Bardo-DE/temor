@@ -4,7 +4,6 @@
 
 use std::sync::Arc;
 
-use ds::prelude::{Emphasis, Selection};
 use temor_client::icons::Image;
 use temor_client::model::icon::{IconAsk, TabIcon, icon_for, initial_of, programs_of};
 use temor_client::model::presence::{AgentState, attention};
@@ -34,8 +33,8 @@ pub struct Tile {
     pub width: f32,
     pub height: f32,
     pub title: String,
-    /// Selected when this pane has the keys in its tab.
-    pub selection: Selection,
+    /// Whether this pane has the keys in its tab.
+    pub selected: bool,
     /// The agent in this pane, if one works or waits there: its segment shows the orb.
     pub agent: AgentState,
 }
@@ -65,8 +64,8 @@ pub struct TabRow {
     pub agent: AgentState,
     /// What plugins say about the pane's folder, on one line, for hover.
     pub about: Option<String>,
-    /// Selected when the tab is in front.
-    pub selection: Selection,
+    /// Whether the tab is in front.
+    pub selected: bool,
     /// The pane with the keys in this tab.
     pub pane: PaneId,
     pub icon: RowIcon,
@@ -184,12 +183,9 @@ impl Hub {
             .map(|path| tidy(path, &self.launch.ambient.home));
         let agent = self.agent_state_of_tab(id);
         // News, or an agent that waits or has a result the person has not looked at.
-        let news = self.book.ws().tabs.unread.contains(&id) || attention(agent) == Emphasis::Strong;
+        let news = self.book.ws().tabs.unread.contains(&id) || attention(agent);
         let unread = news;
-        let selection = match self.book.ws().front() == Some(id) {
-            true => Selection::Selected,
-            false => Selection::Unselected,
-        };
+        let selected = self.book.ws().front() == Some(id);
         // A page is the row's stage, not a pane beside it: only the terminals split the row.
         let tiles = match self.console_of(&tab.tree).panes().len() > 1 {
             true => self.tiles(id, pane),
@@ -208,7 +204,7 @@ impl Hub {
             unread,
             agent,
             about: self.plugin_facts_summary(pane),
-            selection,
+            selected,
             pane,
             tiles,
         })
@@ -319,10 +315,7 @@ impl Hub {
                         Some(name) => name,
                         None => self.pane_title(pane, &tab.title),
                     },
-                    selection: match pane == focus {
-                        true => Selection::Selected,
-                        false => Selection::Unselected,
-                    },
+                    selected: pane == focus,
                     agent: self.agents.radar.most_urgent([pane]),
                 })
             })

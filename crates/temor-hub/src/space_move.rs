@@ -1,10 +1,10 @@
 //! Moving things between Spaces: a tab to another Space, a running pane adopted as a tab (the
 //! quick terminal's "Move to Space"), and what a deleted Space leaves behind.
 
-use ds::components::app::spaces::SpaceId;
 use temor_client::model::error::CoreError;
 use temor_client::model::vocab::ids::{PaneId, TabId};
 use temor_client::model::vocab::text::Cwd;
+use ui_components::components::app::spaces::SpaceId;
 
 use super::desk::Desk;
 use super::model::{Hub, HubRef};

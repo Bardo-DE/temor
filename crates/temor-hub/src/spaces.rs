@@ -3,9 +3,9 @@
 //! keyboard follows, an empty Space gets a tab) and keeps each Space's key agent and the account
 //! store its credentials come from.
 
-use ds::components::app::spaces::SpaceId;
 use temor_client::model::space::{Place, TemorSpaces};
 use temor_client::model::workspace::WorkspaceIn;
+use ui_components::components::app::spaces::SpaceId;
 
 use super::model::{Hub, HubRef};
 use crate::settings_link::board::SpaceRow;

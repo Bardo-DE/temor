@@ -1,6 +1,6 @@
 //! The action ids a person's file uses, how key lines read, and how shortcuts are shown.
 
-use chordkit::{ConventionSource, Keymap, KeymapSource, Overrides, Platform, SourceError};
+use keymap::{ConventionSource, Keymap, KeymapSource, Overrides, Platform, SourceError};
 
 use super::super::{
     Action, SettingsPane, bindable, build_keymap, declared, shortcut, terminal_shortcut,
@@ -72,17 +72,14 @@ fn action_ids_are_the_ones_a_keys_file_writes() {
         (Action::SelectSpace(3), "switch-to-space-3"),
     ];
     for (action, id) in rows {
-        let named = action.to_chordkit().expect("bound by a keymap entry");
+        let named = action.to_keymap().expect("bound by a keymap entry");
         assert_eq!(named.id(), *id);
-        assert_eq!(Action::from_chordkit(&named), Some(*action), "{id}");
+        assert_eq!(Action::from_keymap(&named), Some(*action), "{id}");
     }
-    assert_eq!(Action::CloseFind.to_chordkit(), None);
-    assert_eq!(
-        Action::SettingsAt(SettingsPane::Keyboard).to_chordkit(),
-        None
-    );
-    assert_eq!(Action::SelectTab(0).to_chordkit(), None);
-    assert_eq!(Action::SelectTab(10).to_chordkit(), None);
+    assert_eq!(Action::CloseFind.to_keymap(), None);
+    assert_eq!(Action::SettingsAt(SettingsPane::Keyboard).to_keymap(), None);
+    assert_eq!(Action::SelectTab(0).to_keymap(), None);
+    assert_eq!(Action::SelectTab(10).to_keymap(), None);
     for id in [
         "undo",
         "temor.nope",
@@ -90,8 +87,8 @@ fn action_ids_are_the_ones_a_keys_file_writes() {
         "temor.tab-10",
         "mail.split-right",
     ] {
-        let named: chordkit::Action = id.parse().expect("an action id");
-        assert_eq!(Action::from_chordkit(&named), None, "{id}");
+        let named: keymap::Action = id.parse().expect("an action id");
+        assert_eq!(Action::from_keymap(&named), None, "{id}");
     }
 }
 
@@ -99,7 +96,7 @@ fn action_ids_are_the_ones_a_keys_file_writes() {
 fn the_declared_defaults_are_temors_own_only() {
     let ids: Vec<String> = declared()
         .iter()
-        .filter_map(|declared| declared.action.to_chordkit())
+        .filter_map(|declared| declared.action.to_keymap())
         .map(|named| named.id())
         .collect();
     assert_eq!(ids.len(), declared().len());
@@ -190,8 +187,8 @@ fn shortcuts_are_shown_the_way_the_platform_writes_them() {
 fn every_bindable_action_has_an_entry_and_comes_back_from_it() {
     let all = bindable();
     for action in &all {
-        let named = action.to_chordkit().expect("bound by a keymap entry");
-        assert_eq!(Action::from_chordkit(&named), Some(*action), "{action:?}");
+        let named = action.to_keymap().expect("bound by a keymap entry");
+        assert_eq!(Action::from_keymap(&named), Some(*action), "{action:?}");
     }
     assert!(all.contains(&Action::Settings));
     assert!(all.contains(&Action::SelectTab(9)));

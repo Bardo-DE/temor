@@ -9,7 +9,7 @@ use super::value::{
 };
 use crate::error::SettingsError;
 use crate::keys::Action;
-use chordkit::Overrides;
+use keymap::Overrides;
 
 /// Everything the pane reads from its settings.
 #[derive(Debug, Clone, PartialEq)]
@@ -30,7 +30,7 @@ pub struct TerminalSettings {
     /// Whether new terminals run in the background daemon, so quitting leaves them running
     /// (`shell.keep_running`).
     pub keep_running: bool,
-    /// The person's key changes, in chordkit's line form (`temor.split-right = Primary+Alt+N`).
+    /// The person's key changes, in the keymap's line form (`temor.split-right = Primary+Alt+N`).
     /// The keymap itself is built at the app's edge from the desktop's conventions and these.
     pub keys: Overrides,
     /// When a finished command is worth a notice while the pane is unfocused (PLAN §8.1).
@@ -73,7 +73,7 @@ pub struct ParsedSettings {
 /// Reads settings text over the defaults. Every problem is kept in `issues`; the rest applies.
 ///
 /// A line whose left side names a key action (`copy`, `temor.split-right`) is a key line. Those
-/// lines go to chordkit's reader whole, in place, so its problems carry the file's line numbers.
+/// lines go to the keymap's reader whole, in place, so its problems carry the file's line numbers.
 pub fn parse_settings(text: &str) -> ParsedSettings {
     let mut settings = TerminalSettings::default();
     let mut issues = Vec::new();
@@ -109,9 +109,9 @@ fn is_key_line(line: &str) -> bool {
     let Some((key, _)) = line.split_once('=') else {
         return false;
     };
-    match key.trim().parse::<chordkit::Action>() {
-        Ok(chordkit::Action::Standard(_)) => true,
-        Ok(other) => Action::from_chordkit(&other).is_some(),
+    match key.trim().parse::<keymap::Action>() {
+        Ok(keymap::Action::Standard(_)) => true,
+        Ok(other) => Action::from_keymap(&other).is_some(),
         Err(_) => false,
     }
 }

@@ -2,25 +2,25 @@
 //! TODO(platform:macos): the agent layer (the Keychain, the Dock and single instance are `macos/`).
 //! TODO(platform:windows): taskbar overlay badge, single instance through a named pipe.
 
-#[cfg(not(all(target_os = "macos", feature = "quire-desktop")))]
+#[cfg(not(all(target_os = "macos", feature = "desktop")))]
 use crate::Badge;
-#[cfg(not(all(target_os = "macos", feature = "quire-desktop")))]
+#[cfg(not(all(target_os = "macos", feature = "desktop")))]
 use crate::secrets::{NoSecrets, SecretFault, SecretVault};
 use crate::tailnet::TailnetChanges;
-#[cfg(not(all(target_os = "macos", feature = "quire-desktop")))]
+#[cfg(not(all(target_os = "macos", feature = "desktop")))]
 use crate::{Claim, Primary, Request};
 use crate::{DesktopEnv, DesktopError, WindowPort};
 use std::sync::Arc;
 use temor_ssh::TailnetHost;
-#[cfg(not(all(target_os = "macos", feature = "quire-desktop")))]
+#[cfg(not(all(target_os = "macos", feature = "desktop")))]
 use tokio::sync::mpsc::unbounded_channel;
 
 /// Single instance. Without a bus every launch is the first.
-#[cfg(not(all(target_os = "macos", feature = "quire-desktop")))]
+#[cfg(not(all(target_os = "macos", feature = "desktop")))]
 #[derive(Debug, Clone)]
 pub struct SystemInstance;
 
-#[cfg(not(all(target_os = "macos", feature = "quire-desktop")))]
+#[cfg(not(all(target_os = "macos", feature = "desktop")))]
 impl SystemInstance {
     /// An instance claim in `env`.
     pub fn new(_env: DesktopEnv) -> Self {
@@ -81,11 +81,11 @@ impl SystemIntents {
 }
 
 /// The dock badge. Absent here.
-#[cfg(not(all(target_os = "macos", feature = "quire-desktop")))]
+#[cfg(not(all(target_os = "macos", feature = "desktop")))]
 #[derive(Debug)]
 pub struct SystemDock;
 
-#[cfg(not(all(target_os = "macos", feature = "quire-desktop")))]
+#[cfg(not(all(target_os = "macos", feature = "desktop")))]
 impl SystemDock {
     /// Always [`DesktopError::Unsupported`].
     pub async fn connect(_env: &DesktopEnv) -> Result<Self, DesktopError> {
@@ -141,11 +141,11 @@ impl SystemTailnet {
 
 /// A Space's secrets. Absent here: nothing is kept and every ask finds nothing.
 /// TODO(platform:windows): the Credential Manager through the same.
-#[cfg(not(all(target_os = "macos", feature = "quire-desktop")))]
+#[cfg(not(all(target_os = "macos", feature = "desktop")))]
 #[derive(Debug)]
 pub struct SystemSecrets;
 
-#[cfg(not(all(target_os = "macos", feature = "quire-desktop")))]
+#[cfg(not(all(target_os = "macos", feature = "desktop")))]
 impl SystemSecrets {
     /// Always [`SecretFault::NoStore`].
     pub fn new(_runtime: tokio::runtime::Handle) -> Result<Self, SecretFault> {
@@ -155,7 +155,7 @@ impl SystemSecrets {
 
 /// Its constructor always fails, so no value of it exists; if one did, it would answer as
 /// [`NoSecrets`] does.
-#[cfg(not(all(target_os = "macos", feature = "quire-desktop")))]
+#[cfg(not(all(target_os = "macos", feature = "desktop")))]
 impl SecretVault for SystemSecrets {
     fn get(&self, account: &str) -> Result<Option<String>, SecretFault> {
         NoSecrets.get(account)

@@ -9,9 +9,9 @@
 //! with the keys keeps its name, the others are their glyphs alone.
 
 use dioxus::prelude::*;
-use ds::prelude::IconSize;
 use temor_client::model::vocab::ids::{PaneId, TabId};
 use temor_client::model::workspace::WorkspaceIn;
+use ui_components::prelude::IconSize;
 
 use super::dnd::Dnd;
 use super::row_tip::RowTip;
@@ -56,7 +56,7 @@ fn segment(
     onmenu: EventHandler<PaneId>,
 ) -> Element {
     let pane = tile.pane;
-    let selected = selected_attr(tile.selection);
+    let selected = selected_attr(tile.selected);
     let glyph_only = (squeeze && selected.is_none()).then_some("true");
     let click = dnd.click.clone();
     // A right click on a segment is the tab's menu, with Close Pane for this pane alone.

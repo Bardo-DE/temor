@@ -4,7 +4,7 @@
 //! made meanwhile elsewhere is kept and a refusal names the action that holds the chord. The
 //! panes follow the file (`hub::keys`); nothing here tells them.
 
-use chordkit::{Chord, Context, Keymap, Overrides, Platform};
+use keymap::{Chord, Context, Keymap, Overrides, Platform};
 use temor_panes::pane::SettingsError;
 use temor_panes::pane::keys::{
     Action, bind_key, build_keymap, portable_chord, reset_all_keys, reset_key,
@@ -35,7 +35,7 @@ pub struct KeysView {
 impl KeysView {
     /// Whether the person has changed the key of `action`.
     pub fn changed(&self, action: Action) -> bool {
-        action.to_chordkit().is_some_and(|named| {
+        action.to_keymap().is_some_and(|named| {
             self.changed
                 .entries()
                 .iter()
@@ -45,7 +45,7 @@ impl KeysView {
 
     /// What `action` is pressed as in a terminal window, if it has a key.
     pub fn chord_of(&self, action: Action) -> Option<Chord> {
-        let named = action.to_chordkit()?;
+        let named = action.to_keymap()?;
         self.keymap
             .chords_in(&named, Context::Terminal)
             .first()

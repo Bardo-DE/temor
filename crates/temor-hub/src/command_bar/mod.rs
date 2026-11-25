@@ -1,4 +1,4 @@
-//! The ⌘T bar in the window (PLAN §7, D11): quire's palette machine over the rows temor-core
+//! The ⌘T bar in the window (PLAN §7, D11): the toolkit's palette machine over the rows temor-core
 //! ranks, the providers wired at the edge, and the seams other parts of the app fill in (Spaces,
 //! hosts, the model). Pure parts here; the hub carries the picks out (`hub::bar`).
 

@@ -1,7 +1,7 @@
 //! Single instance: the first launch owns the name, a second asks it to open a window or tab and
 //! is told to exit.
 
-#![cfg(all(target_os = "linux", feature = "quire-desktop"))]
+#![cfg(all(target_os = "linux", feature = "desktop"))]
 
 use crate::bus::PrivateBus;
 use std::ffi::OsString;

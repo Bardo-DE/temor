@@ -7,11 +7,11 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use dioxus::prelude::*;
-use ds::edit::raw_key::RawKey;
-use ds::host::measure::{RectProbe, use_rect};
-use ds::host::signals::HostSignals;
 use temor_client::model::vocab::ids::PaneId;
 use temor_panes::vt::SurfacePoint;
+use ui_components::edit::raw_key::RawKey;
+use ui_components::host::measure::{RectProbe, use_rect};
+use ui_components::host::signals::HostSignals;
 
 use super::peek_card::PeekCard;
 use super::peek_keys::{KeySays, says};

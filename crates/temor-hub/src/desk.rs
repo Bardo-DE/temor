@@ -2,12 +2,11 @@
 //! and the signal the message bar reads. Cloned into every pane view and the sidebar.
 
 use dioxus::prelude::*;
-use ds::base::vocab::Shown;
-use ds::window::host::WindowHost;
-use ds::window::vocab::PageZoom;
 use temor_client::model::vocab::ids::{FolderId, PaneId, TabId};
 use temor_client::model::vocab::text::TabTitle;
 use temor_client::model::workspace::{TabsIn, WorkspaceIn};
+use ui_components::window::host::WindowHost;
+use ui_components::window::vocab::PageZoom;
 
 use super::model::HubRef;
 use super::space_rows::PendingSwitch;
@@ -30,7 +29,7 @@ pub struct Desk {
     /// The Space the ⌘T bar asked for, until the desk switches to it.
     pub picked_space: PendingSwitch,
     /// Whether the sidebar is shown: the window's, which the show/hide action flips.
-    pub sidebar: Signal<Shown>,
+    pub sidebar: Signal<bool>,
     /// The window itself, which zooms the page; none where nothing hosts the window.
     pub window: HostOf,
     /// The folder of the sidebar being named where it stands (one just made, or Rename Folder).

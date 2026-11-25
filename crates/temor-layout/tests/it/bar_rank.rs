@@ -1,6 +1,5 @@
 //! The ⌘T ranking's fixed rules (§7), one test per rule.
 
-use ds_style::space::list::SpaceId;
 use temor_core::vocab::ai::AiSwitch;
 use temor_core::vocab::ids::TabId;
 use temor_core::vocab::text::{CommandText, Cwd, HostAlias, PluginId};
@@ -8,6 +7,7 @@ use temor_layout::bar::{
     BarAction, BarRow, Candidate, Frecency, PluginRow, RowGroup, Section, Target, rank,
 };
 use temor_pane::keys::Action;
+use ui_style::space::list::SpaceId;
 
 fn candidates() -> Vec<Candidate> {
     let c = |title: &str, target| Candidate {

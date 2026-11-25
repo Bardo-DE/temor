@@ -1,8 +1,8 @@
 //! The quick terminal's state, inputs and outputs.
 
-use ds_style::space::list::SpaceId;
 use temor_core::vocab::ids::PaneId;
 use temor_core::vocab::text::Cwd;
+use ui_style::space::list::SpaceId;
 
 /// The quick terminal.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]

@@ -1,7 +1,7 @@
 //! The split tree's data: a flat node array addressed by handles, each split's share relative
 //! to its parent, and the pane (if any) that is zoomed.
 
-use ds_core::word::Word;
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 use temor_core::vocab::ids::PaneId;
 

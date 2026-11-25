@@ -1,5 +1,5 @@
 //! The files an older temor wrote: the session files (`session.json`, `session-<n>.json`) and
-//! the Spaces file (`spaces.json`, quire's `Spaces<Project, Place>` as the kit writes it). temor
+//! the Spaces file (`spaces.json`, the toolkit's `Spaces<Project, Place>` as the kit writes it). temor
 //! now keeps its rows and Spaces in the store ([`super::Kept`]) and reads these once, into it. The directory is
 //! injected; the binary resolves it from the XDG state home. A damaged file is set aside
 //! (`session.json.bad`), a newer one is left alone. The writers stay so tests can leave a file as
@@ -8,11 +8,11 @@
 use std::io;
 use std::path::{Path, PathBuf};
 
-use ds_style::space::list::SpaceId;
 use temor_hosts::host::store::{HostsFile, read_hosts, splice_hosts};
 use temor_layout::space::TemorSpaces;
 use temor_layout::workspace::restore::{FreshWhy, Restored, decode, encode};
 use temor_layout::workspace::{KeepClosed, Workspace};
+use ui_style::space::list::SpaceId;
 
 use super::private::{ensure_private_dir, write_private_file};
 

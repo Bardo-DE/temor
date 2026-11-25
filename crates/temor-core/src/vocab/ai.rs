@@ -1,7 +1,7 @@
 //! The one switch over all AI (§8.3): while it is off, nothing reaches a model and no AI row is
 //! offered.
 
-use ds_core::word::Word;
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 
 /// Whether temor may use a model at all.

@@ -33,16 +33,16 @@ fn launch_in(home: std::path::PathBuf) -> Launch {
         },
         settings: temor_panes::pane::settings::TerminalSettings::default(),
         keymap: temor_ui_base::edge::keymap_for(
-            chordkit::Platform::Linux {
-                desktop: chordkit::Desktop::Ours,
+            keymap::Platform::Linux {
+                desktop: keymap::Desktop::Ours,
             },
-            &chordkit::Overrides::default(),
+            &keymap::Overrides::default(),
         )
         .0,
         launcher: LauncherChoice::ThisProgram,
         appearance: AppearanceSource::scratch(
             home.join("config"),
-            ds::prelude::SystemPrefs::default(),
+            ui_components::prelude::SystemSettings::default(),
         ),
         probe: None,
         state_dir: None,
@@ -155,10 +155,10 @@ fn the_home_folder_is_written_as_a_tilde() {
 }
 
 mod spaces {
-    use ds::components::app::spaces::{SpaceId, Spaces};
     use temor_client::model::space::{Project, Route};
     use temor_client::model::vocab::text::{Cwd, RoutePattern};
     use temor_client::model::workspace::WorkspaceIn;
+    use ui_components::components::app::spaces::{SpaceId, Spaces};
 
     use super::super::space_route::expand_home;
     use super::{hub_after, launch};

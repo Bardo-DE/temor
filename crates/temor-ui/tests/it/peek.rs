@@ -5,10 +5,10 @@
 use std::time::{Duration, Instant};
 
 use dioxus::html::Modifiers;
-use ds::base::vocab::ShortcutKey;
-use ds::prelude::{Point, Px};
-use ds_harness::{Harness, Input, PointerAction, PointerInput};
 use temor_ui_base::probe::Probe;
+use ui_components::base::vocab::ShortcutKey;
+use ui_components::prelude::{Point, Px};
+use ui_harness::{Harness, Input, PointerAction, PointerInput};
 
 use super::block_list::composer_value;
 use super::support::tools_present;

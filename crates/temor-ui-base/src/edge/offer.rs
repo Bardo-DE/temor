@@ -5,7 +5,7 @@ use std::collections::hash_map::RandomState;
 use std::hash::{BuildHasher, Hasher};
 use std::path::PathBuf;
 
-use ds_settings::Store;
+use settings_store_fs::Store;
 use temor_client::model::offer::Program;
 use temor_client::ssh::{InnerLoadLine, InnerShell, LoadToken, SshError, probe_line};
 

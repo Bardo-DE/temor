@@ -17,7 +17,7 @@ pub enum UiError {
     SettingsRead(#[source] std::io::Error),
     /// The settings could not be written.
     #[error("the settings could not be saved: {0}")]
-    SettingsWrite(#[source] ds_settings::SettingsError),
+    SettingsWrite(#[source] settings_store_fs::SettingsError),
     /// A change made in the Settings window cannot be kept: what the setting would hold is not
     /// something it can, said in words for the person.
     #[error("{0}")]

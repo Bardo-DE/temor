@@ -2,9 +2,9 @@
 //! when the person says so.
 
 use dioxus::prelude::*;
-use ds::components::overlays::alert_model::{AlertButton, AlertRole};
-use ds::prelude::*;
 use temor_panes::pane::paste::UnsafeReason;
+use ui_components::components::overlays::alert_model::{AlertButton, AlertRole};
+use ui_components::prelude::*;
 
 /// Why a paste needs confirming, in the person's words.
 pub fn reason_text(reason: UnsafeReason) -> &'static str {

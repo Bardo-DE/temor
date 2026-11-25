@@ -1,4 +1,4 @@
-//! A plugin for temor's tests, built on `bayonet::testing`. It answers all four capabilities and
+//! A plugin for temor's tests, built on `plugin_host::testing`. It answers all four capabilities and
 //! misbehaves on the wire when started with `--fault <name>` (bayonet's names).
 //!
 //! What it answers, by request:
@@ -13,7 +13,7 @@
 use std::process::ExitCode;
 use std::time::Duration;
 
-use bayonet::testing::{Ending, Fake, Fault, Step, fault_argument};
+use plugin_host::testing::{Ending, Fake, Fault, Step, fault_argument};
 use temor_plugins::Cap;
 use temor_plugins::message::{
     Activation, Batch, Fact, Icon, Item, Message, OpenTarget, Phase, Request,

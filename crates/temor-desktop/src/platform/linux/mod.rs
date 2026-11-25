@@ -1,4 +1,4 @@
-//! The Linux desktop: the session bus, docket's agent layer and porter's account service.
+//! The Linux desktop: the session bus, actiond's agent layer and accountd's account service.
 
 mod args;
 mod bus;

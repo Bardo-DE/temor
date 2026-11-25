@@ -5,11 +5,11 @@
 
 use std::time::Duration;
 
-use ds::base::vocab::ShortcutKey;
-use ds::prelude::{Point, Px};
-use ds_blitz::Extent;
-use ds_harness::{Harness, Input};
 use temor_ui_base::probe::Probe;
+use ui_blitz::Extent;
+use ui_components::base::vocab::ShortcutKey;
+use ui_components::prelude::{Point, Px};
+use ui_harness::{Harness, Input};
 
 use super::drive::{Rect, chord, rect, rects, started, type_line, wait_until};
 use super::window::{harness, harness_scaled};

@@ -8,7 +8,6 @@ use temor_client::model::workspace::WorkspaceIn;
 
 use super::desk::Desk;
 use super::model::Hub;
-use temor_ui_base::sidebar_room::toggled;
 
 impl Hub {
     /// `input`, with the focused pane's width in columns told to a split, and the width of the
@@ -60,7 +59,7 @@ impl Desk {
     /// Shows the sidebar, or hides it, whatever the window's width.
     pub(super) fn sidebar_toggle(&self) {
         let mut sidebar = self.sidebar;
-        let next = toggled(sidebar());
+        let next = !sidebar();
         sidebar.set(next);
     }
 }

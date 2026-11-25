@@ -1,4 +1,4 @@
-//! The General and Appearance pages: quire's `SettingsPage` over temor's schema, split by
+//! The General and Appearance pages: the toolkit's `SettingsPage` over temor's schema, split by
 //! `pages::page_of`. The page draws the switches and choices; the window's own rows draw the
 //! text, numbers and lists it only shows (`own_rows`). Every change goes through [`save_edit`]:
 //! the file is read again, the edit applied, the result saved. A save that fails shows a banner
@@ -8,11 +8,11 @@
 use std::path::PathBuf;
 
 use dioxus::prelude::*;
-use ds::prelude::*;
-use ds::style::tokens::control_size::ControlSize;
-use ds_settings::schema::KeySpec;
-use ds_settings_page::{SectionRows, SettingEdit, SettingsPage};
+use settings_types::schema::KeySpec;
 use temor_panes::pane::keys::SettingsPane;
+use ui_components::prelude::*;
+use ui_components::style::tokens::control_size::ControlSize;
+use ui_settings_page::{SectionRows, SettingEdit, SettingsPage};
 
 use super::edit::{save_edit, values_of};
 use super::own_rows::OwnRow;

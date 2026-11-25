@@ -10,14 +10,14 @@ publish = false
 [features]
 # The Linux desktop's services (PLAN D15): the agent layer, single instance, the dock badge and the
 # Tailscale list. Off, temor-desktop is its portable half and the build has no zbus.
-default = ["quire-desktop"]
-quire-desktop = ["temor-client/quire-desktop"]
+default = ["desktop"]
+desktop = ["temor-client/desktop"]
 
 [dependencies]
-chordkit = { workspace = true }
+keymap = { workspace = true }
 dioxus = { workspace = true }
-ds = { workspace = true }
-ds-blitz = { workspace = true }
+ui-components = { workspace = true }
+ui-blitz = { workspace = true }
 png = { workspace = true }
 serde_json = { workspace = true }
 # temor, as the window may name it (PLAN §2b, the fence): its data and services through the
@@ -49,8 +49,8 @@ temor-render = { workspace = true, features = ["ghostty"] }
 temor-vt = { workspace = true, features = ["ghostty"] }
 temor-wire = { workspace = true }
 temor-testkit = { workspace = true }
-ds-harness = { workspace = true }
-ds-lint = { workspace = true }
+ui-harness = { workspace = true }
+ui-lint = { workspace = true }
 tokio = { workspace = true, features = ["rt-multi-thread", "time"] }
 
 [[test]]

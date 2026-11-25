@@ -4,15 +4,16 @@
 //! the program has turned on the kitty keyboard flags it asked for those chords, so they reach it.
 //! Pure: no window, no terminal.
 
-use chordkit::{Context, Key as ChordKey, Keymap, NamedKey};
+use keymap::keyboard_types::NamedKey;
+use keymap::{Context, Key as ChordKey, Keymap};
 use temor_panes::pane::keys::Action;
 use temor_panes::vt::{KeyAction, KeyInput, KittyKeyFlags};
 
-/// A key as the window heard it: the press as chordkit reads it (when it has a name there) and
+/// A key as the window heard it: the press as the keymap reads it (when it has a name there) and
 /// what the program would get.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Stroke {
-    pub input: Option<chordkit::KeyInput>,
+    pub input: Option<keymap::KeyInput>,
     pub key: KeyInput,
 }
 
@@ -54,7 +55,7 @@ pub fn route_with(stroke: Stroke, keymap: &Keymap, find: bool, kitty: bool) -> R
     }
     let bound = keymap
         .resolve(&input, Context::Terminal)
-        .and_then(|named| Action::from_chordkit(&named));
+        .and_then(|named| Action::from_keymap(&named));
     match (bound, find) {
         (Some(Action::CloseFind), true) => Routed::Action(Action::CloseFind),
         // The find keys are the bar's only while it is open; elsewhere they are any other key.
@@ -68,13 +69,13 @@ pub fn route_with(stroke: Stroke, keymap: &Keymap, find: bool, kitty: bool) -> R
 /// A key with no action: dropped when it is in the Primary form (it would reach the program as a
 /// control byte; Ghostty drops these too), else the program's. Under the kitty keyboard flags the
 /// program asked for these chords, so it gets them.
-fn unbound(key: KeyInput, input: &chordkit::KeyInput, keymap: &Keymap, kitty: bool) -> Routed {
+fn unbound(key: KeyInput, input: &keymap::KeyInput, keymap: &Keymap, kitty: bool) -> Routed {
     match (keymap.is_primary_form(input, Context::Terminal), kitty) {
         (true, false) => Routed::Ignored,
         (true, true) | (false, _) => Routed::Shell(key),
     }
 }
 
-fn is_plain_escape(input: &chordkit::KeyInput) -> bool {
+fn is_plain_escape(input: &keymap::KeyInput) -> bool {
     input.modifiers.is_empty() && input.key == ChordKey::Named(NamedKey::Escape)
 }

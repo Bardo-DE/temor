@@ -1,6 +1,6 @@
 //! What a Space's new shell is given from outside the process (PLAN §7): the dotenv file under
 //! the project root, and the secrets from the account store. The store belongs to the desktop
-//! integration (temor-desktop, through porter); the window only asks through
+//! integration (temor-desktop, through accountd); the window only asks through
 //! [`CredentialSource`], whose default has nothing.
 
 use std::fmt;

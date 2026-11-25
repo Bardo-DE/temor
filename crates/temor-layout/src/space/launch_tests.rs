@@ -4,9 +4,9 @@ use super::{
     AccountRef, Credential, DotenvFault, Profile, Project, RuntimeDir, agent_plan, dotenv_path,
     launch,
 };
-use ds_style::space::list::SpaceId;
 use temor_core::error::CoreError;
 use temor_core::vocab::text::{EnvKey, EnvValue, KeyPath, ProjectRoot, RelPath};
+use ui_style::space::list::SpaceId;
 
 fn var(key: &str, value: &str) -> (EnvKey, EnvValue) {
     (EnvKey::new(key).unwrap(), EnvValue(value.to_owned()))

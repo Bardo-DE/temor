@@ -1,15 +1,15 @@
-//! Spaces in the window (PLAN §7), on quire's Spaces kit. The kit owns the list as a signal and
+//! Spaces in the window (PLAN §7), on the toolkit's Spaces kit. The kit owns the list as a signal and
 //! drives switching, renaming, colouring and deleting; the hub keeps a workspace for each Space
 //! and follows the kit through the four callbacks `use_window_spaces` hands it.
 
 use dioxus::prelude::*;
-use ds::base::vocab::Availability;
-use ds::components::app::spaces::{
-    NewSpace, SpaceHead, SpaceId, SpaceMenu, SpacesFoot, SwitchChord, Switched, use_spaces,
-};
-use ds::components::menus::item::item::MenuItem;
-use ds::prelude::{Point, Px};
 use temor_client::model::space::{Place, Project, TemorSpaces};
+use ui_components::base::vocab::Availability;
+use ui_components::components::app::spaces::{
+    SpaceHead, SpaceId, SpaceMenu, SpacesFoot, SwitchChord, Switched, use_spaces,
+};
+use ui_components::components::menus::item::item::MenuItem;
+use ui_components::prelude::{Point, Px};
 
 use super::address_bar::{AddressBar, WalkButtons};
 use super::shelf::ShelfButton;
@@ -83,7 +83,7 @@ pub fn space_menu_on(desk: &Desk) -> impl FnMut(MouseEvent) + 'static {
     }
 }
 
-/// The foot of the sidebar: a dot for each Space once there are several (quire's `SpacesFoot`
+/// The foot of the sidebar: a dot for each Space once there are several (the toolkit's `SpacesFoot`
 /// draws none for one) between its two ends, `trailing` the right one (the foot draws no `+`:
 /// New Space is in the Space's menu). The Space switch has no chord of its own here: the desktop
 /// owns Ctrl+digit.
@@ -101,7 +101,7 @@ pub fn SpaceFoot(desk: Desk, trailing: Element) -> Element {
                 handle,
                 new_payload,
                 chord: SwitchChord::Unbound,
-                new_space: NewSpace::Hidden,
+                new_space: false,
                 leading,
                 trailing,
             }

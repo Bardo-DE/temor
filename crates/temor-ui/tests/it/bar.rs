@@ -5,11 +5,11 @@
 
 use std::time::Duration;
 
-use ds::base::vocab::ShortcutKey;
+use ui_components::base::vocab::ShortcutKey;
 
-use ds::window::vocab::PageZoom;
-use ds_harness::{FocusState, Harness, Input, WindowHosting};
 use temor_ui_base::probe::Probe;
+use ui_components::window::vocab::PageZoom;
+use ui_harness::{Harness, Input, WindowHosting};
 
 use super::drive::{chord, focus_pane, panes, rows, started, type_line, type_text, wait_until};
 use super::window::harness_hosting;
@@ -81,11 +81,7 @@ fn the_find_field_takes_the_keyboard_and_gives_it_back() {
 
     chord(&mut h, 'f');
     assert_eq!(h.count(".temor-find"), 1, "⌘F opens the find bar");
-    assert_eq!(
-        h.focus_of(".temor-find input"),
-        FocusState::Focused,
-        "the field has the caret"
-    );
+    assert!(h.focus_of(".temor-find input"), "the field has the caret");
     for c in "zq".chars() {
         h.send(Input::key(ShortcutKey::Char(c)));
     }
@@ -130,7 +126,7 @@ fn the_console_bar_finds_and_opens_the_rows_menu() {
         "the field opens in the bar"
     );
     assert_eq!(h.count(".temor-find.temor-sheet"), 0, "not on the corner");
-    assert_eq!(h.focus_of(".temor-find input"), FocusState::Focused);
+    assert!(h.focus_of(".temor-find input"));
     press(&mut h, find);
     h.advance(Duration::from_millis(100));
     assert_eq!(h.count(".temor-find"), 0, "a second press closes it");

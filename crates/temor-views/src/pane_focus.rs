@@ -6,13 +6,13 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use dioxus::prelude::*;
-use ds::edit::input::EditInput;
-use ds::edit::pointer::EditFocus;
-use ds::host::ime::ImeEvent;
-use ds::host::measure::RectProbe;
 use temor_client::model::pane::PaneFocus;
 use temor_client::model::vocab::ids::PaneId;
 use temor_client::model::workspace::WorkspaceIn;
+use ui_components::edit::input::EditInput;
+use ui_components::edit::pointer::EditFocus;
+use ui_components::host::ime::ImeEvent;
+use ui_components::host::measure::RectProbe;
 
 use super::focus_edge::use_focus_edge;
 use super::ime::{ImeGlue, focus_handler};

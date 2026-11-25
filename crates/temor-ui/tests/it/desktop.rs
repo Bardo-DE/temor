@@ -2,7 +2,7 @@
 //! window's link, and a second launch hands its request over and is told to end. The agent
 //! layer, the dock and the Tailscale list are held by temor-desktop's own bus tests.
 
-#![cfg(all(target_os = "linux", feature = "quire-desktop"))]
+#![cfg(all(target_os = "linux", feature = "desktop"))]
 
 use std::time::Duration;
 

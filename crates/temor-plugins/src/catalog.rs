@@ -2,8 +2,8 @@
 
 use std::path::{Path, PathBuf};
 
-use bayonet::registry::{Fit, Installed, Registry};
-use bayonet::{Search, discover};
+use plugin_host::registry::{Fit, Installed, Registry};
+use plugin_host::{Search, discover};
 
 use crate::capability::{Cap, Provision};
 

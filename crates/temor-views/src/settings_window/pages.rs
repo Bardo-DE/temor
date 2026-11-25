@@ -1,9 +1,9 @@
 //! Which keys are on which page of the Settings window, and which of them the window's own rows
-//! draw because quire's `SettingsPage` shows them read-only.
+//! draw because the toolkit's `SettingsPage` shows them read-only.
 //!
 //! Pure over the schema.
 
-use ds_settings::schema::{KeyKind, KeySpec, Schema};
+use settings_types::schema::{KeyKind, KeySpec, Schema};
 use temor_panes::pane::keys::SettingsPane;
 
 use temor_ui_base::settings::schema;
@@ -12,7 +12,7 @@ use temor_ui_base::settings::schema;
 ///
 /// TEMPORARY, and the only place that knows: `#[settings(page = ...)]` names the Settings app's
 /// page, not a page of temor's own window, so General and Appearance are told apart by section
-/// title. When quire adds a page id to the attribute, this is the one function to swap (every
+/// title. When the toolkit adds a page id to the attribute, this is the one function to swap (every
 /// other part of the window asks it, never a title). A section it does not know is General.
 pub fn page_of(section: &str) -> SettingsPane {
     match section {
@@ -24,7 +24,7 @@ pub fn page_of(section: &str) -> SettingsPane {
 /// How a key is drawn.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DrawnBy {
-    /// Quire's `SettingsPage`: a switch, segments or a pop-up button.
+    /// The toolkit's `SettingsPage`: a switch, segments or a pop-up button.
     Page,
     /// The window's own row: text, a number or a list, which the page only shows.
     Window,

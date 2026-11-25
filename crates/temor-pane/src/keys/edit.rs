@@ -1,9 +1,9 @@
-//! Changing the person's key file (`keys.conf`, chordkit's line form), as pure functions over its
+//! Changing the person's key file (`keys.conf`, the keymap's line form), as pure functions over its
 //! text: bind an action, reset one, reset all. Comments and lines that belong to no action are
 //! kept as they are. The keymap in force says who holds a chord, so a conflict is refused and
 //! names the action that has it (PLAN §6).
 
-use chordkit::{Action as Named, Context, DefaultChord, Keymap, OverrideEntry, Overrides};
+use keymap::{Action as Named, Context, DefaultChord, Keymap, OverrideEntry, Overrides};
 
 use super::action::Action;
 use crate::error::SettingsError;
@@ -20,7 +20,7 @@ pub fn bind_key(
     chord: &str,
 ) -> Result<String, SettingsError> {
     let named = action
-        .to_chordkit()
+        .to_keymap()
         .ok_or_else(|| SettingsError::KeyNotBindable(action.label().to_owned()))?;
     let wanted: DefaultChord = chord
         .trim()
@@ -61,7 +61,7 @@ pub fn bind_key(
 
 /// `text` without the lines that change `action`: it answers to its own key again.
 pub fn reset_key(text: &str, action: Action) -> String {
-    match action.to_chordkit() {
+    match action.to_keymap() {
         Some(named) => without(text, &named.id()),
         None => text.to_owned(),
     }
@@ -78,7 +78,7 @@ pub fn reset_all_keys(text: &str) -> String {
 pub fn is_key_action(key: &str) -> bool {
     match key.parse::<Named>() {
         Ok(Named::Standard(_)) => true,
-        Ok(other) => Action::from_chordkit(&other).is_some(),
+        Ok(other) => Action::from_keymap(&other).is_some(),
         Err(_) => false,
     }
 }
@@ -102,7 +102,7 @@ fn kept_lines(text: &str, keep: impl Fn(&str) -> bool) -> String {
 
 /// What a person reads for the action that holds a chord.
 fn holder_name(held: &Named) -> String {
-    match Action::from_chordkit(held) {
+    match Action::from_keymap(held) {
         Some(ours) => ours.label().to_owned(),
         None => match held {
             Named::Standard(standard) => standard.label(),

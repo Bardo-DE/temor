@@ -7,13 +7,12 @@ use std::time::Instant;
 
 use dioxus::html::geometry::ClientPoint;
 use dioxus::prelude::*;
-use ds::base::time::clock::sleep;
-use ds::host::ime::ImeSwitch;
-use ds::host::measure::RectProbe;
-use ds::host::signals::HostSignals;
-use ds::prelude::*;
 use temor_client::model::pane::PaneFocus;
 use temor_panes::render::{PixelSize, Scale};
+use ui_components::base::time::clock::sleep;
+use ui_components::host::measure::RectProbe;
+use ui_components::host::signals::HostSignals;
+use ui_components::prelude::*;
 
 use super::convert::{device_point, scale_of};
 use super::ime::ImeGlue;
@@ -43,7 +42,7 @@ pub(super) fn send_text(slot: &RefCell<Slot>, text: &str) {
 pub(super) fn focus_in(ime: ImeGlue, slot: Rc<RefCell<Slot>>, rect: RectProbe) {
     // The candidates are placed once the input method is on, where the cursor is by then.
     let placer = ime.clone();
-    ime.switch(ImeSwitch::On, move || {
+    ime.switch(true, move || {
         placer.cursor_area(cursor_rect(&slot, rect));
     });
 }

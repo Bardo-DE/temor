@@ -1,6 +1,6 @@
 //! temor's protocol on bayonet's runner.
 
-use bayonet::run::{Greeting, Protocol};
+use plugin_host::run::{Greeting, Protocol};
 
 use crate::capability::{Cap, Provision};
 use crate::catalog::PROTOCOL;

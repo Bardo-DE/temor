@@ -1,18 +1,18 @@
 //! Opening the Settings window, or raising it when it is open (as mailo's does): ⌘, the command
-//! bar and its page rows all come here. The window is quire's (`ds_blitz::open_window`), which
+//! bar and its page rows all come here. The window is the toolkit's (`ui_blitz::open_window`), which
 //! gives it the same root contexts as the first window. Where it is asked to be is put in
 //! [`SettingsAsked`], which every window shares, and an open Settings window follows it.
 //!
 //! The hub asks through the [`SettingsWindows`] the window was given (`temor_hub::settings_link`):
-//! the launched window is given [`QuireSettings`], a test a recorder, since quire's harness has
+//! the launched window is given [`LaunchedSettings`], a test a recorder, since the toolkit's harness has
 //! no event loop to open a window on.
 
 use std::cell::RefCell;
 use std::rc::Rc;
 
 use dioxus::prelude::*;
-use ds_blitz::{WindowHandle, WindowLife, WindowSize, WindowSpec};
 use temor_panes::pane::keys::SettingsPane;
+use ui_blitz::{WindowHandle, WindowLife, WindowSize, WindowSpec};
 
 use temor_hub::settings_link::{OpenSettings, SettingsAsked};
 
@@ -39,17 +39,17 @@ pub fn use_settings_opened() {
     use_context_provider(SettingsOpened::default);
 }
 
-/// Opening the Settings window through quire's event loop: what the launched window is given as
+/// Opening the Settings window through the toolkit's event loop: what the launched window is given as
 /// its [`SettingsWindows`]. Turns it to `at` through [`SettingsAsked`], then opens or raises it.
 #[derive(Debug, Clone, Copy, Default)]
-pub struct QuireSettings;
+pub struct LaunchedSettings;
 
-impl OpenSettings for QuireSettings {
+impl OpenSettings for LaunchedSettings {
     fn open(&self, at: Option<SettingsPane>) {
         if let (Some(at), Some(asked)) = (at, try_consume_context::<SettingsAsked>()) {
             asked.ask(at);
         }
-        quire();
+        open_or_raise();
     }
 }
 
@@ -58,22 +58,22 @@ pub(super) fn raise(life: WindowLife) -> bool {
     matches!(life, WindowLife::Opening | WindowLife::Open)
 }
 
-/// Ask quire's event loop for the window, or raise the one already open.
-fn quire() {
+/// Ask the toolkit's event loop for the window, or raise the one already open.
+fn open_or_raise() {
     let opened = try_consume_context::<SettingsOpened>().unwrap_or_default();
     let existing = opened.0.borrow().clone();
     if let Some(handle) = existing.filter(|handle| raise(handle.life())) {
         handle.focus();
         return;
     }
-    match ds_blitz::open_window(
+    match ui_blitz::open_window(
         WindowSpec::new(TITLE, WindowSize::new(SIZE.0, SIZE.1)),
         settings_window,
     ) {
-        Ok(handle) => {
+        Some(handle) => {
             *opened.0.borrow_mut() = Some(handle);
         }
-        Err(why) => report_failure(&why.to_string()),
+        None => report_failure("the app has no event loop to ask"),
     }
 }
 

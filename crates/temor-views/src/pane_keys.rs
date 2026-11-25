@@ -3,13 +3,13 @@
 
 use std::rc::Rc;
 
-use dioxus::prelude::{Key, Modifiers};
-use ds::edit::composition::Composing;
-use ds::edit::input::EditInput;
-use ds::edit::raw_key::{KeyPhase, RawKey};
-use ds::focus::request::FocusRequest;
-use ds::host::measure::RectProbe;
+use dioxus::prelude::{Key, Modifiers, NamedKey};
 use temor_client::model::vocab::ids::PaneId;
+use ui_components::edit::composition::Composing;
+use ui_components::edit::input::EditInput;
+use ui_components::edit::raw_key::{KeyPhase, RawKey};
+use ui_components::focus::request::FocusRequest;
+use ui_components::host::measure::RectProbe;
 
 use super::ime::ImeGlue;
 use super::pane_link::{PaneLink, Redraw};
@@ -37,14 +37,14 @@ enum ComposerKey {
 }
 
 fn composer_key(raw: &RawKey) -> ComposerKey {
-    let chord = Modifiers::SUPER | Modifiers::META | Modifiers::CONTROL;
+    let chord = Modifiers::META | Modifiers::CONTROL;
     match (raw.phase, &raw.key, &raw.text) {
         (KeyPhase::Release, ..) => ComposerKey::Release,
         _ if raw.modifiers.intersects(chord) => ComposerKey::Chord,
-        (_, Key::Enter, _) => ComposerKey::Submit,
-        (_, Key::Backspace, _) => ComposerKey::Backspace,
-        (_, Key::ArrowUp, _) => ComposerKey::History(HistoryStep::Older),
-        (_, Key::ArrowDown, _) => ComposerKey::History(HistoryStep::Newer),
+        (_, Key::Named(NamedKey::Enter), _) => ComposerKey::Submit,
+        (_, Key::Named(NamedKey::Backspace), _) => ComposerKey::Backspace,
+        (_, Key::Named(NamedKey::ArrowUp), _) => ComposerKey::History(HistoryStep::Older),
+        (_, Key::Named(NamedKey::ArrowDown), _) => ComposerKey::History(HistoryStep::Newer),
         (_, _, Some(text)) => ComposerKey::Type(text.clone()),
         _ => ComposerKey::Other,
     }
@@ -104,7 +104,7 @@ impl std::fmt::Debug for KeyRegion {
     }
 }
 
-/// Every key the region hears (a press, a repeat, a release) as quire's raw key. `peek_key` is the
+/// Every key the region hears (a press, a repeat, a release) as the toolkit's raw key. `peek_key` is the
 /// peek's ear for it; `apply` takes what a finished composition types.
 pub fn key_handler(
     link: PaneLink,
@@ -154,9 +154,9 @@ pub fn key_handler(
 #[cfg(test)]
 mod tests {
     use dioxus::html::{Code, Location};
-    use dioxus::prelude::{Key, Modifiers};
-    use ds::edit::raw_key::{KeyPhase, RawKey};
+    use dioxus::prelude::{Key, Modifiers, NamedKey};
     use temor_pane_view::session::HistoryStep;
+    use ui_components::edit::raw_key::{KeyPhase, RawKey};
 
     use super::{ComposerKey, composer_key};
 
@@ -187,32 +187,43 @@ mod tests {
                 ComposerKey::Type("a".to_owned()),
             ),
             (raw(Release, a(), none, None), ComposerKey::Release),
-            (raw(Release, Key::Enter, none, None), ComposerKey::Release),
+            (
+                raw(Release, Key::Named(NamedKey::Enter), none, None),
+                ComposerKey::Release,
+            ),
             (
                 raw(Press, a(), Modifiers::CONTROL, None),
                 ComposerKey::Chord,
             ),
             (
-                raw(Press, Key::Enter, Modifiers::SUPER, None),
+                raw(Press, Key::Named(NamedKey::Enter), Modifiers::META, None),
                 ComposerKey::Chord,
             ),
             (
-                raw(Press, Key::Enter, none, Some("\r")),
+                raw(Press, Key::Named(NamedKey::Enter), none, Some("\r")),
                 ComposerKey::Submit,
             ),
             (
-                raw(Press, Key::Backspace, none, None),
+                raw(Press, Key::Named(NamedKey::Backspace), none, None),
                 ComposerKey::Backspace,
             ),
             (
-                raw(Press, Key::ArrowUp, none, None),
+                raw(Press, Key::Named(NamedKey::ArrowUp), none, None),
                 ComposerKey::History(HistoryStep::Older),
             ),
             (
-                raw(Press, Key::ArrowDown, Modifiers::SHIFT, None),
+                raw(
+                    Press,
+                    Key::Named(NamedKey::ArrowDown),
+                    Modifiers::SHIFT,
+                    None,
+                ),
                 ComposerKey::History(HistoryStep::Newer),
             ),
-            (raw(Press, Key::Escape, none, None), ComposerKey::Other),
+            (
+                raw(Press, Key::Named(NamedKey::Escape), none, None),
+                ComposerKey::Other,
+            ),
         ];
         for (key, want) in cases {
             assert_eq!(composer_key(&key), want, "{key:?}");

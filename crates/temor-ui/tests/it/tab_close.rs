@@ -1,7 +1,7 @@
 //! A tab's close button, the tab selection's wash, and the room around the terminal.
 
-use ds_harness::Input;
 use temor_ui_base::probe::Probe;
+use ui_harness::Input;
 
 use super::drive::{chord, rect, rects, started, type_line, wait_html, wait_keyboard, wait_until};
 

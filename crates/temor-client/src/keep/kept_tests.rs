@@ -1,12 +1,12 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
-use ds_style::space::list::{SpaceId, Spaces};
 use temor_hosts::host::store::HostsFile;
 use temor_layout::space::Project;
 use temor_layout::workspace::WorkspaceIn;
 use temor_layout::workspace::restore::encode;
 use temor_store::{SqliteStore, Topics};
+use ui_style::space::list::{SpaceId, Spaces};
 
 use super::{Kept, Laying};
 use crate::Client;

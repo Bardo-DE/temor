@@ -2,7 +2,7 @@
 //! names every value and a Settings page picks its control by them (a pair with `off` is a
 //! switch). They convert to and from `temor-pane`'s own typed values.
 
-use ds_core::word::Word;
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 use temor_panes::pane::settings::{CursorStyle, PagerChoice, StartIn};
 

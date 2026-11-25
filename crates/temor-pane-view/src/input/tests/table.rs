@@ -1,14 +1,14 @@
 //! The key tables' rows and how one is routed: through the stroke and the router, with the
 //! keymap a platform's conventions give.
 
-use chordkit::{Desktop, Keymap, Overrides, Platform};
 use dioxus::html::{Code, Key, Location, Modifiers as Held};
-use ds::edit::raw_key::{KeyPhase, RawKey};
+use keymap::{Desktop, Keymap, Overrides, Platform};
 use temor_panes::pane::keys::Action;
+use ui_components::edit::raw_key::{KeyPhase, RawKey};
 
 use super::super::keys::stroke;
 use super::super::route::{Routed, route_with};
-use chordkit::{ConventionSource, KeymapSource};
+use keymap::{ConventionSource, KeymapSource};
 use temor_panes::pane::keys::build_keymap;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

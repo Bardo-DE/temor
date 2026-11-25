@@ -7,11 +7,11 @@ use std::os::unix::net::UnixStream;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
-use ds::base::vocab::ShortcutKey;
+use ui_components::base::vocab::ShortcutKey;
 
-use ds_harness::{Harness, Input};
 use temor_pane::report::{ReportState, StatusLine, encode_hello, encode_status};
 use temor_ui_base::probe::Probe;
+use ui_harness::{Harness, Input};
 
 use super::drive::{chord, focus_pane, started, type_line, wait_until};
 use super::support::{scratch_path, tools_present};

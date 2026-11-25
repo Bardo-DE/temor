@@ -3,10 +3,11 @@
 
 use std::path::Path;
 
-use chordkit::{Chord, Key, Modifier, Modifiers, Overrides, Platform};
-use ds_settings::schema::KeyPath;
-use ds_settings_page::SettingEdit;
+use keymap::keyboard_types::Modifiers;
+use keymap::{Chord, Key, Overrides, Platform};
+use settings_types::schema::KeyPath;
 use temor_panes::pane::keys::Action;
+use ui_settings_page::SettingEdit;
 
 use super::edit::{applied, current, save_edit};
 use super::keys_edit::{KeyChange, change_keys, changed_text, load_view};
@@ -33,8 +34,8 @@ fn edit(path: &str, value: toml::Value) -> SettingEdit {
     }
 }
 
-fn chord(mods: &[Modifier], key: char) -> Chord {
-    Chord::new(mods.iter().copied().collect::<Modifiers>(), Key::Char(key))
+fn chord(mods: Modifiers, key: char) -> Chord {
+    Chord::new(mods, Key::Char(key))
 }
 
 #[test]
@@ -91,11 +92,11 @@ fn a_saved_edit_lands_in_the_file_over_what_it_holds_now() {
 #[test]
 fn a_key_is_bound_reset_and_refused_by_the_keymap_in_force() {
     let (keymap, _) = keymap_for(Platform::Windows, &Overrides::default());
-    let ctrl_shift_alt = [Modifier::Ctrl, Modifier::Shift, Modifier::Alt];
+    let ctrl_shift_alt = Modifiers::CONTROL | Modifiers::SHIFT | Modifiers::ALT;
     let bound = changed_text(
         "# mine\nbogus = 1\n",
         &keymap,
-        KeyChange::Bind(Action::SplitRight, chord(&ctrl_shift_alt, 'k')),
+        KeyChange::Bind(Action::SplitRight, chord(ctrl_shift_alt, 'k')),
     )
     .expect("free chord");
     assert!(
@@ -110,7 +111,7 @@ fn a_key_is_bound_reset_and_refused_by_the_keymap_in_force() {
         &keymap,
         KeyChange::Bind(
             Action::SplitDown,
-            chord(&[Modifier::Ctrl, Modifier::Shift], 'd'),
+            chord(Modifiers::CONTROL | Modifiers::SHIFT, 'd'),
         ),
     )
     .expect_err("held by split right");
@@ -130,19 +131,19 @@ fn keys_conf_is_written_and_read_back_as_the_keymap_the_panes_will_build() {
     let before = load_view(&ambient, platform).expect("no file is fine");
     assert!(!before.changed(Action::SplitRight));
 
-    let ctrl_shift_alt = [Modifier::Ctrl, Modifier::Shift, Modifier::Alt];
-    let change = KeyChange::Bind(Action::SplitRight, chord(&ctrl_shift_alt, 'k'));
+    let ctrl_shift_alt = Modifiers::CONTROL | Modifiers::SHIFT | Modifiers::ALT;
+    let change = KeyChange::Bind(Action::SplitRight, chord(ctrl_shift_alt, 'k'));
     let after = change_keys(&ambient, platform, change).expect("bound");
     assert!(after.changed(Action::SplitRight));
     assert_eq!(
         after.chord_of(Action::SplitRight),
-        Some(chord(&ctrl_shift_alt, 'k'))
+        Some(chord(ctrl_shift_alt, 'k'))
     );
     let text = std::fs::read_to_string(ambient.keys_path()).expect("keys.conf");
     assert!(text.contains("temor.split-right"), "{text}");
 
     // A refusal changes nothing on disk: Split right holds the chord it was just given.
-    let held = KeyChange::Bind(Action::SplitDown, chord(&ctrl_shift_alt, 'k'));
+    let held = KeyChange::Bind(Action::SplitDown, chord(ctrl_shift_alt, 'k'));
     let refused = change_keys(&ambient, platform, held).expect_err("held");
     assert!(refused.to_string().contains("Split right"), "{refused}");
     assert_eq!(
@@ -156,7 +157,7 @@ fn keys_conf_is_written_and_read_back_as_the_keymap_the_panes_will_build() {
 
 #[test]
 fn a_window_that_is_opening_or_open_is_raised_and_a_closed_one_is_opened_again() {
-    use ds_blitz::WindowLife::{Closed, Open, Opening};
+    use ui_blitz::WindowLife::{Closed, Open, Opening};
     for (life, raised) in [(Opening, true), (Open, true), (Closed, false)] {
         assert_eq!(raise(life), raised, "{life:?}");
     }

@@ -5,9 +5,6 @@
 //! shows where to drop one over the top of the list, so the rows below never move under it.
 
 use dioxus::prelude::*;
-use ds::host::measure::{Anchor, use_rect};
-use ds::motion::drag::DragPhase;
-use ds::prelude::*;
 use temor_client::model::menu::{Item, Target as Clicked};
 use temor_client::model::vocab::ids::TabId;
 use temor_client::model::vocab::text::Cwd;
@@ -15,6 +12,9 @@ use temor_client::model::workspace::WorkspaceIn;
 use temor_client::query::OnShelf;
 use temor_client::{Command, Shelf};
 use temor_schema::url::{HistoryScope, Host, Location, TemorUrl};
+use ui_components::host::measure::{Anchor, use_rect};
+use ui_components::motion::drag::DragPhase;
+use ui_components::prelude::*;
 
 use super::dnd::{Dnd, Target};
 use super::live::{client, use_live};
@@ -117,7 +117,7 @@ pub fn Favourites(rows: Vec<TabRow>, desk: Desk, dnd: Dnd) -> Element {
                     FavouriteTile {
                         key: "{place}",
                         name: tile_name(&folder, &home),
-                        front: rows.iter().any(|row| row.selection == Selection::Selected && row.place.as_deref() == Some(folder.as_str())),
+                        front: rows.iter().any(|row| row.selected && row.place.as_deref() == Some(folder.as_str())),
                         tab: rows.iter().find(|row| row.place.as_deref() == Some(folder.as_str())).map(|row| row.id),
                         folder,
                         place,
@@ -142,12 +142,8 @@ fn FavouriteTile(
     desk: Desk,
 ) -> Element {
     let rect = use_rect();
-    let mut menu = use_signal(|| Shown::Hidden);
-    let opening = tab_menu_trigger(move || menu.set(Shown::Visible));
-    let selection = match front {
-        true => Selection::Selected,
-        false => Selection::Unselected,
-    };
+    let mut menu = use_signal(|| false);
+    let opening = tab_menu_trigger(move || menu.set(true));
     let picking = desk.clone();
     let open = folder.clone();
     let (acting, opened) = (desk.clone(), folder.clone());
@@ -158,7 +154,7 @@ fn FavouriteTile(
                 class: "temor-fav",
                 role: "button",
                 "aria-label": name,
-                "data-selected": selected_attr(selection),
+                "data-selected": selected_attr(front),
                 onmounted: move |event: MountedEvent| rect.on_mounted(event),
                 onclick: move |_| match tab {
                     Some(tab) => picking.act(select_tab(tab)),
@@ -168,7 +164,7 @@ fn FavouriteTile(
                 IconView { source: IconSource::Glyph(Icon::Folder), size: IconSize::Large }
             }
         }
-        if let (Shown::Visible, Some(at)) = (menu(), rect.rect()) {
+        if menu() && let Some(at) = rect.rect() {
             Menu {
                 placement: MenuPlacement::Context,
                 anchor: Anchor::Rect(at),
@@ -190,7 +186,7 @@ fn FavouriteTile(
                         _ => {}
                     }
                 },
-                onclose: move |()| menu.set(Shown::Hidden),
+                onclose: move |()| menu.set(false),
             }
         }
     }

@@ -4,11 +4,11 @@
 
 use std::time::Duration;
 
-use ds::base::press::PointerButton;
-use ds::base::vocab::ShortcutKey;
-use ds_blitz::Extent;
-use ds_harness::{Harness, Input};
 use temor_ui_base::probe::Probe;
+use ui_blitz::Extent;
+use ui_components::base::press::PointerButton;
+use ui_components::base::vocab::ShortcutKey;
+use ui_harness::{Harness, Input};
 
 use super::drive::{self, chord, menu_item, rects, type_text, wait_until};
 use super::window::harness;

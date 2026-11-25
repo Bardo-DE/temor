@@ -1,8 +1,8 @@
-# What agents may ask temor to do (docket intents vocabulary 1; PLAN §8.4). Installed to
-# $XDG_DATA_DIRS/quire/intents/org.quire.Temor.toml beside dbus-1/services/org.quire.Temor.service,
-# which starts temor when docket's router calls the name. Every field is written (porter's
+# What agents may ask temor to do (actiond intents vocabulary 1; PLAN §8.4). Installed to
+# $XDG_DATA_DIRS/bardo/intents/org.bardo.Temor.toml beside dbus-1/services/org.bardo.Temor.service,
+# which starts temor when actiond calls the name. Every field is written (accountd's
 # provider-file rule). crates/temor-desktop embeds this file, so the file the installer ships and
-# the one the window answers for are one file; a test holds it to docket's validator.
+# the one the window answers for are one file; a test holds it to actiond's validator.
 #
 # Action names start with `temor`, the app name's last element: the validator refuses any other
 # prefix (PLAN writes them as `terminal.*`).
@@ -12,13 +12,13 @@
 #   is somebody else's words (a program's output), so everything returned is `third_party`, source
 #   `screen`; reading it taints the agent's session (`ReadUntrusted`, decided by the router).
 # - Opening a pane changes the window and can be closed again: `undoable_write` with a token.
-# - A sandboxed command's ceiling is `outbound`; the window classifies each call (`per_call`):
+# - A sandboxed command's ceiling is `outbound`; the window classifies each call (`classified`):
 #   with the network closed it is `undoable_write` (the overlay is the undo), with it open it
-#   stays `outbound`. The `network` choice uses docket's ids (closed, open).
+#   stays `outbound`. The `network` choice uses actiond's ids (closed, open).
 # - Typing a command into a pane runs it as the person, so it is `destructive`, always asks, and is
 #   never a standing grant (`ask_always`).
 vocab = 1
-app = "org.quire.Temor"
+app = "org.bardo.Temor"
 entities = []
 
 [[actions]]
@@ -27,10 +27,10 @@ label = "List the panes"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["screen"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 65536, lines = "many" } }, trust = { kind = "third_party", v = { kind = "screen", v = { app = "org.quire.Temor" } } } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 65536, multiline = true } }, trust = { kind = "third_party", v = { kind = "screen", v = { app = "org.bardo.Temor" } } } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -42,10 +42,10 @@ label = "Get a pane's folder"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["screen"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 4096, lines = "one" } }, trust = { kind = "third_party", v = { kind = "screen", v = { app = "org.quire.Temor" } } } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 4096, multiline = false } }, trust = { kind = "third_party", v = { kind = "screen", v = { app = "org.bardo.Temor" } } } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -63,10 +63,10 @@ label = "Read a pane's text"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["screen"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 65536, lines = "many" } }, trust = { kind = "third_party", v = { kind = "screen", v = { app = "org.quire.Temor" } } } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 65536, multiline = true } }, trust = { kind = "third_party", v = { kind = "screen", v = { app = "org.bardo.Temor" } } } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -98,7 +98,7 @@ label = "Open a pane"
 on = { kind = "nothing" }
 effect = "undoable_write"
 classes = ["app_own"]
-undo = "token"
+undo = true
 reach = "offered"
 latency = "quick"
 result = { kind = "value", v = { ty = { kind = "integer", v = { min = 0, max = 4294967295 } }, trust = { kind = "app_authored" } } }
@@ -131,7 +131,7 @@ sink = "inert"
 [[actions.params]]
 name = "cwd"
 label = "Folder to start in (the front pane's if left out)"
-ty = { kind = "text", v = { max = 4096, lines = "one" } }
+ty = { kind = "text", v = { max = 4096, multiline = false } }
 need = { kind = "optional" }
 sink = "inert"
 
@@ -141,10 +141,10 @@ label = "List a pane's commands"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["screen"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "instant"
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 65536, lines = "many" } }, trust = { kind = "third_party", v = { kind = "screen", v = { app = "org.quire.Temor" } } } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 65536, multiline = true } }, trust = { kind = "third_party", v = { kind = "screen", v = { app = "org.bardo.Temor" } } } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -162,10 +162,10 @@ label = "Read a command's output"
 on = { kind = "nothing" }
 effect = "read"
 classes = ["screen"]
-undo = "not_undoable"
+undo = false
 reach = "offered"
 latency = "quick"
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 65536, lines = "many" } }, trust = { kind = "third_party", v = { kind = "screen", v = { app = "org.quire.Temor" } } } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 65536, multiline = true } }, trust = { kind = "third_party", v = { kind = "screen", v = { app = "org.bardo.Temor" } } } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -189,12 +189,12 @@ name = "temor.command.run_sandboxed"
 label = "Run a command in a sandbox"
 on = { kind = "nothing" }
 effect = "outbound"
-per_call = "classified"
+classified = true
 classes = ["files", "screen"]
-undo = "token"
+undo = true
 reach = "offered"
 latency = "long"
-result = { kind = "value", v = { ty = { kind = "text", v = { max = 65536, lines = "many" } }, trust = { kind = "third_party", v = { kind = "screen", v = { app = "org.quire.Temor" } } } } }
+result = { kind = "value", v = { ty = { kind = "text", v = { max = 65536, multiline = true } }, trust = { kind = "third_party", v = { kind = "screen", v = { app = "org.bardo.Temor" } } } } }
 keys = { kind = "none" }
 lasting = "no"
 dry_run = "none"
@@ -202,14 +202,14 @@ dry_run = "none"
 [[actions.params]]
 name = "line"
 label = "The command to run"
-ty = { kind = "text", v = { max = 8192, lines = "many" } }
+ty = { kind = "text", v = { max = 8192, multiline = true } }
 need = { kind = "required" }
 sink = "body"
 
 [[actions.params]]
 name = "cwd"
 label = "Folder to run in (the front pane's if left out)"
-ty = { kind = "text", v = { max = 4096, lines = "one" } }
+ty = { kind = "text", v = { max = 4096, multiline = false } }
 need = { kind = "optional" }
 sink = "inert"
 
@@ -229,7 +229,7 @@ label = "Run a command in a pane"
 on = { kind = "nothing" }
 effect = "destructive"
 classes = ["files", "screen"]
-undo = "not_undoable"
+undo = false
 reach = "ask_always"
 latency = "quick"
 result = { kind = "nothing" }
@@ -247,6 +247,6 @@ sink = "inert"
 [[actions.params]]
 name = "line"
 label = "The command to type"
-ty = { kind = "text", v = { max = 8192, lines = "many" } }
+ty = { kind = "text", v = { max = 8192, multiline = true } }
 need = { kind = "required" }
 sink = "body"

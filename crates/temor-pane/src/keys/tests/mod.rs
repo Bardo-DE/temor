@@ -1,4 +1,4 @@
-//! The key rules (PLAN §6) over chordkit's keymap.
+//! The key rules (PLAN §6) over the keymap.
 
 mod build;
 mod edit;

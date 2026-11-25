@@ -3,15 +3,15 @@
 //! terminal does instead.
 //!
 //! Which key is this row's is told by its path, the one place that knows (`is_font_key`), until
-//! quire's schema can name a control for a key (`control = "..."`, after the pin reaches it).
+//! the toolkit's schema can name a control for a key (`control = "..."`, after the pin reaches it).
 
 use dioxus::prelude::*;
-use ds::components::fields::field_row::FieldRow;
-use ds::components::menus::pop_up_button::PopUpButton;
-use ds::prelude::*;
-use ds_settings::schema::KeySpec;
-use ds_settings_page::SettingEdit;
+use settings_types::schema::KeySpec;
 use temor_panes::render::font_catalog;
+use ui_components::components::fields::field_row::FieldRow;
+use ui_components::components::menus::pop_up_button::PopUpButton;
+use ui_components::prelude::*;
+use ui_settings_page::SettingEdit;
 
 use crate::names::named;
 

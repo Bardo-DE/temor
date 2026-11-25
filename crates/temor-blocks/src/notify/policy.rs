@@ -1,6 +1,6 @@
 //! The rules: which block or program event becomes a notice, and how often notices may come.
 
-use ds_core::time::stamp::Stamp;
+use ui_core::time::stamp::Stamp;
 
 use super::{Notice, PaneFocus};
 use crate::block::{Block, Outcome};

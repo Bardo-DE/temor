@@ -3,12 +3,12 @@
 
 use std::time::Duration;
 
-use ds::base::press::PointerButton;
-use ds::base::vocab::ShortcutKey;
-use ds::prelude::{Point, Px};
-use ds_blitz::Extent;
-use ds_harness::Input;
 use temor_ui_base::probe::Probe;
+use ui_blitz::Extent;
+use ui_components::base::press::PointerButton;
+use ui_components::base::vocab::ShortcutKey;
+use ui_components::prelude::{Point, Px};
+use ui_harness::Input;
 
 use super::drive::{rect, rects, started};
 

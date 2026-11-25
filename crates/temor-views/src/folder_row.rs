@@ -1,21 +1,21 @@
-//! A folder of tabs in the sidebar (PLAN §7), as Arc's are: quire's outline `Row` with its tabs
+//! A folder of tabs in the sidebar (PLAN §7), as Arc's are: the toolkit's outline `Row` with its tabs
 //! under it, then the folders in it, one step in. A press on it opens or closes it, as its
 //! triangle does; a tab dropped on it goes in; a right click is its menu (New Folder Inside,
 //! Rename Folder, Delete Folder). It is named where it stands, as mailo's folders are: Return
 //! keeps the name, Escape the old one.
 
 use dioxus::prelude::*;
-use ds::base::press::{PointerButton, Press};
-use ds::base::vocab::{Availability, DropState, RowState};
-use ds::components::lists::row::row::Outline;
-use ds::components::overlays::drag_ghost::DropLine;
-use ds::focus::request::use_focus_request;
-use ds::host::measure::{Anchor, use_rect};
-use ds::prelude::*;
 use temor_client::model::menu::{Item, Target as MenuTarget};
 use temor_client::model::vocab::ids::{FolderId, TabId};
 use temor_client::model::vocab::text::TabTitle;
 use temor_client::model::workspace::{TabsIn, WorkspaceIn};
+use ui_components::base::press::{PointerButton, Press};
+use ui_components::base::vocab::{Availability, DropState, RowState};
+use ui_components::components::lists::row::row::Outline;
+use ui_components::components::overlays::drag_ghost::DropLine;
+use ui_components::focus::request::use_focus_request;
+use ui_components::host::measure::{Anchor, use_rect};
+use ui_components::prelude::*;
 
 use super::dnd::{Dnd, Target};
 use super::menu::{Pick, menu_items};
@@ -29,7 +29,7 @@ use temor_hub::{Desk, FolderRows};
 #[allow(non_snake_case)]
 pub fn FolderRowView(folder: FolderRows, all: Vec<FolderRows>, desk: Desk, dnd: Dnd) -> Element {
     let id = folder.id;
-    let mut menu = use_signal(|| Shown::Hidden);
+    let mut menu = use_signal(|| false);
     let rect = use_rect();
     if let Some(at) = rect.rect() {
         dnd.rects.set_folder(id, at);
@@ -38,10 +38,6 @@ pub fn FolderRowView(folder: FolderRows, all: Vec<FolderRows>, desk: Desk, dnd: 
         let rects = dnd.rects.clone();
         move || rects.forget_folder(id)
     });
-    let shown = match folder.open {
-        true => Shown::Visible,
-        false => Shown::Hidden,
-    };
     let toggling = desk.clone();
     let opening = desk.clone();
     let open = folder.open;
@@ -63,19 +59,18 @@ pub fn FolderRowView(folder: FolderRows, all: Vec<FolderRows>, desk: Desk, dnd: 
     rsx! {
         div {
             class: "temor-side-folder",
-            oncontextmenu: tab_menu_trigger(move || menu.set(Shown::Visible)),
+            oncontextmenu: tab_menu_trigger(move || menu.set(true)),
             Row {
                 title: folder.title.as_str(),
                 leading: RowLeading::Source(IconSource::Glyph(Icon::Folder)),
-                outline: Outline::Branch(shown),
+                outline: Outline::Branch(folder.open),
                 edit,
                 state: RowState {
                     availability: Availability::Enabled,
                     drop,
                     ..RowState::default()
                 },
-                on_toggle: move |shown: Shown| {
-                    let open = shown == Shown::Visible;
+                on_toggle: move |open: bool| {
                     toggling.act(WorkspaceIn::Tabs(TabsIn::OpenFolder { folder: id, open }));
                 },
                 onclick: move |press: Press| {
@@ -112,8 +107,8 @@ pub fn FolderRowView(folder: FolderRows, all: Vec<FolderRows>, desk: Desk, dnd: 
             if drop == DropState::Target {
                 DropLine {}
             }
-            if let (Shown::Visible, Some(at)) = (menu(), rect.rect()) {
-                FolderMenu { folder: id, at, desk: desk.clone(), onclose: move |()| menu.set(Shown::Hidden) }
+            if menu() && let Some(at) = rect.rect() {
+                FolderMenu { folder: id, at, desk: desk.clone(), onclose: move |()| menu.set(false) }
             }
         }
     }
@@ -149,7 +144,7 @@ fn FolderMenu(folder: FolderId, at: Rect, desk: Desk, onclose: EventHandler<()>)
     }
 }
 
-/// A folder's name, written where the row says it: quire's `TextField` without its bezel, with
+/// A folder's name, written where the row says it: the toolkit's `TextField` without its bezel, with
 /// the keyboard as it mounts and the old name selected. Return keeps what is typed (an empty name
 /// keeps the old one) and Escape leaves it; either ends the naming.
 #[component]
@@ -163,14 +158,14 @@ fn FolderName(folder: FolderId, title: String, desk: Desk) -> Element {
             label: "Folder name".to_owned(),
             value: typed(),
             placeholder: title.clone(),
-            bezel: FieldBezel::Plain,
+            bezeled: false,
             focus,
             oninput: move |text: String| typed.set(text),
             onkey: move |event: KeyboardEvent| {
                 // Every key is the field's: a letter typed into a name is not a shortcut.
                 event.stop_propagation();
                 match event.key() {
-                    Key::Enter => {
+                    Key::Named(NamedKey::Enter) => {
                         let name = typed.peek().trim().to_owned();
                         naming.set(None);
                         if !name.is_empty() && name != title {
@@ -178,7 +173,7 @@ fn FolderName(folder: FolderId, title: String, desk: Desk) -> Element {
                             desk.act(WorkspaceIn::Tabs(TabsIn::RenameFolder { folder, title }));
                         }
                     }
-                    Key::Escape => naming.set(None),
+                    Key::Named(NamedKey::Escape) => naming.set(None),
                     _ => {}
                 }
             },

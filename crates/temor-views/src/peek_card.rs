@@ -7,8 +7,8 @@ use std::sync::Arc;
 
 use anyview_peek::{AnyPeeked, Card};
 use dioxus::prelude::*;
-use ds::components::lists::preview::content::PANE_MEDIA;
-use ds::host::measure::RectProbe;
+use ui_components::components::lists::preview::content::PANE_MEDIA;
+use ui_components::host::measure::RectProbe;
 
 /// The card's width (the preview's media box plus the card's padding on both sides) and the
 /// height it takes at most, in logical pixels: the room it is placed in until it is measured.

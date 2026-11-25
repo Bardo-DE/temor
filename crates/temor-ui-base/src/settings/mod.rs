@@ -5,7 +5,7 @@
 //! The layers hold: `temor-pane` keeps `TerminalSettings` and its typed values and never sees
 //! ds-settings; this module reads the file into [`TerminalDoc`] and converts it into them.
 //!
-//! The theme stays where it is, in quire's `appearance.toml` (`view::theme`).
+//! The theme stays where it is, in the toolkit's `appearance.toml` (`view::theme`).
 
 mod convert;
 mod doc;

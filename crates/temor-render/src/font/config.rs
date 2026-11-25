@@ -5,7 +5,7 @@ use crate::metrics::{FontSize, LineHeight};
 /// The grid's font family.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 pub enum FontFamily {
-    /// The system's `monospace` family (fontconfig's choice on Linux). The default until quire
+    /// The system's `monospace` family (fontconfig's choice on Linux). The default until the toolkit
     /// adds a terminal code-face token (PLAN §5).
     #[default]
     Monospace,

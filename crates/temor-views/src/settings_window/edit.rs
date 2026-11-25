@@ -5,7 +5,7 @@
 
 use std::path::PathBuf;
 
-use ds_settings_page::SettingEdit;
+use ui_settings_page::SettingEdit;
 
 use temor_ui_base::edge::Ambient;
 use temor_ui_base::error::UiError;

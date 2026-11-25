@@ -3,11 +3,11 @@
 //! key agent. The core puts the plan together (`space::launch`); this reads the dotenv file,
 //! starts the agent and asks the account store.
 
-use ds::components::app::spaces::SpaceId;
 use temor_client::model::space::{Project, RuntimeDir, dotenv_path, launch};
 use temor_client::model::vocab::text::Cwd;
 use temor_client::model::workspace::WorkspaceIn;
 use temor_panes::shell::ChildEnv;
+use ui_components::components::app::spaces::SpaceId;
 
 use super::model::Hub;
 use temor_client::space::start::read_dotenv;

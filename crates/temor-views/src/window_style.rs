@@ -1,8 +1,8 @@
-//! The window's own sheet: the layout of the shell, the pane and the sidebar's rows. quire has no
+//! The window's own sheet: the layout of the shell, the pane and the sidebar's rows. The toolkit has no
 //! column component at v0.3.1, and a `RawKeySurface` takes no style of its own. Colours and type
-//! come from quire's tokens and the pane's palette, so this sheet has no design values. A tab's
-//! selection is quire's source-list wash (da218b79, `--sel-neutral`), taken here through the selection tokens until
-//! the quire pin reaches it: the sidebar says where you are, and the accent is left to the terminal's content.
+//! come from the toolkit's tokens and the pane's palette, so this sheet has no design values. A tab's
+//! selection is the toolkit's source-list wash (da218b79, `--sel-neutral`), taken here through the selection tokens until
+//! the toolkit pin reaches it: the sidebar says where you are, and the accent is left to the terminal's content.
 
 pub const WINDOW_CSS: &str = "\
 .temor-shell { position: relative; width: 100%; height: 100%; }\

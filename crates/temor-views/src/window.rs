@@ -10,20 +10,20 @@ use std::time::Instant;
 use temor_client::{Command, Shelf};
 
 use dioxus::prelude::*;
-use ds::base::spawner::Spawner;
-use ds::base::vocab::Shown;
-use ds::components::app::spaces::SIDEBAR_MIN_WIDTH;
-use ds::components::chrome::split_view::model::{PaneSize, PaneSpec, SplitPane};
-use ds::components::chrome::split_view::view::SplitView;
-use ds::components::overlays::drag_ghost::DragGhost;
-use ds::host::measure::use_rect;
-use ds::motion::drag::{DRAG_THRESHOLD, DragPhase, use_drag};
-use ds::prelude::*;
-use ds::window::host::{use_window_host, use_window_title};
-use ds_blitz::{TokioSpawner, use_gpu, use_window_handle};
 use temor_client::model::split::Direction;
 use temor_client::model::vocab::ids::TabId;
 use temor_client::model::workspace::{TabsIn, WorkspaceIn};
+use ui_blitz::{use_gpu, use_window_handle};
+use ui_components::components::app::spaces::SIDEBAR_MIN_WIDTH;
+use ui_components::components::chrome::split_view::model::{PaneSize, PaneSpec, SplitPane};
+use ui_components::components::chrome::split_view::view::SplitView;
+use ui_components::components::overlays::drag_ghost::DragGhost;
+use ui_components::host::measure::use_rect;
+use ui_components::motion::drag::{DRAG_THRESHOLD, DragPhase, use_drag};
+use ui_components::prelude::*;
+use ui_components::spawn::Spawner;
+use ui_components::window::host::{use_window_host, use_window_title};
+use ui_host_hooks::TokioSpawner;
 
 use super::bar::BarView;
 use super::dnd::{ClickCell, Dnd, Dropped, RowRects, point_of, resolve};
@@ -103,7 +103,7 @@ pub fn App() -> Element {
         let (hub, picked) = (hub.clone(), picked_space.clone());
         move || hub.set_bar_spaces(Rc::new(KitSpaces::new(spaces, picked)))
     });
-    let mut sidebar = use_signal(|| Shown::Visible);
+    let mut sidebar = use_signal(|| true);
     let desk = Desk {
         sidebar,
         hub: hub.clone(),
@@ -165,7 +165,8 @@ pub fn App() -> Element {
             let mut over = dnd.over;
             let target = *over.peek();
             over.set(None);
-            dnd.drag.up();
+            // The drop goes where `over` said: the tracker's own target is not needed.
+            let _ = dnd.drag.up();
             if matches!(phase, DragPhase::Live { .. }) {
                 dnd.click.swallow();
             }
@@ -226,7 +227,8 @@ pub fn App() -> Element {
         use_callback(move |(): ()| {
             let mut over = dnd.over;
             over.set(None);
-            dnd.drag.up();
+            // Let go outside the window: nothing is dropped.
+            let _ = dnd.drag.up();
         })
     };
     let moved = {
@@ -284,7 +286,7 @@ pub fn App() -> Element {
     })();
     // Pinned, the sidebar is the pane's body; hidden, it moves out of the pane (which clips what
     // floats over it) into a zero-width host at the window's edge, where it peeks.
-    let side_box = |pinned: Shown| {
+    let side_box = |pinned: bool| {
         rsx! {
             div {
                 class: "temor-side-box",
@@ -294,14 +296,13 @@ pub fn App() -> Element {
         }
     };
     let sidebar_body = match sidebar() {
-        Shown::Visible => side_box(Shown::Visible),
-        Shown::Hidden => rsx! {},
+        true => side_box(true),
+        false => rsx! {},
     };
     rsx! {
         Ds {
             appearance: now.settings.appearance.appearance(),
             system: now.system,
-            typeface: Some(now.settings.appearance.typeface()),
             look: look.clone(),
             material: Material::Window,
             extent: RootExtent::Window,
@@ -323,9 +324,9 @@ pub fn App() -> Element {
                     panes: vec![
                         SplitPane::new(sidebar_spec(), sidebar_body).shown(sidebar()),
                     ],
-                    on_shown: move |(_, shown): (usize, Shown)| sidebar.set(shown),
+                    on_shown: move |(_, shown): (usize, bool)| sidebar.set(shown),
                     Column {
-                        gap: ColumnGap::None,
+                        gap: None,
                         extent: ColumnExtent::Fill,
                         if let Some(text) = notice.shown() {
                             InlineBanner {
@@ -362,8 +363,8 @@ pub fn App() -> Element {
                         }
                     }
                 }
-                if sidebar() == Shown::Hidden {
-                    div { class: "temor-edge-host", {side_box(Shown::Hidden)} }
+                if !sidebar() {
+                    div { class: "temor-edge-host", {side_box(false)} }
                 }
             }
             SpaceMenus { desk: desk.clone() }

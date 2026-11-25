@@ -1,6 +1,6 @@
 //! An agent's state in a pane (§8.1), and the reports that move it.
 
-use ds_core::word::Word;
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 use temor_core::vocab::ids::{PaneId, Seq};
 use temor_core::vocab::text::{Note, PluginId};
@@ -70,7 +70,7 @@ pub enum StatusSource {
     ProgramStatus,
     /// An `agent.adapter` plugin over temor's socket.
     Adapter(PluginId),
-    /// docket's companion roster, for agent-view sessions.
+    /// actiond's companion roster, for agent-view sessions.
     Docket,
     /// A notification sequence or a bell.
     Notification,

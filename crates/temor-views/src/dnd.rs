@@ -3,7 +3,7 @@
 //! Arc's do (a pinned row dropped on another takes its place, on a loose row it is unpinned there,
 //! and a loose row dropped on a pinned one is pinned there), and a row dropped on the Favourites
 //! keeps its folder there; a loose row dropped on a folder goes in it. The drag
-//! machine and the ghost are quire's (`use_drag`, `DragGhost`, `DropLine`); this holds where the
+//! machine and the ghost are the toolkit's (`use_drag`, `DragGhost`, `DropLine`); this holds where the
 //! rows are and the rule for what a release means. The rule is pure.
 
 use std::cell::{Cell, RefCell};
@@ -12,9 +12,9 @@ use std::rc::Rc;
 
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
-use ds::motion::drag::{DragPhase, DragTracker};
-use ds::prelude::{Point, Px, Rect};
 use temor_client::model::vocab::ids::{FolderId, PaneId, TabId};
+use ui_components::motion::drag::{DragPhase, DragTracker};
+use ui_components::prelude::{Point, Px, Rect};
 
 use temor_hub::DragKey;
 
@@ -320,7 +320,7 @@ mod tests {
                 x: Px(0.0),
                 y: Px(top),
             },
-            size: ds::prelude::Size {
+            size: ui_components::prelude::Size {
                 width: Px(100.0),
                 height: Px(20.0),
             },

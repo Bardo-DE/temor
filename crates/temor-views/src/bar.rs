@@ -1,6 +1,6 @@
-//! The ⌘T command bar (PLAN §7): quire's `CommandPalette` over the rows temor-core ranked. The
+//! The ⌘T command bar (PLAN §7): the toolkit's `CommandPalette` over the rows temor-core ranked. The
 //! palette draws and walks them; it never re-ranks. The hub keeps the query and the highlight
-//! (quire's palette machine, `bar::BarModel`), so this view only reports what the person did.
+//! (the toolkit's palette machine, `bar::BarModel`), so this view only reports what the person did.
 //!
 //! While a viewer pane has the keyboard its own commands (Zoom to Fit, Rotate Left, …) are listed
 //! after the bar's rows (PLAN §10). They are the pane's, not the bar's: the bar does not rank
@@ -12,12 +12,12 @@ use std::rc::Rc;
 
 use anyview_pane::{HitList, PaneCommand};
 use dioxus::prelude::*;
-use ds::components::menus::palette::palette_group::{
-    GroupEntries, PaletteGroup, PaletteGroups, PaletteRow,
-};
-use ds::prelude::{AfterPick, CommandPalette, PaletteClose, RowChord};
 use temor_client::model::bar::{BarRow, Section};
 use temor_client::model::vocab::text::PluginId;
+use ui_components::components::menus::palette::palette_group::{
+    GroupEntries, PaletteGroup, PaletteGroups, PaletteRow,
+};
+use ui_components::prelude::{CommandPalette, PaletteClose, RowChord};
 
 use temor_hub::command_bar::{
     Escape, FIND_PLACEHOLDER, Reply, action_of, entry_row, escape, lift, reply,
@@ -197,7 +197,7 @@ fn groups_of(rows: &[BarRow], hub: &HubRef) -> Vec<PaletteGroup<Pick>> {
                         .unwrap_or_default(),
                     // The palette stays up until the bar's own step closes it, so the pick
                     // reaches the palette machine once.
-                    after: AfterPick::KeepOpen,
+                    keep_open: true,
                     ..PaletteRow::new(Pick::Bar(row.clone()), row.title.clone())
                 })
                 .collect();

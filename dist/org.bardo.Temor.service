@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.bardo.Temor
+Exec=/usr/bin/temor
+SystemdService=org.bardo.Temor.service

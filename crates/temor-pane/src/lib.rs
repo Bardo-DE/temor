@@ -6,7 +6,7 @@
 //! # Example
 //!
 //! Settings text is read over the defaults; a bad line is reported and the rest still applies.
-//! Key lines are chordkit's form and are kept as the person's changes to the keymap:
+//! Key lines are the keymap's form and are kept as the person's changes to the keymap:
 //!
 //! ```
 //! use temor_pane::settings::parse_settings;

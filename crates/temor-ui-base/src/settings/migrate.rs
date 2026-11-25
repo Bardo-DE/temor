@@ -21,7 +21,7 @@ use crate::error::UiError;
 pub struct Converted {
     /// The settings lines, as the document `settings.toml` holds.
     pub doc: TerminalDoc,
-    /// The text of `keys.conf`: the key lines in chordkit's form, then the refused key lines as
+    /// The text of `keys.conf`: the key lines in the keymap's form, then the refused key lines as
     /// comments.
     pub keys_text: String,
     /// Comment lines for the end of `settings.toml`: the refused settings lines.
@@ -140,7 +140,7 @@ fn append(path: &Path, text: &str) -> Result<(), UiError> {
         return Ok(());
     }
     let io = |source: std::io::Error| {
-        UiError::SettingsWrite(ds_settings::SettingsError::Io {
+        UiError::SettingsWrite(settings_store_fs::SettingsError::Io {
             path: path.to_path_buf(),
             source,
         })

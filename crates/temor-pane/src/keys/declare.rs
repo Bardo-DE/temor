@@ -2,7 +2,7 @@
 //! platform and terminal context gives them the right modifiers. Standard actions temor runs
 //! (copy, paste, find, close) are not declared: the platform's conventions already bind them.
 
-use chordkit::StandardAction;
+use keymap::StandardAction;
 
 use super::action::Action;
 
@@ -37,7 +37,7 @@ pub fn declared() -> Vec<Declared> {
     )] = &[
         (Action::OpenBar, "Primary+T", None, OPEN_BAR_FORGOES),
         (Action::NewTab, "Primary+N", None, NEW_TAB_FORGOES),
-        // Primary+Shift+Y: no convention of chordkit's binds it (Primary+` is "next window").
+        // Primary+Shift+Y: no convention binds it (Primary+` is "next window").
         (Action::ToggleQuick, "Primary+Shift+Y", None, &[]),
         (Action::SplitRight, "Primary+D", None, &[]),
         (Action::SplitDown, "Primary+Shift+D", None, &[]),

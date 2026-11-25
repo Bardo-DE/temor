@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::rc::Rc;
 use std::time::{Duration, Instant};
 
-use chordkit::{Desktop, Overrides, Platform};
+use keymap::{Desktop, Overrides, Platform};
 use temor_client::model::block::Outcome;
 use temor_pane::PaneEvent;
 use temor_pane::settings::NotifyAfter;

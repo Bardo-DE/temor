@@ -4,10 +4,10 @@
 //! the stored value is never read back into the page.
 
 use dioxus::prelude::*;
-use ds::components::content::label::LabelRole;
-use ds::components::fields::field_row::FieldRow;
-use ds::components::fields::text_field_model::{FieldKind, FieldText};
-use ds::prelude::*;
+use ui_components::components::content::label::LabelRole;
+use ui_components::components::fields::field_row::FieldRow;
+use ui_components::components::fields::text_field_model::{FieldKind, FieldText};
+use ui_components::prelude::*;
 
 use temor_client::model::space::Credential;
 

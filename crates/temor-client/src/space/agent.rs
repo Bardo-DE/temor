@@ -9,9 +9,9 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::time::{Duration, Instant};
 
-use ds_style::space::list::SpaceId;
 use temor_core::vocab::home::expand_home;
 use temor_layout::space::AgentPlan;
+use ui_style::space::list::SpaceId;
 
 use crate::keep::private::ensure_private_dir;
 

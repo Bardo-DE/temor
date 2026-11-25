@@ -5,8 +5,8 @@
 use std::rc::Rc;
 
 use dioxus::prelude::*;
-use ds::host::measure::RectProbe;
-use ds::host::signals::HostSignals;
+use ui_components::host::measure::RectProbe;
+use ui_components::host::signals::HostSignals;
 
 use super::block_menu::BlockMenuAt;
 use super::handlers::{block_menu_opened, grid_pressed, pointer_over};

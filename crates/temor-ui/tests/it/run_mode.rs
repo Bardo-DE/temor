@@ -5,12 +5,12 @@
 use std::ffi::OsString;
 use std::time::{Duration, Instant};
 
-use ds::base::vocab::ShortcutKey;
-use ds_harness::{Harness, Input};
 use temor_desktop::{CLOSED_WHILE_RUNNING, NOT_FOUND, RunEnd, RunEnds, RunTicket};
 use temor_hub::Run;
 use temor_shell::ChildEnv;
 use temor_ui_base::probe::Probe;
+use ui_components::base::vocab::ShortcutKey;
+use ui_harness::{Harness, Input};
 
 use super::drive::{chord, rows, wait_html, wait_until};
 use super::support::{scratch, tools_present};

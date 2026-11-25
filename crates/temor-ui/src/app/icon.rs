@@ -2,10 +2,10 @@
 //! and the macOS dock take theirs from the desktop entry and the bundle. The picture is the
 //! 256 by 256 one the packages install (`dist/icons`), decoded once at start.
 
-use ds::prelude::WindowIcon;
+use ui_components::prelude::WindowIcon;
 
 const ICON_PNG: &[u8] =
-    include_bytes!("../../../../dist/icons/hicolor/256x256/apps/org.quire.Temor.png");
+    include_bytes!("../../../../dist/icons/hicolor/256x256/apps/org.bardo.Temor.png");
 
 /// The icon, or `None` when the picture cannot be read (the window then opens with the desktop's
 /// own icon).

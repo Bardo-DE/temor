@@ -3,12 +3,12 @@
 //! fields to forward a port and to edit a file locally. A pane that is not a host shows nothing.
 
 use dioxus::prelude::*;
-use ds::components::content::label::LabelStyle;
-use ds::prelude::*;
 use temor_client::model::host::edit::Resolution;
 use temor_client::model::remote::Grant;
 use temor_client::model::vocab::ids::PaneId;
 use temor_client::ssh::Port;
+use ui_components::components::content::label::LabelStyle;
+use ui_components::prelude::*;
 
 use super::host_words::{
     CLOSE_FORWARD, DECIDE_LATER, DONE_EDITING, EDIT_LOCALLY, FORWARD_PORT, OPEN_CHECK,

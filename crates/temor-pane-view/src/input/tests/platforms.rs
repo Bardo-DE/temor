@@ -1,7 +1,7 @@
 //! Where ⌘ chords go on each platform.
 
-use chordkit::Platform;
-use dioxus::html::{Code, Key, Modifiers as Held};
+use dioxus::html::{Code, Key, Modifiers as Held, NamedKey};
+use keymap::Platform;
 use temor_panes::pane::keys::Action;
 
 use super::table::{KDE, OURS, Went, ch, check, row};
@@ -24,7 +24,7 @@ fn our_desktop_sends_command_as_super_or_ctrl_shift() {
             "⌘C as Super+C",
             ch("c"),
             Code::KeyC,
-            Held::SUPER,
+            Held::META,
             Went::Action(Action::Copy),
         ),
         row(
@@ -73,21 +73,21 @@ fn our_desktop_sends_command_as_super_or_ctrl_shift() {
             "⌘⇧D as Super+Shift+D",
             ch("D"),
             Code::KeyD,
-            Held::SUPER | Held::SHIFT,
+            Held::META | Held::SHIFT,
             Went::Action(Action::SplitDown),
         ),
         row(
             "⌥⌘= as Alt+Super+=",
             ch("="),
             Code::Equal,
-            Held::ALT | Held::SUPER,
+            Held::ALT | Held::META,
             Went::Action(Action::Equalize),
         ),
         row(
             "⌘= as Super+= zooms in",
             ch("="),
             Code::Equal,
-            Held::SUPER,
+            Held::META,
             Went::Action(Action::ZoomIn),
         ),
         // A ⌘ chord with no action is dropped, never a control byte for the program.
@@ -96,7 +96,7 @@ fn our_desktop_sends_command_as_super_or_ctrl_shift() {
             "Super+K has no action",
             ch("k"),
             Code::KeyK,
-            Held::SUPER,
+            Held::META,
             Went::Dropped,
         ),
         row(
@@ -138,19 +138,25 @@ fn our_desktop_sends_command_as_super_or_ctrl_shift() {
         // The desktop handles these before a window sees them.
         row(
             "Super alone",
-            Key::Meta,
+            Key::Named(NamedKey::Meta),
             Code::MetaLeft,
-            Held::SUPER,
+            Held::META,
             Went::Program,
         ),
         row(
             "Super+Space",
             ch(" "),
             Code::Space,
-            Held::SUPER,
+            Held::META,
             Went::Program,
         ),
-        row("Super+Tab", Key::Tab, Code::Tab, Held::SUPER, Went::Program),
+        row(
+            "Super+Tab",
+            Key::Named(NamedKey::Tab),
+            Code::Tab,
+            Held::META,
+            Went::Program,
+        ),
     ];
     check(OURS, false, &rows);
 }
@@ -219,10 +225,10 @@ fn windows_and_kde_use_ctrl_shift_and_leave_plain_ctrl_and_super_alone() {
             "Super+C is not a copy here",
             ch("c"),
             Code::KeyC,
-            Held::SUPER,
+            Held::META,
             Went::Program,
         ),
-        row("Super+K", ch("k"), Code::KeyK, Held::SUPER, Went::Program),
+        row("Super+K", ch("k"), Code::KeyK, Held::META, Went::Program),
     ];
     for platform in [Platform::Windows, KDE] {
         check(platform, false, &rows);
@@ -236,14 +242,14 @@ fn macos_uses_command_only() {
             "⌘C",
             ch("c"),
             Code::KeyC,
-            Held::SUPER,
+            Held::META,
             Went::Action(Action::Copy),
         ),
         row(
             "⌘K has no action",
             ch("k"),
             Code::KeyK,
-            Held::SUPER,
+            Held::META,
             Went::Dropped,
         ),
         row(

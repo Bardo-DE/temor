@@ -1,17 +1,17 @@
 //! The names temor owns on the bus and the actions it declares. The declarations themselves are
-//! the file `dist/intents/org.quire.Temor.toml`, embedded here so the file the installer ships
+//! the file `dist/intents/org.bardo.Temor.toml`, embedded here so the file the installer ships
 //! and the one the window answers for are one file.
 //!
 //! Action names start with `temor`, the app name's last element, which the agent layer requires
 //! (PLAN §8.4 writes them as `terminal.*`; the validator refuses any other prefix).
 
 /// The name the agent layer calls (the manifest's app).
-pub const APP_BUS_NAME: &str = "org.quire.Temor";
+pub const APP_BUS_NAME: &str = "org.bardo.Temor";
 /// The name the first launch owns; a later launch calls it (single instance).
-pub const INSTANCE_BUS_NAME: &str = "org.quire.Temor1";
+pub const INSTANCE_BUS_NAME: &str = "org.bardo.Temor1";
 
 /// The shipped actions file.
-pub const MANIFEST: &str = include_str!("../../../dist/intents/org.quire.Temor.toml");
+pub const MANIFEST: &str = include_str!("../../../dist/intents/org.bardo.Temor.toml");
 
 /// List the panes.
 pub const PANE_LIST: &str = "temor.pane.list";

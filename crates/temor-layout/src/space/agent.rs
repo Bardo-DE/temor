@@ -3,10 +3,10 @@
 //! the key and removes the socket when the Space's last shell ends.
 
 use super::project::Profile;
-use ds_style::space::list::SpaceId;
 use temor_core::error::CoreError;
 use temor_core::vocab::text::{EnvKey, EnvValue, KeyPath};
 use temor_shell::SOCKET_PATH_MAX;
+use ui_style::space::list::SpaceId;
 
 /// The person's runtime folder (`$XDG_RUNTIME_DIR`, such as `/run/user/1000`), given by the
 /// edge: the core reads no environment.

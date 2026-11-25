@@ -30,4 +30,4 @@ pub use route::{SpaceRoute, route, route_folder, routes_of};
 pub use spawn_plan::{Origin, SpawnPlan, spawn_plan};
 
 /// temor's Spaces: each keeps a [`Project`] and recalls a [`Place`].
-pub type TemorSpaces = ds_style::space::list::Spaces<Project, Place>;
+pub type TemorSpaces = ui_style::space::list::Spaces<Project, Place>;

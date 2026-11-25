@@ -9,10 +9,6 @@ use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-use ds::base::vocab::ShortcutKey;
-use ds::prelude::SystemPrefs;
-use ds_harness::{Harness, HarnessConfig, Input, Viewport, WindowHosting};
-use ds_lint::{LintConfig, Rule, markup};
 use temor_client::model::space::{AccountRef, Credential, Profile, Project, Route};
 use temor_core::vocab::text::{EnvKey, EnvValue, ProjectRoot, RoutePattern};
 use temor_hub::settings_link::board::{SpaceBoard, SpaceEdit, SpaceRow};
@@ -25,6 +21,10 @@ use temor_ui_base::edge::{Ambient, CredentialFault, CredentialSource, Credential
 use temor_ui_base::probe::Probe;
 use temor_ui_base::settings::TerminalDoc;
 use temor_views::settings_window::{SETTINGS_CSS, settings_root};
+use ui_components::base::vocab::ShortcutKey;
+use ui_components::prelude::SystemSettings;
+use ui_harness::{Harness, HarnessConfig, Input, Viewport, WindowHosting};
+use ui_lint::{LintConfig, Rule, markup};
 
 use super::drive::{chord, focus_pane, press, rects, wait_until};
 use super::support::{scratch, tools_present};
@@ -68,12 +68,12 @@ fn settings_window(
     let launch = Launch {
         ambient: ambient.clone(),
         settings: TerminalSettings::default(),
-        appearance: AppearanceSource::scratch(home.join("config"), SystemPrefs::default()),
+        appearance: AppearanceSource::scratch(home.join("config"), SystemSettings::default()),
         keymap: temor_ui_base::edge::keymap_for(
-            chordkit::Platform::Linux {
-                desktop: chordkit::Desktop::Ours,
+            keymap::Platform::Linux {
+                desktop: keymap::Desktop::Ours,
             },
-            &chordkit::Overrides::default(),
+            &keymap::Overrides::default(),
         )
         .0,
         launcher: LauncherChoice::ThisProgram,
@@ -168,7 +168,7 @@ fn command_comma_and_the_bars_page_rows_ask_for_the_window() {
 #[test]
 #[cfg_attr(
     target_os = "macos",
-    ignore = "the harness's Backspace deletes nothing in a text field on macOS (quire builds text editing per OS)"
+    ignore = "the harness's Backspace deletes nothing in a text field on macOS (the toolkit builds text editing per OS)"
 )]
 fn a_changed_font_size_writes_settings_toml_and_a_bad_one_is_refused() {
     let (mut h, ambient) = settings_window("settings-font", SettingsPane::Appearance, |c| c);
@@ -258,7 +258,7 @@ fn a_recorded_chord_writes_keys_conf_a_held_one_is_refused_and_reset_all_clears(
 fn a_spaces_folder_typed_in_the_page_is_sent_to_the_main_window() {
     let board = SpaceBoard::default();
     board.publish(vec![SpaceRow {
-        id: ds::components::app::spaces::SpaceId(0),
+        id: ui_components::components::app::spaces::SpaceId(0),
         name: "Home".to_owned(),
         project: Project::default(),
     }]);
@@ -274,7 +274,7 @@ fn a_spaces_folder_typed_in_the_page_is_sent_to_the_main_window() {
     assert_eq!(
         board.take_edits(),
         [SpaceEdit {
-            space: ds::components::app::spaces::SpaceId(0),
+            space: ui_components::components::app::spaces::SpaceId(0),
             change: SpaceChange::Root(Some(ProjectRoot("/srv/work".to_owned()))),
         }]
     );
@@ -342,11 +342,11 @@ fn a_space_folder_sent_to_the_main_window_is_kept() {
 /// Rule 2 of the coherence rules for every page: no class nothing styles.
 #[test]
 fn every_page_uses_only_styled_classes() {
-    let css = format!("{}\n{SETTINGS_CSS}", ds::stylesheet());
+    let css = format!("{}\n{SETTINGS_CSS}", ui_components::stylesheet());
     for (at, page) in SettingsPane::ALL.into_iter().enumerate() {
         let (h, _) = settings_window(&format!("settings-coherence-{at}"), page, |c| c);
         let html = h.html();
-        let unstyled: Vec<_> = markup(&html, &css, &LintConfig::new(&ds::kits()))
+        let unstyled: Vec<_> = markup(&html, &css, &LintConfig::new(&ui_components::kits()))
             .into_iter()
             .filter(|offence| offence.rule == Rule::UnstyledClass)
             .collect();
@@ -375,7 +375,7 @@ fn spaces_page(
 
 fn home(profile: Profile) -> SpaceRow {
     SpaceRow {
-        id: ds::components::app::spaces::SpaceId(0),
+        id: ui_components::components::app::spaces::SpaceId(0),
         name: "Home".to_owned(),
         project: Project {
             profile,
@@ -397,7 +397,7 @@ fn last_change(board: &SpaceBoard) -> SpaceChange {
 #[test]
 #[cfg_attr(
     target_os = "macos",
-    ignore = "the harness's Backspace deletes nothing in a text field on macOS (quire builds text editing per OS)"
+    ignore = "the harness's Backspace deletes nothing in a text field on macOS (the toolkit builds text editing per OS)"
 )]
 fn a_variable_is_added_edited_and_removed_on_the_spaces_page() {
     let profile = Profile {
@@ -445,7 +445,7 @@ fn each_route_has_its_own_named_remove_button() {
     };
     let board = SpaceBoard::default();
     board.publish(vec![SpaceRow {
-        id: ds::components::app::spaces::SpaceId(0),
+        id: ui_components::components::app::spaces::SpaceId(0),
         name: "Home".to_owned(),
         project,
     }]);
@@ -591,7 +591,7 @@ fn the_font_row_lists_the_computers_fonts() {
     }
     if let Some(path) = std::env::var_os("TEMOR_SHOT") {
         let picture = h
-            .render_over(ds_harness::Backdrop::Scheme)
+            .render_over(ui_harness::Backdrop::Scheme)
             .expect("a frame");
         let file = std::fs::File::create(path).expect("the shot file");
         let mut encoder = png::Encoder::new(

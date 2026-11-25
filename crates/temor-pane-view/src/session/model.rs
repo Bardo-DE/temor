@@ -4,13 +4,13 @@
 
 use std::path::PathBuf;
 
-use chordkit::Keymap;
-use ds_core::time::stamp::Stamp;
+use keymap::Keymap;
 use temor_panes::pane::settings::NotifyAfter;
 use temor_panes::pane::text::Finder;
 use temor_panes::pane::text::Selection;
 use temor_panes::pty::ChildExit;
 use temor_panes::render::{FontSet, GridFit, PixelSize, Scale};
+use ui_core::time::stamp::Stamp;
 
 use super::clip::PendingPaste;
 use super::clipboard::Clipboard;

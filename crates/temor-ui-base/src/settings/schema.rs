@@ -3,15 +3,16 @@
 
 use std::path::Path;
 
-use ds_settings::schema::{AppId, FilePath, Schema, SettingsSchema};
-use ds_settings::{AppName, ConfigRoot};
+use settings_store_fs::ConfigRoot;
+use settings_types::AppName;
+use settings_types::schema::{AppId, FilePath, Schema, SettingsSchema};
 
 use super::doc::{
     CursorSettings, FontSettings, NotifySettings, OfferSettings, ScrollbackSettings, ShellSettings,
 };
 
 /// The directory under the config root, and the schema's app id.
-pub const APP: AppName = AppName("temor");
+pub const APP: AppName = AppName::foreign("temor");
 
 /// The settings file, relative to the config root, as the schema names it.
 const FILE: &str = "temor/settings.toml";
@@ -30,7 +31,7 @@ pub fn schema() -> Schema {
     .flat_map(|schema| schema.key)
     .collect();
     Schema {
-        app: AppId(APP.0.to_owned()),
+        app: AppId(APP.name().to_owned()),
         file: FilePath(FILE.to_owned()),
         version: 1,
         key,
@@ -47,13 +48,15 @@ pub fn schema() -> Schema {
 /// so `settings.toml` lands in its `temor/`.
 pub fn root_for(config_dir: &Path) -> ConfigRoot {
     match (config_dir.file_name(), config_dir.parent()) {
-        (Some(name), Some(parent)) if name == APP.0 => ConfigRoot::Scratch(parent.to_path_buf()),
+        (Some(name), Some(parent)) if name == APP.name() => {
+            ConfigRoot::Scratch(parent.to_path_buf())
+        }
         _ => ConfigRoot::Scratch(config_dir.to_path_buf()),
     }
 }
 
 /// `temor --write-schema <dir>`: write `temor.settings.toml` into `dir`, and say where.
 pub fn write_schema(dir: &Path) -> Result<String, String> {
-    let path = schema().write_to(dir).map_err(|e| e.to_string())?;
+    let path = settings_store_fs::write_schema(&schema(), dir).map_err(|e| e.to_string())?;
     Ok(format!("wrote {}\n", path.display()))
 }

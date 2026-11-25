@@ -5,7 +5,7 @@
 //! cargo test -p temor-desktop --test it secrets -- --ignored` (a gnome-keyring with its own
 //! data folder, unlocked with a test password).
 
-#![cfg(all(target_os = "linux", feature = "quire-desktop"))]
+#![cfg(all(target_os = "linux", feature = "desktop"))]
 
 use temor_desktop::{SecretVault, SystemSecrets};
 

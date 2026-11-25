@@ -5,7 +5,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;
 
-use ds_core::time::stamp::Stamp;
+use ui_core::time::stamp::Stamp;
 
 /// Where "now" comes from.
 pub trait Clock: Send {

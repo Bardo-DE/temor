@@ -93,7 +93,9 @@ pub(crate) fn colr(face: &Face, glyph: u16, px: f32, box_w: u32, box_h: u32) -> 
     let mut ctx = RenderContext::new_with(w16, h16, settings);
     let mut resources = Resources::new();
     ctx.set_paint(vello_cpu::color::palette::css::BLACK);
-    ctx.glyph_run(&mut resources, &face.font_data())
+    // A glyph that fails to render paints nothing, which the alpha check below reads as `None`.
+    let _ = ctx
+        .glyph_run(&mut resources, &face.font_data())
         .font_size(px * fit)
         .hint(false)
         .fill_glyphs(std::iter::once(Glyph {

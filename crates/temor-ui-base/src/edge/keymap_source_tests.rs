@@ -1,10 +1,10 @@
-//! The desktop's settings read through quire with temor's own folders, and `keys.conf` watched.
+//! The desktop's settings read through the toolkit with temor's own folders, and `keys.conf` watched.
 
 use std::ffi::OsString;
 use std::sync::mpsc::channel;
 use std::time::{Duration, SystemTime};
 
-use chordkit::{Action, Chord, Context, Desktop, Platform, StandardAction};
+use keymap::{Action, Chord, Context, Desktop, Platform, StandardAction};
 
 use super::{system_keys, watch_file};
 use crate::edge::Ambient;
@@ -57,8 +57,7 @@ fn our_desktop_and_the_others_take_their_conventions() {
     };
     for platform in [ours, Platform::MacOs, Platform::Windows] {
         let redo = Action::Standard(StandardAction::Redo);
-        let conventional =
-            chordkit::Keymap::conventional(platform).chords_in(&redo, Context::Normal);
+        let conventional = keymap::Keymap::conventional(platform).chords_in(&redo, Context::Normal);
         assert_eq!(system_keys(platform, &ambient).platform(), platform);
         assert_eq!(
             redo_chords(platform, &ambient),

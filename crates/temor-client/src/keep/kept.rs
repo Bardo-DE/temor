@@ -10,7 +10,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
-use ds_style::space::list::SpaceId;
 use temor_core::vocab::ids::PaneId;
 use temor_hosts::host::store::{HostsFile, read_hosts, splice_hosts};
 use temor_layout::space::TemorSpaces;
@@ -19,11 +18,12 @@ use temor_layout::workspace::restore::{
 };
 use temor_layout::workspace::{KeepClosed, Spawn, ViewerOpen, Workspace, leave_out};
 use temor_schema::session::SessionId;
+use ui_style::space::list::SpaceId;
 
 use super::older::{SpacesStartup, Startup, file_name, load_for, load_spaces};
 use crate::{Client, Command, Topics};
 
-/// The Spaces, as quire's kit writes them.
+/// The Spaces, as the toolkit's kit writes them.
 const SPACES: &str = "spaces";
 /// The hosts: the answers given them and the panes on them.
 const HOSTS: &str = "hosts";

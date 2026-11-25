@@ -24,6 +24,10 @@ allow = [
     "bzip2-1.0.6",
 ]
 confidence-threshold = 0.9
+exceptions = [
+    # The xxHash port dioxus-core 0.8 hashes templates with: the Boost licence, permissive, attribution only.
+    { crate = "xxhash-rust", allow = ["BSL-1.0"] },
+]
 
 # MPL-2.0 is allowed, and it is a decision rather than an oversight.
 #

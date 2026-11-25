@@ -8,10 +8,10 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
-chordkit = { workspace = true }
+keymap = { workspace = true }
 dioxus = { workspace = true }
-ds = { workspace = true }
-ds-core = { workspace = true }
+ui-components = { workspace = true }
+ui-core = { workspace = true }
 temor-client = { workspace = true }
 temor-panes = { workspace = true }
 thiserror = { workspace = true }

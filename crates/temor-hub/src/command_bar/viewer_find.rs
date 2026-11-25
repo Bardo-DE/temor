@@ -5,8 +5,8 @@
 //! how the pane's rows become the bar's; `view::bar` draws them.
 
 use anyview_pane::PaneCommand;
-use ds::components::menus::palette::palette_group::PaletteRow;
-use ds::prelude::{AfterPick, PaletteClose, TextLine};
+use ui_components::components::menus::palette::palette_group::PaletteRow;
+use ui_components::prelude::{PaletteClose, TextLine};
 
 /// What closing the bar does: Escape and a pick, or a click outside it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -52,7 +52,7 @@ pub fn entry_row<T>(value: T, query: &str) -> Option<PaletteRow<T>> {
     let wanted = query.trim().to_lowercase();
     TITLE.to_lowercase().contains(&wanted).then(|| PaletteRow {
         detail: Some(TextLine::from("Search the file that is open")),
-        after: AfterPick::KeepOpen,
+        keep_open: true,
         ..PaletteRow::new(value, TITLE)
     })
 }
@@ -73,7 +73,7 @@ pub fn lift<T>(
             chord: row.chord,
             availability: row.availability,
             action: row.action,
-            after: AfterPick::KeepOpen,
+            keep_open: true,
             shape: row.shape,
         })
         .collect()

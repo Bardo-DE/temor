@@ -6,7 +6,7 @@
 
 use std::hash::{DefaultHasher, Hash, Hasher};
 
-use ds_settings::Store;
+use settings_store_fs::Store;
 use temor_client::model::offer::{
     Answer, OfferIn, OfferList, OfferOut, OfferState, Program, Reply, offer_step,
 };

@@ -3,12 +3,12 @@
 //! stopped trying), and the ports the host listens on with what can be done about each.
 
 use dioxus::prelude::*;
-use ds::components::content::label::LabelStyle;
-use ds::prelude::*;
 use temor_client::model::remote::Grant;
 use temor_client::model::vocab::ids::PaneId;
 use temor_client::remote::PortAction;
 use temor_client::ssh::Port;
+use ui_components::components::content::label::LabelStyle;
+use ui_components::prelude::*;
 
 use super::host_words::{REMEMBER_TIP, TRY_AGAIN};
 use super::remote_words::{

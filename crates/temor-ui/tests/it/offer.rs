@@ -8,8 +8,8 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
-use ds_harness::Harness;
 use temor_ui_base::probe::Probe;
+use ui_harness::Harness;
 
 use super::drive::{focus_pane, press, type_line, wait_html, wait_until};
 use super::support::{scratch_path, tools_present};

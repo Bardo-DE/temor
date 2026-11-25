@@ -5,9 +5,9 @@ use dioxus::html::Modifiers as HeldMods;
 use dioxus::html::geometry::WheelDelta;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
-use ds::host::signals::HostSignals;
 use temor_panes::render::Scale;
 use temor_panes::vt::{Modifiers, MouseButton as VtButton, SurfacePoint};
+use ui_components::host::signals::HostSignals;
 
 use temor_pane_view::session::WheelDirection;
 

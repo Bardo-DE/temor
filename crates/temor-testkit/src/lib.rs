@@ -1,4 +1,4 @@
-//! Test helpers every crate's tests share. L0: it names no quire, dioxus, docket, zbus or tokio
+//! Test helpers every crate's tests share. L0: it names no toolkit, dioxus, actiond, zbus or tokio
 //! crate, and only a `[dev-dependencies]` section may name it.
 //!
 //! - [`program_or_skip`], [`optional_program`] and [`skip`] find a tool or skip the test, and

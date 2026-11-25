@@ -3,10 +3,10 @@
 use super::{QuickIn, QuickOut, QuickState, QuickTerm, adopt, quick_step};
 use crate::test_support::fresh_workspace;
 use crate::workspace::{Workspace, WorkspaceIn, WorkspaceOut, workspace_step};
-use ds_style::space::list::SpaceId;
 use temor_core::error::CoreError;
 use temor_core::vocab::ids::{PaneId, TabId};
 use temor_core::vocab::text::Cwd;
+use ui_style::space::list::SpaceId;
 
 fn cwd(path: &str) -> Option<Cwd> {
     Some(Cwd(path.to_owned()))

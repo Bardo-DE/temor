@@ -171,8 +171,8 @@ Each one sits behind a `platform/` edge trait, marked `// TODO(platform:<os>)`.
       side are unsupported today.
 
 ## App icon (in dist/, wire up when packaging)
-- Linux: `dist/icons/hicolor/<N>x<N>/apps/org.quire.Temor.png` (16–512) installs under `$prefix/share/icons/hicolor/`; the desktop entry already says `Icon=org.quire.Temor`. Window icon at runtime: set from the 256/512 PNG once quire lands its window-icon setter (queued: launch-config field plus `WindowHost::set_icon`).
-- macOS: `scripts/package-macos.sh` builds `.icns` from `dist/icons/source/org.quire.Temor-1024.png` into temor.app (ad-hoc signed; a Developer ID signature and notarisation are the owner's).
+- Linux: `dist/icons/hicolor/<N>x<N>/apps/org.bardo.Temor.png` (16–512) installs under `$prefix/share/icons/hicolor/`; the desktop entry already says `Icon=org.bardo.Temor`. Window icon at runtime: set from the 256/512 PNG once quire lands its window-icon setter (queued: launch-config field plus `WindowHost::set_icon`).
+- macOS: `scripts/package-macos.sh` builds `.icns` from `dist/icons/source/org.bardo.Temor-1024.png` into temor.app (ad-hoc signed; a Developer ID signature and notarisation are the owner's).
 - Windows (owner): `dist/windows/temor.ico` (6 sizes) into the exe resources.
 
 ## Blocks (lane/blocks, P2, reviewed at 08c5ce2 plus orchestrator fixes)
@@ -333,7 +333,7 @@ Items below are each lane's leftovers and the orchestrator's decisions.
   `primary.next()`. Needs a tokio runtime and `ds-settings/tokio` (zbus is built on tokio here,
   as docket and porter build it).
 - temor-ui must depend on temor-desktop with `default-features = false` and forward its own
-  `quire-desktop` feature, or the portable build pulls zbus.
+  `desktop` feature, or the portable build pulls zbus.
 - Action names are `temor.*`, not `terminal.*` as PLAN §8.4 writes them: docket's validator
   requires the app name's last element as prefix. PLAN should say so.
 - `context()`: docket's ContextSnapshot has no field for the focused pane's folder or the last
@@ -345,7 +345,7 @@ Items below are each lane's leftovers and the orchestrator's decisions.
 - Dock badge: nothing in ds-desktop or docket sends `LauncherEntry.Update` (sill only reads it), so
   `SystemDock` emits the signal itself at object path `/com/canonical/unity/launcherentry/1`.
   A dock that keys on the path (none known) would need the libunity hash.
-- Porter identifies the terminal by its systemd unit (`org.quire.Temor.service`). A temor started
+- Porter identifies the terminal by its systemd unit (`org.bardo.Temor.service`). A temor started
   from the launcher or a shell is not that unit, so Tailnet1 may answer `Denied`. `SystemTailnet`
   returns that as an error (not an empty list); the window should show the group as absent.
 - Dependency copies: docket abbb62c pins porter 55d1ade, the Tailnet reader is porter a7c11d2, so
@@ -358,7 +358,7 @@ Items below are each lane's leftovers and the orchestrator's decisions.
   by the two bus names in dist/. Add it if the launcher should activate temor that way.
 - Platform TODOs: macOS dock badge and single instance, Windows taskbar badge and single
   instance (stubs in crates/temor-desktop/src/platform/unsupported.rs).
-- The `quire-desktop` boundary gate is in scripts/check-layers.sh (metadata level). A build-level
+- The `desktop` boundary gate is in scripts/check-layers.sh (metadata level). A build-level
   check (`cargo tree --no-default-features -p temor-desktop` has no zbus) is for the orchestrator's
   gate if wanted.
 - Add `temor-desktop` and its tests (need `dbus-daemon`) to the TEMOR_REQUIRE_TOOLS list.
@@ -366,7 +366,7 @@ Items below are each lane's leftovers and the orchestrator's decisions.
 #### Orchestrator decisions (2026-10-10)
 - Two porter-core copies (docket abbb62c pins porter 55d1ade; porter-client is a7c11d2): accepted until docket moves; asked the agent session for a docket rev on porter ≥ a7c11d2.
 - `temor.pane` / `temor.command` entity kinds and richer `context()`: P12 (companion context).
-- Launcher starts must run as the unit so porter grants Tailnet1: set `DBusActivatable=true` in dist/org.quire.Temor.desktop (the launcher then activates org.quire.Temor, and D-Bus starts it through `SystemdService=`). Do at merge.
+- Launcher starts must run as the unit so porter grants Tailnet1: set `DBusActivatable=true` in dist/org.bardo.Temor.desktop (the launcher then activates org.bardo.Temor, and D-Bus starts it through `SystemdService=`). Do at merge.
 - UPDATE: pin docket 1b905edc5303c9f2241f8a5f6358968ece8dde36 and porter (prov, porter-core, porter-client) b12886e4d047d9763a4dccfa9fa3ce92084483ca (includes a7c11d2) at merge, for one porter-core. Batch 10 later: porter a1a07f5 (additive).
 
 ### ssh
@@ -869,7 +869,7 @@ together.
   shell to report `VIRTUAL_ENV` (an integration mark); until then it doesn't show.
 - Chips sit on the live prompt's header line (the line above the typing line, or the prompt's own
   line for a one-line prompt), including before the first command.
-- `org.quire.Temor1` methods take an activation token (`NewWindow(s)`, `NewTab(ss)`). Nothing
+- `org.bardo.Temor1` methods take an activation token (`NewWindow(s)`, `NewTab(ss)`). Nothing
   outside temor calls them.
 - Remote calls send the default cell size (8×16) and no palette for now.
 - The offer bar stays a bar under the pane (it resizes the pane), like the host banners. An
@@ -948,7 +948,7 @@ porter-core and docket.
       Working stopgap. A CheckpointList literal needs `turn`.
 - [x] Batch 15: temor shows the plan only, with no confirm of its own. sill's hold-to-confirm
       sheet is the one confirmation.
-- [ ] docket lists `org.quire.Temor` under `cli` in its intentd.toml now (Batch 15 notes). Left:
+- [ ] docket lists `org.bardo.Temor` under `cli` in its intentd.toml now (Batch 15 notes). Left:
       Perform still sends `Origin::InWindowField` (temor-desktop `platform/linux/checkpoints.rs`);
       check it against the cli role.
 - [ ] quire's context menu drops disabled items and has no per-item tooltip, so "Wait for the
@@ -1670,7 +1670,7 @@ rows in the bar, `block.lens` and `agent.adapter` host sides). Left:
       by another agent (claude running codex in the same pane) closes the outer agent's session
       and its turns leave the Restore list. Keeping the outer session needs a rule for nested
       foregrounds (the outer one's session stays while an inner program runs).
-- [ ] `org.quire.Temor1.Run` answers only temor's installed image (peephole, `Exe`, pinned at
+- [ ] `org.bardo.Temor1.Run` answers only temor's installed image (peephole, `Exe`, pinned at
       connect; `instance::CALLERS`). A temor the person built is refused, so a checkout's
       `temor -e` aimed at a running checkout temor is refused too, and that launch then starts as
       a window of its own (`join` treats a failed claim as no desktop). If that gets in the way of

@@ -85,7 +85,7 @@ impl GridFont {
     /// The CSS `font-family` for text set like the grid beside it (a block card's command, the
     /// sticky header): the grid's family, then the symbol families the grid falls back to, so a
     /// TUI's arrows and marks are drawn there too, then the terminal's monospace token. Inline,
-    /// as the grid's family is no quire token.
+    /// as the grid's family is no toolkit token.
     pub fn family_css(&self) -> String {
         let symbols: String = temor_panes::render::SYMBOL_FAMILIES
             .iter()
@@ -97,7 +97,7 @@ impl GridFont {
         )
     }
 
-    /// A CSS declaration that makes quire's code font the grid's, for the window around the
+    /// A CSS declaration that makes the toolkit's code font the grid's, for the window around the
     /// panes: a page's text and a peek are then set as the terminal is.
     pub fn code_css(&self) -> String {
         format!(

@@ -11,13 +11,14 @@ publish = false
 # The data as types (L0): ids and named text live there and are re-exported from `vocab`.
 temor-schema = { workspace = true }
 temor-pane = { workspace = true, default-features = false }
-ds-core = { workspace = true }
+ui-core = { workspace = true }
+base-words = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
-ds-core = { workspace = true, features = ["testing"] }
+ui-core = { workspace = true, features = ["testing"] }
 proptest = { workspace = true }
 
 [lints]

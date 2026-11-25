@@ -1,14 +1,14 @@
 //! The top of the sidebar under the Space's name (PLAN §7, v14 B1): Back and Forward for the row
 //! in front, and its address, the folders down to what it shows (the page on its stage, or its
-//! terminal's folder) on quire's path bar. A folder in it opens that folder's page; the middle of
+//! terminal's folder) on the toolkit's path bar. A folder in it opens that folder's page; the middle of
 //! a long path folds into "…", a menu of the folders folded.
 
 use dioxus::prelude::*;
-use ds::components::chrome::path_control::model::PathSegment;
-use ds::prelude::*;
-use ds::style::tokens::control_size::ControlSize;
 use temor_panes::pane::keys::Action;
 use temor_schema::url::TemorUrl;
+use ui_components::components::chrome::path_control::model::PathSegment;
+use ui_components::prelude::*;
+use ui_components::style::tokens::control_size::ControlSize;
 
 use super::tool_button::ToolButton;
 use temor_hub::{Address, Desk, temor_page_name, use_hub};

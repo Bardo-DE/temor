@@ -2,8 +2,8 @@
 //! other key pressed is typing. The platform tells a modifier key's own press without its bit
 //! and its release with it, so the bit is applied here.
 
-use dioxus::html::{Key, Modifiers as HeldMods};
-use ds::edit::raw_key::{KeyPhase, RawKey};
+use dioxus::html::{Key, Modifiers as HeldMods, NamedKey};
+use ui_components::edit::raw_key::{KeyPhase, RawKey};
 
 use temor_hub::peek_step::Command;
 use temor_pane_view::input::vt_mods;
@@ -20,20 +20,18 @@ pub enum KeySays {
 /// The modifier bit a modifier key stands for.
 fn bit_of(key: &Key) -> Option<HeldMods> {
     Some(match key {
-        Key::Control => HeldMods::CONTROL,
-        Key::Shift => HeldMods::SHIFT,
-        Key::Alt => HeldMods::ALT,
-        Key::AltGraph => HeldMods::ALT_GRAPH,
-        Key::Meta => HeldMods::META,
-        Key::Super => HeldMods::SUPER,
-        Key::CapsLock => HeldMods::CAPS_LOCK,
-        Key::NumLock => HeldMods::NUM_LOCK,
-        Key::ScrollLock => HeldMods::SCROLL_LOCK,
-        Key::Fn => HeldMods::FN,
-        Key::FnLock => HeldMods::FN_LOCK,
-        Key::Hyper => HeldMods::HYPER,
-        Key::Symbol => HeldMods::SYMBOL,
-        Key::SymbolLock => HeldMods::SYMBOL_LOCK,
+        Key::Named(NamedKey::Control) => HeldMods::CONTROL,
+        Key::Named(NamedKey::Shift) => HeldMods::SHIFT,
+        Key::Named(NamedKey::Alt) => HeldMods::ALT,
+        Key::Named(NamedKey::AltGraph) => HeldMods::ALT_GRAPH,
+        Key::Named(NamedKey::Meta) => HeldMods::META,
+        Key::Named(NamedKey::CapsLock) => HeldMods::CAPS_LOCK,
+        Key::Named(NamedKey::NumLock) => HeldMods::NUM_LOCK,
+        Key::Named(NamedKey::ScrollLock) => HeldMods::SCROLL_LOCK,
+        Key::Named(NamedKey::Fn) => HeldMods::FN,
+        Key::Named(NamedKey::FnLock) => HeldMods::FN_LOCK,
+        Key::Named(NamedKey::Symbol) => HeldMods::SYMBOL,
+        Key::Named(NamedKey::SymbolLock) => HeldMods::SYMBOL_LOCK,
         _ => return None,
     })
 }
@@ -76,16 +74,28 @@ mod tests {
         let c = || Key::Character("c".to_owned());
         // (event, what it says). A modifier's own press comes without its bit, its release with it.
         let table = [
-            (key(Press, Key::Shift, ctrl), KeySays::Look(Held)),
             (
-                key(Press, Key::Control, HeldMods::empty()),
+                key(Press, Key::Named(NamedKey::Shift), ctrl),
+                KeySays::Look(Held),
+            ),
+            (
+                key(Press, Key::Named(NamedKey::Control), HeldMods::empty()),
                 KeySays::Look(Up),
             ),
-            (key(Repeat, Key::Shift, ctrl), KeySays::Look(Held)),
-            (key(Release, Key::Shift, both), KeySays::Look(Up)),
-            (key(Release, Key::Control, both), KeySays::Look(Up)),
             (
-                key(Release, Key::Alt, both | HeldMods::ALT),
+                key(Repeat, Key::Named(NamedKey::Shift), ctrl),
+                KeySays::Look(Held),
+            ),
+            (
+                key(Release, Key::Named(NamedKey::Shift), both),
+                KeySays::Look(Up),
+            ),
+            (
+                key(Release, Key::Named(NamedKey::Control), both),
+                KeySays::Look(Up),
+            ),
+            (
+                key(Release, Key::Named(NamedKey::Alt), both | HeldMods::ALT),
                 KeySays::Look(Held),
             ),
             (key(Press, c(), both), KeySays::Typed),

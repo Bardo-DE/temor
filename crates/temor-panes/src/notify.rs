@@ -24,9 +24,9 @@ pub trait Notifier: Send {
     fn notify(&self, note: &DesktopNote) -> Result<(), NotifyFailed>;
 }
 
-/// The default until quire's desktop feature provides a notification service (quire v0.2.30 has
+/// The default until the toolkit's desktop feature provides a notification service (the toolkit has
 /// none: its notifications are in sill's shell kit). Notices are dropped.
-// TODO(quire-desktop): the freedesktop notification service through ds-desktop, with the
+// TODO(desktop): the freedesktop notification service through ds-desktop, with the
 // notification's activation raising the window (PLAN §8.1). Until then nothing is shown.
 #[derive(Debug, Default)]
 pub struct NoopNotifier;

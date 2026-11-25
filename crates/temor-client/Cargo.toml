@@ -9,8 +9,8 @@ publish = false
 
 # Between the store and the window (PLAN §2b, P24). A caller asks for a value and is handed one
 # that is already there; the reading happens on the client's threads, and again when the store
-# says what a commit touched. Draws nothing and words nothing: no dioxus, no quire widgets (only
-# quire's Spaces list, as temor-core keeps it). It keeps the window's Spaces and workspaces
+# says what a commit touched. Draws nothing and words nothing: no dioxus, no toolkit widgets (only
+# the toolkit's Spaces list, as temor-core keeps it). It keeps the window's Spaces and workspaces
 # (`spaces`) and what is kept between launches (`keep`). The running terminals are temor-panes':
 # no terminal engine is built here.
 
@@ -18,7 +18,7 @@ publish = false
 # What a test builds with: `Live::wait`, and a faster look for other processes' writes.
 testing = []
 # The Linux desktop's services through `temor-desktop` (PLAN D15); off, its portable half.
-quire-desktop = ["temor-desktop/quire-desktop"]
+desktop = ["temor-desktop/desktop"]
 
 [dependencies]
 temor-schema = { workspace = true }
@@ -31,7 +31,7 @@ temor-agent = { workspace = true }
 # A new shell's report key (`keep::replay`) and the private folder check (`keep::private`).
 temor-shell = { workspace = true, features = ["io"] }
 # The Spaces (`spaces`): the kit's list, which temor-core keeps its projects in.
-ds-style = { workspace = true }
+ui-style = { workspace = true }
 serde_json = { workspace = true }
 # The private state folder's owner check (`keep::private`).
 rustix = { workspace = true }
@@ -51,7 +51,7 @@ temor-pty = { workspace = true }
 # (`shelf`), and the shelf's times.
 temor-desktop = { workspace = true }
 temor-transfer = { workspace = true }
-ds-core = { workspace = true }
+ui-core = { workspace = true }
 # The plugins' work (`plugins`), and an agent adapter's status as the pane's report.
 temor-plugins = { workspace = true }
 temor-pane = { workspace = true }
@@ -65,7 +65,7 @@ similar = { workspace = true }
 [dev-dependencies]
 temor-client = { path = ".", features = ["testing"] }
 temor-testkit = { workspace = true }
-ds-core = { workspace = true, features = ["testing"] }
+ui-core = { workspace = true, features = ["testing"] }
 serde = { workspace = true }
 tempfile = { workspace = true }
 tokio = { workspace = true, features = ["rt", "time", "macros"] }

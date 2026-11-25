@@ -12,11 +12,11 @@
 //! the surface neither hears them a second time nor starts a selection under the card.
 
 use dioxus::prelude::*;
-use ds::components::fields::text_field_model::FieldRows;
-use ds::edit::raw_key::{KeyPhase, RawKey};
-use ds::focus::request::FocusRequest;
-use ds::prelude::*;
-use ds::style::tokens::control_size::ControlSize;
+use ui_components::components::fields::text_field_model::FieldRows;
+use ui_components::edit::raw_key::{KeyPhase, RawKey};
+use ui_components::focus::request::FocusRequest;
+use ui_components::prelude::*;
+use ui_components::style::tokens::control_size::ControlSize;
 
 use temor_pane_view::session::HistoryStep;
 
@@ -52,7 +52,7 @@ fn in_view(count: usize, picked: usize) -> std::ops::Range<usize> {
 }
 
 /// How many lines the field shows for `text`: none past one line (a single-line field), else the
-/// least of quire's heights that holds them, at most ten (the text scrolls past that).
+/// least of the toolkit's heights that holds them, at most ten (the text scrolls past that).
 fn shown_rows(text: &str) -> Option<(FieldRows, u8)> {
     match text.matches('\n').count() + 1 {
         0 | 1 => None,
@@ -116,9 +116,12 @@ pub struct ChoicesView {
 /// deleting); Ctrl+C is the composer's, which empties it.
 fn field_takes(event: &KeyboardEvent, selection: bool) -> bool {
     let mods = event.modifiers();
-    let command = mods.intersects(Modifiers::SUPER | Modifiers::META);
+    let command = mods.contains(Modifiers::META);
     match event.key() {
-        Key::ArrowLeft | Key::ArrowRight | Key::Backspace | Key::Delete => true,
+        Key::Named(NamedKey::ArrowLeft)
+        | Key::Named(NamedKey::ArrowRight)
+        | Key::Named(NamedKey::Backspace)
+        | Key::Named(NamedKey::Delete) => true,
         Key::Character(c) if command => match c.to_lowercase().as_str() {
             // With text selected in the list, ⌘C copies that.
             "c" => !selection,
@@ -181,7 +184,7 @@ pub fn ComposerCard(
     let on_key = move |event: KeyboardEvent| {
         let mods = event.modifiers();
         // ⌘ is Super where the platform says so, Meta where it says that.
-        let command = mods.intersects(Modifiers::SUPER | Modifiers::META);
+        let command = mods.contains(Modifiers::META);
         let control = mods.contains(Modifiers::CONTROL);
         let shift = mods.contains(Modifiers::SHIFT);
         let phase = match event.is_auto_repeating() {
@@ -192,48 +195,52 @@ pub fn ComposerCard(
         key.call(raw.clone());
         let plain = !command && !control && !mods.contains(Modifiers::ALT);
         match event.key() {
-            Key::Tab if plain && shift && choosing => {
+            Key::Named(NamedKey::Tab) if plain && shift && choosing => {
                 event.prevent_default();
                 pick.call(HistoryStep::Older);
             }
-            Key::Tab if plain && !shift => {
+            Key::Named(NamedKey::Tab) if plain && !shift => {
                 event.prevent_default();
                 match choosing {
                     true => take_word.call(None),
                     false => complete.call(()),
                 }
             }
-            Key::ArrowUp | Key::ArrowDown if mods.is_empty() && choosing => {
+            Key::Named(NamedKey::ArrowUp) | Key::Named(NamedKey::ArrowDown)
+                if mods.is_empty() && choosing =>
+            {
                 event.prevent_default();
                 pick.call(match event.key() {
-                    Key::ArrowUp => HistoryStep::Older,
+                    Key::Named(NamedKey::ArrowUp) => HistoryStep::Older,
                     _ => HistoryStep::Newer,
                 });
             }
-            Key::Enter if plain && !shift && choosing => {
+            Key::Named(NamedKey::Enter) if plain && !shift && choosing => {
                 event.prevent_default();
                 take_word.call(None);
             }
-            Key::Escape if choosing => {
+            Key::Named(NamedKey::Escape) if choosing => {
                 event.prevent_default();
                 close.call(());
             }
             // A new line: a multi-line field adds it itself; a one-line field becomes one that
             // holds it, and the caret goes on at its end.
-            Key::Enter if shift && !command && !control => {
+            Key::Named(NamedKey::Enter) if shift && !command && !control => {
                 if one_line {
                     event.prevent_default();
                     input.call(format!("{typed}\n"));
                 }
             }
-            Key::Enter if !command && !control => {
+            Key::Named(NamedKey::Enter) if !command && !control => {
                 event.prevent_default();
                 submit.call(());
             }
-            Key::ArrowUp | Key::ArrowDown if mods.is_empty() && one_line => {
+            Key::Named(NamedKey::ArrowUp) | Key::Named(NamedKey::ArrowDown)
+                if mods.is_empty() && one_line =>
+            {
                 event.prevent_default();
                 history.call(match event.key() {
-                    Key::ArrowUp => HistoryStep::Older,
+                    Key::Named(NamedKey::ArrowUp) => HistoryStep::Older,
                     _ => HistoryStep::Newer,
                 });
             }
@@ -268,7 +275,7 @@ pub fn ComposerCard(
                         false => FieldKind::Multiline,
                     },
                     rows: rows.map_or(FieldRows::Two, |(rows, _)| rows),
-                    bezel: FieldBezel::Plain,
+                    bezeled: false,
                     size: ControlSize::Regular,
                     focus: field_focus,
                     oninput: move |text: String| input.call(text),

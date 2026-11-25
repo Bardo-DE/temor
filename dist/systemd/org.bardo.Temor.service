@@ -1,11 +1,11 @@
-# temor as a systemd user unit. Installed to /usr/lib/systemd/user/org.quire.Temor.service; the D-Bus
-# activation files (dist/org.quire.Temor.service and dist/org.quire.Temor1.service, installed to
+# temor as a systemd user unit. Installed to /usr/lib/systemd/user/org.bardo.Temor.service; the D-Bus
+# activation files (dist/org.bardo.Temor.service and dist/org.bardo.Temor1.service, installed to
 # /usr/share/dbus-1/services/) name this unit with SystemdService=, so a call to either bus name
-# while temor is not running starts it here, and porter's account service knows the process by
-# this unit (its callers file gives the terminal role to unit org.quire.Temor.service).
+# while temor is not running starts it here, and accountd's account service knows the process by
+# this unit (its callers file gives the terminal role to unit org.bardo.Temor.service).
 #
-# org.quire.Temor is the name docket's router calls (agents), org.quire.Temor1 the one a second
-# launch calls (single instance). The unit is ready once temor owns org.quire.Temor1.
+# org.bardo.Temor is the name actiond calls (agents), org.bardo.Temor1 the one a second
+# launch calls (single instance). The unit is ready once temor owns org.bardo.Temor1.
 #
 # temor is a window with a shell in it, so the unit carries no sandbox: a terminal runs whatever
 # the person types, as the person.
@@ -16,10 +16,10 @@ PartOf=graphical-session.target
 
 [Service]
 Type=dbus
-BusName=org.quire.Temor1
+BusName=org.bardo.Temor1
 ExecStart=/usr/bin/temor
 Slice=app.slice
-# No loader variables from the session reach temor: porter gives its fixed caller role only to a
+# No loader variables from the session reach temor: accountd gives its fixed caller role only to a
 # unit that unsets them (applied after the manager environment and Environment=). The shells it
 # starts read the person's own startup files as usual.
 UnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GCONV_PATH GIO_EXTRA_MODULES GTK_MODULES GTK_PATH GST_PLUGIN_PATH GST_PLUGIN_SYSTEM_PATH LIBGL_DRIVERS_PATH MESA_LOADER_DRIVER_OVERRIDE __EGL_VENDOR_LIBRARY_DIRS __EGL_VENDOR_LIBRARY_FILENAMES GBM_BACKENDS_PATH LIBVA_DRIVERS_PATH VK_ICD_FILENAMES VK_DRIVER_FILES VK_ADD_DRIVER_FILES VK_LAYER_PATH VK_ADD_LAYER_PATH VK_INSTANCE_LAYERS VK_LOADER_LAYERS_ENABLE

@@ -8,7 +8,7 @@ use fontique::{
     FontWidth, GenericFamily, SourceCache,
 };
 
-use quire_emoji::{EmojiChoice, Fonts, prefer_colour};
+use ui_emoji::{EmojiChoice, Fonts, prefer_colour};
 
 use super::config::{FaceStyle, FontConfig, FontFamily, FontSource, Slant, Weight};
 use super::face::{ColorFormat, Face, FaceId, FaceRole, Synth};
@@ -91,8 +91,8 @@ impl FontSet {
         let family =
             primary_family(&mut collection, &config.family, &bundled).ok_or_else(not_found)?;
         if lookup == Lookup::System {
-            // The same detection as quire's windows, so a colour emoji face is found (and an
-            // `QUIRE_EMOJI_FAMILY` honoured) in the terminal grid and the UI alike. After the
+            // The same detection as the toolkit's windows, so a colour emoji face is found (and an
+            // `BARDO_EMOJI_FAMILY` honoured) in the terminal grid and the UI alike. After the
             // family is chosen: the colour face goes before the first monospace family that maps
             // an emoji, and that family can be the system's monospace itself.
             prefer_colour(

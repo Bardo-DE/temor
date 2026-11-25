@@ -10,7 +10,7 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use ds_core::time::stamp::Stamp;
+use ui_core::time::stamp::Stamp;
 
 use crate::block::{Author, Block, BlockIn, BlockOut, BlockState, BlockStore, block_step};
 use temor_core::vocab::ids::{BlockId, Counter, ExitCode, GridRow, GridSpan};

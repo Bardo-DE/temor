@@ -3,8 +3,8 @@
 //! or the find bar's match is scrolled to once. The pane hands it what it drew and each move of
 //! the offset; what comes out is where to scroll.
 
-use ds_core::geometry::scroll::{Scroll, ScrollSpan};
 use temor_client::model::vocab::ids::BlockId;
+use ui_core::geometry::scroll::{Scroll, ScrollSpan};
 
 /// The room a revealed find match keeps above it, for the find bar over the list's top.
 const FIND_ROOM: f32 = 64.0;
@@ -141,9 +141,9 @@ impl Follow {
 #[cfg(test)]
 mod tests {
     use super::{Drawn, Follow, FollowIn, FollowOut};
-    use ds_core::geometry::scroll::{Scroll, ScrollSpan};
-    use ds_core::geometry::units::Px;
     use temor_client::model::vocab::ids::BlockId;
+    use ui_core::geometry::scroll::{Scroll, ScrollSpan};
+    use ui_core::geometry::units::Px;
 
     const VIEW: f32 = 100.0;
 

@@ -7,11 +7,11 @@ use std::rc::Rc;
 use std::time::Instant;
 
 use dioxus::prelude::*;
-use ds::host::captured::{CapturedPointer, PointerPhase};
-use ds::host::measure::RectProbe;
-use ds::host::pointer_capture::{PointerCapture, PointerHold, use_pointer_capture};
-use ds::host::signals::HostSignals;
 use temor_panes::vt::MouseButton as VtButton;
+use ui_components::host::captured::{CapturedPointer, PointerPhase};
+use ui_components::host::measure::RectProbe;
+use ui_components::host::pointer_capture::{PointerCapture, PointerHold, use_pointer_capture};
+use ui_components::host::signals::HostSignals;
 
 use super::convert::{device_point, scale_of, vt_button, vt_mods, wheel_lines};
 use super::window_help::device_at;

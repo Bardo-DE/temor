@@ -1,23 +1,21 @@
 //! temor offered to the agent layer: a call from "the router" (the connection the test names as
-//! intentd, on a bus of its own) reaches the window, and nobody else is answered.
+//! actiond, on a bus of its own) reaches the window, and nobody else is answered.
 
-#![cfg(all(target_os = "linux", feature = "quire-desktop"))]
+#![cfg(all(target_os = "linux", feature = "desktop"))]
 
 use crate::bus::PrivateBus;
 use crate::window::FakeWindow;
-use docket_core::{
-    AppRefusal, Args, CallClass, CallId, ContextSnapshot, Invocation, Origin, Outcome, ParamName,
-    TargetValue, UndoFault, Undoable, Value,
-};
-use porter_core::AppName;
-use prov::{ActionName, Actor, Effect, Integrity, Label, Labelled, SpaceId};
+use account_core::AppName;
+use action_core::{AppRefusal, ContextSnapshot, Invocation, Outcome, UndoFault, Undoable};
+use action_vocab::{Args, CallClass, CallId, ChoiceId, Origin, ParamName, TargetValue, Value};
+use provenance::{ActionName, Actor, Effect, Integrity, Label, Labelled, SpaceId};
 use std::collections::HashMap;
 use std::sync::Arc;
 use temor_desktop::{APP_BUS_NAME, PaneRef, SystemIntents};
 use zbus::zvariant::Value as BusValue;
 
-const PROVIDER_PATH: &str = "/org/quire/IntentProvider1";
-const PROVIDER_INTERFACE: &str = "org.quire.IntentProvider1";
+const PROVIDER_PATH: &str = "/org/bardo/IntentProvider1";
+const PROVIDER_INTERFACE: &str = "org.bardo.IntentProvider1";
 
 fn invocation(action: &str, args: &[(&str, Value)]) -> String {
     let args: Args = args
@@ -35,7 +33,7 @@ fn invocation(action: &str, args: &[(&str, Value)]) -> String {
         target: TargetValue::Nothing,
         args,
         actor: Actor::User {
-            via: AppName::parse("org.quire.Shell").unwrap(),
+            via: AppName::parse("org.bardo.Shell").unwrap(),
         },
         origin: Origin::Launcher,
         space: SpaceId::parse("work").unwrap(),
@@ -44,7 +42,7 @@ fn invocation(action: &str, args: &[(&str, Value)]) -> String {
 }
 
 fn choice(id: &str) -> Value {
-    Value::Choice(docket_core::ChoiceId::parse(id).unwrap())
+    Value::Choice(ChoiceId::parse(id).unwrap())
 }
 
 /// The router's call of `member` on temor, with `arguments`, as `caller`.
@@ -144,7 +142,7 @@ async fn an_opened_pane_can_be_closed_again_with_its_undo_token() {
 
     let options = format!("\"{}\"", token.as_str());
     let actor = serde_json::to_string(&Actor::User {
-        via: AppName::parse("org.quire.Shell").unwrap(),
+        via: AppName::parse("org.bardo.Shell").unwrap(),
     })
     .unwrap();
     let text = call(&s.router, "Undo", &(options, actor)).await.unwrap();
@@ -189,7 +187,7 @@ async fn a_sandboxed_run_is_classified_by_its_network_and_undone_by_the_window()
         panic!("a run that changed something is undoable");
     };
     let actor = serde_json::to_string(&Actor::User {
-        via: AppName::parse("org.quire.Shell").unwrap(),
+        via: AppName::parse("org.bardo.Shell").unwrap(),
     })
     .unwrap();
     let quoted = format!("\"{}\"", token.as_str());
@@ -226,9 +224,7 @@ async fn typing_into_a_pane_needs_the_line_and_reaches_the_front_pane() {
 #[tokio::test]
 async fn context_reports_the_window_and_only_the_router_may_ask() {
     let Some(s) = served().await else { return };
-    let text = call(&s.router, "Context", &("\"active_window\"".to_owned(),))
-        .await
-        .unwrap();
+    let text = call(&s.router, "Context", &()).await.unwrap();
     let snapshot: ContextSnapshot = serde_json::from_str(&text).unwrap();
     assert_eq!(snapshot.app.as_str(), APP_BUS_NAME);
     assert_eq!(snapshot.window.value, "temor");

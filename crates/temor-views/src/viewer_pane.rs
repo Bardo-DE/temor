@@ -9,14 +9,14 @@ use std::rc::Rc;
 
 use anyview_pane::{PaneRequest, ViewerPane, use_pane_handle};
 use dioxus::prelude::*;
-use ds::edit::raw_key::{KeyPhase, RawKey};
-use ds::focus::select::Select;
-use ds::focus::soon::focus_soon_told;
-use ds::prelude::*;
-use ds::root::pass_through::ExtraClass;
 use temor_client::model::vocab::ids::PaneId;
 use temor_client::model::workspace::WorkspaceIn;
 use temor_panes::pane::keys::Action;
+use ui_components::edit::raw_key::{KeyPhase, RawKey};
+use ui_components::focus::select::Select;
+use ui_components::focus::soon::focus_soon_told;
+use ui_components::prelude::*;
+use ui_components::root::pass_through::ExtraClass;
 
 use super::focus_edge::use_focus_edge;
 use temor_hub::{Desk, Origin, use_hub};

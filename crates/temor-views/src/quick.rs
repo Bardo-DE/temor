@@ -5,11 +5,11 @@
 use std::time::Instant;
 
 use dioxus::prelude::*;
-use ds::base::press::Press;
-use ds::prelude::*;
-use ds::style::space::list::SpaceId;
 use temor_client::model::bar::SpaceEntry;
 use temor_client::model::vocab::ids::PaneId;
+use ui_components::base::press::Press;
+use ui_components::prelude::*;
+use ui_components::style::space::list::SpaceId;
 
 use super::pane_view::PaneView;
 use temor_hub::Desk;

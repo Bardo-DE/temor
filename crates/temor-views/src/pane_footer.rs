@@ -2,8 +2,8 @@
 //! the paste question and the "shell has ended" banner.
 
 use dioxus::prelude::*;
-use ds::prelude::*;
 use temor_panes::pane::paste::UnsafeReason;
+use ui_components::prelude::*;
 
 use super::blocks::Chrome;
 use super::confirm::PasteConfirm;

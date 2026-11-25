@@ -7,11 +7,11 @@
 //! only whether it is set, and offers Replace and Remove (`space_profile`, `space_secrets`).
 
 use dioxus::prelude::*;
-use ds::components::app::spaces::SpaceId;
-use ds::components::content::label::LabelRole;
-use ds::components::fields::field_row::FieldRow;
-use ds::prelude::*;
 use temor_client::model::vocab::text::{KeyPath, ProjectRoot, RelPath};
+use ui_components::components::app::spaces::SpaceId;
+use ui_components::components::content::label::LabelRole;
+use ui_components::components::fields::field_row::FieldRow;
+use ui_components::prelude::*;
 
 use super::space_fields::{AddRoute, RouteRow, SpaceText};
 use super::space_profile::{AddCredential, AddVariable, CredentialRow, VariableRow};

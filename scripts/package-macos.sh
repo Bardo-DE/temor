@@ -47,7 +47,7 @@ sed "s/@VERSION@/$version/g" dist/macos/Info.plist > "$app/Contents/Info.plist"
 # The icon: the 1024 px source at each size the iconset wants, as `.icns`.
 iconset=$(mktemp -d)/Temor.iconset
 mkdir -p "$iconset"
-src=dist/icons/source/org.quire.Temor-1024.png
+src=dist/icons/source/org.bardo.Temor-1024.png
 for size in 16 32 128 256 512; do
   sips -z "$size" "$size" "$src" --out "$iconset/icon_${size}x${size}.png" >/dev/null
   double=$((size * 2))

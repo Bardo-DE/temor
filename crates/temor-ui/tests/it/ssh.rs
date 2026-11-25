@@ -6,7 +6,6 @@
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 
-use ds_harness::Harness;
 use temor_client::keep::older::save_with_hosts;
 use temor_client::model::host::consent::{BootstrapGrants, ConsentBook, HostRecord};
 use temor_client::model::host::store::{HostsFile, PaneHost};
@@ -16,6 +15,7 @@ use temor_client::model::workspace::{
 };
 use temor_core::vocab::ids::PaneId;
 use temor_ui_base::probe::Probe;
+use ui_harness::Harness;
 
 use super::drive::{press, wait_html, wait_until};
 use super::support::{ScratchRoot, socket_root, tools_present};

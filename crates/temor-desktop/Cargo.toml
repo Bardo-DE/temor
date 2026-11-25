@@ -9,21 +9,28 @@ publish = false
 
 [features]
 # The Linux desktop's services (PLAN D15, §2). Off, the crate is the portable half: plain types
-# and absent services, with no zbus, docket or porter in the build. `--no-default-features` is
+# and absent services, with no zbus, actions or accounts client in the build. `--no-default-features` is
 # that build; scripts/check-layers.sh holds every such dependency to this feature.
-default = ["quire-desktop"]
-quire-desktop = [
-  "dep:docket-client",
-  "dep:docket-core",
-  "dep:docket-dbus",
-  "dep:prov",
-  "dep:porter-core",
-  "dep:porter-client",
-  "dep:porter-secrets",
+default = ["desktop"]
+desktop = [
+  "dep:action-provider",
+  "dep:action-vocab",
+  "dep:action-wire",
+  "dep:action-manifest",
+  "dep:account-tailscale",
+  "dep:caller-role-types",
+  "dep:base-ids",
+  "dep:action-core",
+  "dep:action-dbus",
+  "dep:provenance",
+  "dep:account-core",
+  "dep:account-client",
+  "dep:account-client-dbus",
+  "dep:account-secrets",
   "dep:zbus",
   "dep:toml",
-  "dep:peephole-bus",
-  "dep:peephole-core",
+  "dep:caller-identity-dbus",
+  "dep:caller-identity-core",
   "dep:futures-util",
   "dep:objc2",
   "dep:objc2-app-kit",
@@ -33,11 +40,11 @@ quire-desktop = [
 
 # `SystemIntents::serve_for_router`: a private bus's stand-in for intentd. Only this crate's own
 # tests turn it on (the dev-dependency below), so no build of the window contains it.
-router-for-tests = ["quire-desktop"]
+router-for-tests = ["desktop"]
 
 # `SystemInstance::vouch_for`: a test names its own connection as temor's, since a test binary
-# is no installed temor. peephole's `fake` seam; only this crate's own tests turn it on.
-callers-for-tests = ["quire-desktop", "peephole-bus/fake"]
+# is no installed temor. the caller-identity `fake` seam; only this crate's own tests turn it on.
+callers-for-tests = ["desktop", "caller-identity-dbus/fake"]
 
 [dependencies]
 serde_json = { workspace = true }
@@ -47,32 +54,39 @@ temor-ssh = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = ["rt", "net", "io-util", "time"] }
 
-# Only a Linux build has a session bus; `quire-desktop` names these.
+# Only a Linux build has a session bus; `desktop` names these.
 [target.'cfg(target_os = "linux")'.dependencies]
-docket-client = { workspace = true, optional = true }
-docket-core = { workspace = true, optional = true }
-docket-dbus = { workspace = true, optional = true }
+action-provider = { workspace = true, optional = true }
+action-vocab = { workspace = true, optional = true }
+action-wire = { workspace = true, optional = true }
+action-manifest = { workspace = true, optional = true }
+account-tailscale = { workspace = true, optional = true }
+caller-role-types = { workspace = true, optional = true }
+base-ids = { workspace = true, optional = true }
+action-core = { workspace = true, optional = true }
+action-dbus = { workspace = true, optional = true }
 futures-util = { workspace = true, optional = true }
-peephole-bus = { workspace = true, optional = true }
-peephole-core = { workspace = true, optional = true }
-porter-client = { workspace = true, optional = true }
-porter-core = { workspace = true, optional = true }
-porter-secrets = { workspace = true, optional = true }
-prov = { workspace = true, optional = true }
+caller-identity-dbus = { workspace = true, optional = true }
+caller-identity-core = { workspace = true, optional = true }
+account-client = { workspace = true, optional = true }
+account-client-dbus = { workspace = true, optional = true }
+account-core = { workspace = true, optional = true }
+account-secrets = { workspace = true, optional = true }
+provenance = { workspace = true, optional = true }
 toml = { workspace = true, optional = true }
 zbus = { workspace = true, optional = true }
 
 # macOS has the Keychain and the Dock tile, no session bus.
 [target.'cfg(target_os = "macos")'.dependencies]
-porter-core = { workspace = true, optional = true }
-porter-secrets = { workspace = true, features = ["keyring"], optional = true }
+account-core = { workspace = true, optional = true }
+account-secrets = { workspace = true, features = ["keyring"], optional = true }
 dispatch2 = { version = "0.3", optional = true }
 objc2 = { version = "0.6", optional = true }
 objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "NSApplication", "NSResponder", "NSDockTile"], optional = true }
 objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSString"], optional = true }
 
 [target.'cfg(any(target_os = "linux", target_os = "macos"))'.dev-dependencies]
-porter-secrets = { workspace = true, features = ["testing"] }
+account-secrets = { workspace = true, features = ["testing"] }
 
 [dev-dependencies]
 temor-testkit = { workspace = true }

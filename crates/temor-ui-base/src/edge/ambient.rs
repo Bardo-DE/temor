@@ -5,7 +5,7 @@
 use std::ffi::OsString;
 use std::path::PathBuf;
 
-use ds_settings::Store;
+use settings_store_fs::Store;
 use temor_client::plugins::DataDirs;
 use temor_panes::shell::ChildEnv;
 

@@ -4,9 +4,9 @@
 //! it goes from the field to the store and no further, and an error names the variable, never the
 //! value.
 
-use ds::components::app::spaces::SpaceId;
 use temor_client::model::space::{AccountRef, Credential};
 use temor_client::model::vocab::text::EnvKey;
+use ui_components::components::app::spaces::SpaceId;
 
 use temor_hub::settings_link::space_edit::{
     account_for, credentials_with, credentials_without, variable_name,

@@ -1,9 +1,9 @@
 use super::*;
 use crate::transfer::Origin;
-use ds_core::time::stamp::Stamp;
 use temor_core::vocab::ids::{Bytes, DownloadId, TabId};
 use temor_core::vocab::text::{HostName, ShelfPath};
 use temor_testkit::run_steps;
+use ui_core::time::stamp::Stamp;
 
 fn shelf() -> Shelf {
     Shelf::new(ShelfPath("/home/a/Downloads".into()))

@@ -5,12 +5,6 @@
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
-use ds::base::press::PointerButton;
-use ds::base::vocab::ShortcutKey;
-use ds::prelude::SystemPrefs;
-use ds::prelude::{Point, Px};
-use ds_harness::Input;
-use ds_harness::{Harness, HarnessConfig, Viewport, WindowHosting};
 use temor_desktop::RunEnds;
 use temor_hub::Run;
 use temor_pane::settings::ShellChoice;
@@ -20,6 +14,12 @@ use temor_ui_base::desktop::Desktop;
 use temor_ui_base::edge::Ambient;
 use temor_ui_base::probe::Probe;
 use temor_views::App;
+use ui_components::base::press::PointerButton;
+use ui_components::base::vocab::ShortcutKey;
+use ui_components::prelude::SystemSettings;
+use ui_components::prelude::{Point, Px};
+use ui_harness::Input;
+use ui_harness::{Harness, HarnessConfig, Viewport, WindowHosting};
 
 use super::drive::{chord, focus_pane, panes, rows, started, type_line, wait_until};
 use super::support::scratch;
@@ -158,13 +158,13 @@ fn harness_at(
             shell: ShellChoice::Program(super::support::bash_path().display().to_string()),
             ..TerminalSettings::default()
         },
-        appearance: AppearanceSource::scratch(home.join("config"), SystemPrefs::default()),
+        appearance: AppearanceSource::scratch(home.join("config"), SystemSettings::default()),
         // Our desktop: ⌘ is Super, or the Ctrl+Shift form the harness chords send.
         keymap: temor_ui_base::edge::keymap_for(
-            chordkit::Platform::Linux {
-                desktop: chordkit::Desktop::Ours,
+            keymap::Platform::Linux {
+                desktop: keymap::Desktop::Ours,
             },
-            &chordkit::Overrides::default(),
+            &keymap::Overrides::default(),
         )
         .0,
         launcher: super::support::launcher_choice(),

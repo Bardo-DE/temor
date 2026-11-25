@@ -13,7 +13,7 @@
 //! pattern, the longest folder. A tie goes to the earlier Space, then the earlier route.
 
 use super::project::Project;
-use ds_style::space::list::{Space, SpaceId};
+use ui_style::space::list::{Space, SpaceId};
 
 use temor_core::vocab::text::RoutePattern;
 

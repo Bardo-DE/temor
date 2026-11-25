@@ -18,7 +18,7 @@
 //! tables = ["folder"]            # the rows it knows; temor asks for "folder"
 //! ```
 
-use bayonet::manifest::{Entry, Provides, Refusal};
+use plugin_host::manifest::{Entry, Provides, Refusal};
 use serde::{Deserialize, Serialize};
 
 use crate::trigger::Trigger;

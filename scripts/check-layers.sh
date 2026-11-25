@@ -2,10 +2,11 @@
 # Checks temor's layer rules (PLAN §2, D23) from `cargo metadata --no-deps`:
 #   - an L0 crate depends only on L0 workspace crates;
 #   - an L1 crate depends only on L0 or L1 workspace crates;
-#   - no L0 or L1 crate depends on ds-*, dioxus, docket, zbus or tokio;
+#   - no L0 or L1 crate depends on ui-*, dioxus, action-*, zbus or tokio; ui-emoji is the one ui-*
+#     crate allowed: it finds the colour emoji face in a fontique collection, no renderer, no toolkit;
 #   - every workspace crate is in the table below (a new crate must be placed in a layer);
-#   - the quire-desktop boundary (PLAN §2, D15): only temor-desktop names zbus, docket or porter
-#     crates, and there each such dependency is optional and listed in its `quire-desktop` feature,
+#   - the desktop boundary (PLAN §2, D15): only temor-desktop names zbus, action-* or account-*
+#     crates, and there each such dependency is optional and listed in its `desktop` feature,
 #     so `--no-default-features` builds with none of them;
 #   - the fence (PLAN §2b): the window's crates (temor-ui-base, temor-hub, temor-views, temor-ui)
 #     depend on no temor crate but temor-client, temor-panes, temor-pane-view, temor-schema and
@@ -66,12 +67,12 @@ for line in sys.stdin.read().split("\n"):
     if len(parts) == 2:
         layers[parts[0]] = int(parts[1])
 
-banned = re.compile(r"^(ds-.*|dioxus.*|docket.*|zbus.*|tokio.*)$")
-desktop_only = re.compile(r"^(docket.*|zbus.*|porter.*|prov)$")
+banned = re.compile(r"^(ui-(?!emoji$).*|dioxus.*|action-.*|zbus.*|tokio.*)$")
+desktop_only = re.compile(r"^(action-.*|zbus.*|account-.*|provenance)$")
 DESKTOP = "temor-desktop"
 WINDOW = {"temor-ui-base", "temor-hub", "temor-views", "temor-ui"}
 FENCE = {"temor-client", "temor-panes", "temor-schema", "temor-pane-view"} | WINDOW
-FEATURE = "quire-desktop"
+FEATURE = "desktop"
 IO_CRATES = {"temor-pty", "temor-transfer", "temor-vt"}
 IO_FEATURES = {"temor-shell", "temor-ssh", "temor-pane"}
 meta = json.loads(sys.argv[1])
@@ -100,7 +101,7 @@ for pkg in meta["packages"]:
             continue
         if desktop_only.match(dname) and dep.get("kind") != "dev":
             if name != DESKTOP:
-                violations.append(f"{name} -> {dname} (only {DESKTOP} names zbus, docket or porter)")
+                violations.append(f"{name} -> {dname} (only {DESKTOP} names zbus, action-* or account-*)")
             elif not dep.get("optional") or dname not in gated:
                 violations.append(f"{name} -> {dname} (must be optional and in feature {FEATURE})")
         if (
@@ -116,7 +117,7 @@ for pkg in meta["packages"]:
             elif dname in IO_FEATURES and (dep["uses_default_features"] or dep["features"]):
                 violations.append(f"{name} -> {dname} (L2 names it without default features or io)")
         if layer <= 1 and banned.match(dname):
-            violations.append(f"{name} -> {dname} (L{layer} never depends on quire, dioxus, docket or zbus)")
+            violations.append(f"{name} -> {dname} (L{layer} never depends on ui-*, dioxus, action-* or zbus)")
             continue
         if dname in layers and layers[dname] > layer:
             violations.append(f"{name} -> {dname} (L{layer} depends on L{layers[dname]}: dependencies point down only)")

@@ -1,9 +1,9 @@
-//! Reads the theme choice from quire's `appearance.toml`. (temor's own settings load in
+//! Reads the theme choice from the toolkit's `appearance.toml`. (temor's own settings load in
 //! `crate::settings`.)
 
 use std::path::Path;
 
-/// Whether the person has chosen a theme in `appearance.toml`. Quire's typed file cannot say: a
+/// Whether the person has chosen a theme in `appearance.toml`. The toolkit's typed file cannot say: a
 /// missing `theme` and `theme = "system"` both read as "follow the desktop".
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ThemeChoice {

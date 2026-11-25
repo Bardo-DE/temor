@@ -6,12 +6,12 @@ use std::collections::BTreeMap;
 use std::rc::Rc;
 use temor_client::model::stage::Layout;
 
-use ds::window::vocab::PageZoom;
 use temor_client::model::bar::{
     BarContext, BarRow, Candidate, RowKey, Sources, Visits, candidates,
 };
 use temor_client::model::vocab::text::{CommandText, HostAlias};
 use temor_panes::pane::keys::Action;
+use ui_components::window::vocab::PageZoom;
 
 use super::desk::Desk;
 use super::dispatch::Origin;

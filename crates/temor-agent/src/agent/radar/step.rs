@@ -2,7 +2,7 @@
 //!
 //! Rules (all deterministic, no guessing from words):
 //! - A stronger source silences weaker ones while it is fresh: OSC 7501, then adapters, then
-//!   docket, then notifications and title hints. When it goes quiet for `precedence_hold`, the
+//!   actiond, then notifications and title hints. When it goes quiet for `precedence_hold`, the
 //!   weaker ones count again.
 //! - OSC 7501 records are kept per id; a new prompt or the program exiting drops working and
 //!   blocked records; finished records stay until the pane is seen.

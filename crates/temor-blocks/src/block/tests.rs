@@ -1,7 +1,7 @@
 use super::{Author, Block, BlockIn, BlockOut, BlockState, block_step};
-use ds_core::time::stamp::Stamp;
 use temor_core::vocab::ids::{BlockId, ExitCode, GridRow, GridSpan};
 use temor_core::vocab::text::CommandText;
+use ui_core::time::stamp::Stamp;
 
 fn a(row: u64) -> BlockIn {
     BlockIn::PromptStart {

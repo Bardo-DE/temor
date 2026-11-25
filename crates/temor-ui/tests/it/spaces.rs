@@ -4,10 +4,6 @@
 use std::path::Path;
 use std::time::Duration;
 
-use ds::base::vocab::ShortcutKey;
-use ds::components::app::spaces::{SpaceId, Spaces};
-use ds::prelude::{Point, Px};
-use ds_harness::{Harness, Input};
 use temor_client::keep::older::{
     SpacesStartup, load_spaces, save_for as save_session_for, save_spaces,
 };
@@ -19,6 +15,10 @@ use temor_client::model::workspace::{
 use temor_core::vocab::ids::TabId;
 use temor_core::vocab::text::{Cwd, EnvKey, EnvValue, ProjectRoot, RelPath, RoutePattern};
 use temor_ui_base::probe::Probe;
+use ui_components::base::vocab::ShortcutKey;
+use ui_components::components::app::spaces::{SpaceId, Spaces};
+use ui_components::prelude::{Point, Px};
+use ui_harness::{Harness, Input};
 
 use super::drive::{chord, rows, type_line, wait_until};
 use super::support::scratch;

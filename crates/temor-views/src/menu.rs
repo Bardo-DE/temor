@@ -1,10 +1,10 @@
 //! The one menu (PLAN §7, v14), drawn: core says what is in it for what was clicked
-//! (`temor_client::model::menu`), in its five groups; this draws the groups with quire's menu, a separator
+//! (`temor_client::model::menu`), in its five groups; this draws the groups with the toolkit's menu, a separator
 //! between each, and tells the caller which item was picked. The caller does the item: what it
 //! means depends on what was clicked.
 
-use ds::prelude::*;
 use temor_client::model::menu::{Group, Item, Target, menu_for};
+use ui_components::prelude::*;
 
 /// What a menu's pick is: an item of the one menu, or one the caller added (a lens).
 #[derive(Debug, Clone, PartialEq, Eq)]

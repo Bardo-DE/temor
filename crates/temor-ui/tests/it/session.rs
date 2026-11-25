@@ -5,8 +5,9 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::time::{Duration, Instant};
 
-use chordkit::{AltGr, Context, Desktop, Key as ChordKey, Modifier, Modifiers as ChordMods};
-use chordkit::{Overrides, Platform};
+use keymap::keyboard_types::Modifiers as ChordMods;
+use keymap::{Context, Desktop, Key as ChordKey};
+use keymap::{Overrides, Platform};
 use temor_pane::PaneEvent;
 use temor_pane::keys::Action;
 use temor_pane::paste::UnsafeReason;
@@ -450,12 +451,9 @@ const OURS: Platform = Platform::Linux {
     desktop: Desktop::Ours,
 };
 
-/// A chord as chordkit reads a press: these modifiers and this character.
-fn chord(mods: &[Modifier], c: char) -> chordkit::KeyInput {
-    chordkit::KeyInput::new(
-        mods.iter().copied().collect::<ChordMods>(),
-        ChordKey::Char(c),
-    )
+/// A chord as the keymap reads a press: these modifiers and this character.
+fn chord(mods: ChordMods, c: char) -> keymap::KeyInput {
+    keymap::KeyInput::new(mods, ChordKey::Char(c))
 }
 
 #[test]
@@ -464,11 +462,11 @@ fn the_find_keys_belong_to_the_bar_only_while_it_is_open() {
         return;
     }
     let keymap = keymap_for(OURS, &Overrides::default()).0;
-    let next = chord(&[Modifier::Ctrl, Modifier::Shift], 'g');
+    let next = chord(ChordMods::CONTROL | ChordMods::SHIFT, 'g');
     assert_eq!(
         keymap
             .resolve(&next, Context::Terminal)
-            .and_then(|named| Action::from_chordkit(&named)),
+            .and_then(|named| Action::from_keymap(&named)),
         Some(Action::FindNext)
     );
     let stroke = Stroke {
@@ -485,14 +483,9 @@ fn the_find_keys_belong_to_the_bar_only_while_it_is_open() {
     assert_eq!(route(stroke, &keymap, false), Routed::Ignored);
 }
 
-/// A key press as the window routes it: the press as chordkit reads it (when it has one) and
+/// A key press as the window routes it: the press as the keymap reads it (when it has one) and
 /// what the program gets.
-fn pressed(
-    input: Option<chordkit::KeyInput>,
-    code: KeyCode,
-    mods: Modifiers,
-    text: &str,
-) -> Stroke {
+fn pressed(input: Option<keymap::KeyInput>, code: KeyCode, mods: Modifiers, text: &str) -> Stroke {
     Stroke {
         input,
         key: KeyInput::press(code, mods, text),
@@ -508,7 +501,7 @@ fn ctrl_c_reaches_the_program_as_an_interrupt_and_altgr_text_as_text() {
     // Ctrl+C is not a chord the pane runs: bash echoes the interrupt it received as ^C.
     f.session
         .key(pressed(
-            Some(chord(&[Modifier::Ctrl], 'c')),
+            Some(chord(ChordMods::CONTROL, 'c')),
             KeyCode::C,
             Modifiers::CTRL,
             "",
@@ -521,7 +514,10 @@ fn ctrl_c_reaches_the_program_as_an_interrupt_and_altgr_text_as_text() {
     type_text(&mut f.session, "echo ");
     f.session
         .key(pressed(
-            Some(chord(&[Modifier::Ctrl, Modifier::Alt], '2').with_alt_gr(AltGr::Held)),
+            Some(chord(
+                ChordMods::CONTROL | ChordMods::ALT | ChordMods::ALT_GRAPH,
+                '2',
+            )),
             KeyCode::Digit2,
             Modifiers::CTRL.with(Modifiers::ALT),
             "@",
@@ -542,10 +538,10 @@ fn command_v_pastes_in_both_command_forms() {
     for (text, chord_mods, mods) in [
         (
             "echo pasted-ctrl-shift",
-            vec![Modifier::Ctrl, Modifier::Shift],
+            ChordMods::CONTROL | ChordMods::SHIFT,
             Modifiers::CTRL.with(Modifiers::SHIFT),
         ),
-        ("echo pasted-super", vec![Modifier::Super], Modifiers::SUPER),
+        ("echo pasted-super", ChordMods::META, Modifiers::SUPER),
     ] {
         *f.clipboard.0.borrow_mut() = text.to_owned();
         wait_until("bracketed paste", || {
@@ -553,7 +549,7 @@ fn command_v_pastes_in_both_command_forms() {
                 == temor_pane::paste::PasteMode::Bracketed
         });
         f.session
-            .key(pressed(Some(chord(&chord_mods, 'v')), KeyCode::V, mods, ""))
+            .key(pressed(Some(chord(chord_mods, 'v')), KeyCode::V, mods, ""))
             .expect("the paste chord");
         press_enter(&mut f.session);
         let want = text.trim_start_matches("echo ").to_owned();
@@ -610,8 +606,8 @@ fn a_theme_change_repaints_the_grid_in_the_new_ground() {
     if !super::support::tools_present() {
         return;
     }
-    use ds::prelude::{Accent, Scheme};
     use temor_ui_base::theme::palette_of;
+    use ui_components::prelude::{Accent, Scheme};
     let mut f = ready("session-theme");
     let dark = palette_of(Scheme::Dark, Accent::default());
     let light = palette_of(Scheme::Light, Accent::default());

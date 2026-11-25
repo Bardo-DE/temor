@@ -56,7 +56,7 @@ pub enum Joined {
 }
 
 /// The activation token this launch was started with: Wayland's `XDG_ACTIVATION_TOKEN`, handed on
-/// so the running window can raise itself. An empty value counts as absent. X11 needs none: quire
+/// so the running window can raise itself. An empty value counts as absent. X11 needs none: the toolkit
 /// reads `DESKTOP_STARTUP_ID` itself, and an X11 raise ignores the token.
 pub fn launch_token(wayland: Option<&str>) -> Option<String> {
     wayland.filter(|token| !token.is_empty()).map(str::to_owned)

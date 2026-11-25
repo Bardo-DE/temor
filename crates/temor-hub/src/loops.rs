@@ -6,8 +6,8 @@
 use std::time::{Duration, Instant};
 
 use dioxus::prelude::*;
-use ds::base::time::clock::sleep;
 use tokio::sync::mpsc::UnboundedReceiver;
+use ui_components::base::time::clock::sleep;
 
 use super::desk::Desk;
 use super::model::Hub;

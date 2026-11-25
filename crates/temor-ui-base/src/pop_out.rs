@@ -4,16 +4,17 @@
 //! the page back to the stage.
 //!
 //! The call goes through [`PopOutWindows`] when the window was given one, which is how a test sees
-//! what would open: quire's harness has no event loop to open a window on.
+//! what would open: the toolkit's harness has no event loop to open a window on.
 
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use anyview_pane::{FilePath, PaneEdge, PaneRequest, ViewerPane};
 use dioxus::prelude::*;
-use ds::base::spawner::Spawner;
-use ds::prelude::*;
-use ds_blitz::{TokioSpawner, WindowSize, WindowSpec, use_window_handle};
+use ui_blitz::{WindowSize, WindowSpec, use_window_handle};
+use ui_components::prelude::*;
+use ui_components::spawn::Spawner;
+use ui_host_hooks::TokioSpawner;
 
 use super::launch::Launch;
 use super::theme::use_window_look;
@@ -28,13 +29,13 @@ pub struct PoppedOut {
     pub edge: PaneEdge,
 }
 
-/// Whatever opens a popped-out page's window: quire's event loop in the launched window, a
+/// Whatever opens a popped-out page's window: the toolkit's event loop in the launched window, a
 /// recorder in a test.
 pub trait OpenPopOut: Send + Sync + 'static {
     fn open(&self, file: &Path);
 }
 
-/// Where Pop Out goes, as a root context. Without one it is quire's `open_window_with`.
+/// Where Pop Out goes, as a root context. Without one it is the toolkit's `open_window_with`.
 #[derive(Clone)]
 pub struct PopOutWindows(pub Arc<dyn OpenPopOut>);
 
@@ -56,9 +57,9 @@ pub fn open(popped: PoppedOut) {
         .map(|name| name.to_string_lossy().into_owned())
         .unwrap_or_default();
     let spec = WindowSpec::new(title, WindowSize::new(SIZE.0, SIZE.1));
-    if let Err(why) = ds_blitz::open_window_with(spec, pop_out_window, popped) {
+    if ui_blitz::open_window_with(spec, pop_out_window, popped).is_none() {
         // The page has left the stage; Back brings it back.
-        eprintln!("Could not pop the page out: {why}");
+        eprintln!("Could not pop the page out: the app has no event loop to ask");
     }
 }
 
@@ -80,7 +81,6 @@ fn PopOutRoot(popped: PoppedOut) -> Element {
         Ds {
             appearance: now.settings.appearance.appearance(),
             system: now.system,
-            typeface: Some(now.settings.appearance.typeface()),
             material: Material::Window,
             extent: RootExtent::Window,
             if let Some(file) = file {

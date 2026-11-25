@@ -44,7 +44,7 @@ id_newtype!(
     TurnRef(u64)
 );
 id_newtype!(
-    /// An agent-view session (an ACP session through docket), as docket numbers it.
+    /// An agent-view session (an ACP session through actiond), as actiond numbers it.
     AgentSessionRef(u64)
 );
 id_newtype!(

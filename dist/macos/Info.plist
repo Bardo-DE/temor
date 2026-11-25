@@ -7,7 +7,7 @@
   <key>CFBundleDisplayName</key>
   <string>temor</string>
   <key>CFBundleIdentifier</key>
-  <string>org.quire.Temor</string>
+  <string>org.bardo.Temor</string>
   <key>CFBundleExecutable</key>
   <string>temor</string>
   <key>CFBundleIconFile</key>

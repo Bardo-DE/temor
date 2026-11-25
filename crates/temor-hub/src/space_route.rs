@@ -4,10 +4,10 @@
 
 use std::path::Path;
 
-use ds::components::app::spaces::SpaceId;
 use temor_client::model::space::{SpaceRoute, route, route_folder, routes_of};
 use temor_client::model::vocab::home;
 use temor_client::model::vocab::text::RoutePattern;
+use ui_components::components::app::spaces::SpaceId;
 
 use super::model::{Hub, HubRef};
 

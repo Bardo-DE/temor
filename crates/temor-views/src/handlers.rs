@@ -7,13 +7,13 @@ use std::rc::Rc;
 use std::time::Instant;
 
 use dioxus::prelude::*;
-use ds::base::time::FRAME_SLACK;
-use ds::base::time::clock::sleep;
-use ds::host::measure::RectProbe;
-use ds::host::signals::HostSignals;
-use ds::prelude::{Point, Px};
 use temor_client::model::vocab::ids::{BlockId, PaneId};
 use temor_panes::pane::keys::Action;
+use ui_components::base::time::FRAME_SLACK;
+use ui_components::base::time::clock::sleep;
+use ui_components::host::measure::RectProbe;
+use ui_components::host::signals::HostSignals;
+use ui_components::prelude::{Point, Px};
 
 use super::block_menu::BlockMenuAt;
 use super::find_bar::StepDirection;

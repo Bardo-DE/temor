@@ -5,10 +5,10 @@
 use std::collections::HashMap;
 use std::ops::Range;
 
-use ds_blitz::{PixelFormat, Pixels, TextureHandle};
 use temor_panes::pane::text::CellPos as ScreenCell;
 use temor_panes::render::Palette;
 use temor_panes::vt::Rgb;
+use ui_blitz::{PixelFormat, Pixels, TextureHandle};
 
 use super::segments::{Placed, Seg, SegKey, Standing};
 use crate::card_colours::{CardFill, card_ground_rgb};

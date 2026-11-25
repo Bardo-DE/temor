@@ -4,7 +4,7 @@
 use std::cell::RefCell;
 
 use dioxus::prelude::*;
-use ds_blitz::use_gpu;
+use ui_blitz::use_gpu;
 
 use super::{hide, show};
 use temor_ui_base::slot::Slot;

@@ -1,10 +1,10 @@
 //! A command block (D5, from OSC 133 A/B/C/D) and who wrote its command.
 
-use ds_core::time::stamp::Stamp;
-use ds_core::word::Word;
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 use temor_core::vocab::ids::{BlockId, ExitCode, GridSpan, TurnRef};
 use temor_core::vocab::text::{AgentLabel, CommandText};
+use ui_core::time::stamp::Stamp;
 
 /// One prompt, the command typed at it, and what the command printed.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

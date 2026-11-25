@@ -6,9 +6,9 @@ use super::agent::{AgentPlan, RuntimeDir, agent_plan};
 use super::credential::Credential;
 use super::dotenv::{DotenvFault, parse_dotenv};
 use super::project::Project;
-use ds_style::space::list::SpaceId;
 use temor_core::error::CoreError;
 use temor_core::vocab::text::{Cwd, EnvKey, EnvValue};
+use ui_style::space::list::SpaceId;
 
 /// A new shell's start, before the edge adds the secrets.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]

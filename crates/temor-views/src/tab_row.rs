@@ -1,4 +1,4 @@
-//! One tab's row in the sidebar (PLAN §7): quire's `Row` on one line, as mailo's and Arc's are,
+//! One tab's row in the sidebar (PLAN §7): the toolkit's `Row` on one line, as mailo's and Arc's are,
 //! led by what runs in it (its app's icon, its brand, or a letter tile), with the tab's name and, trailing, one dot when it needs the person
 //! (news, or an agent that waits). Its folder, and what plugins say of it, are said on hover. A tab
 //! with several panes is Arc's split row instead: a segment per pane (`split_row`). Pressing the
@@ -10,21 +10,20 @@ use std::rc::Rc;
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use ds::base::press::{PointerButton, Press};
-use ds::base::time::clock::sleep;
-use ds::base::vocab::{Availability, DropState, Emphasis, RowState};
-use ds::components::controls::badge::{Badge, BadgeContent, BadgeTone};
-use ds::components::controls::press::Propagation;
-use ds::components::overlays::drag_ghost::DropLine;
-use ds::host::document::use_document_host;
-use ds::host::found::Found;
-use ds::host::reveal::reveal;
-use ds::prelude::*;
-use ds::style::busy::wait_out_busy;
-use ds::style::tokens::control_size::ControlSize;
 use temor_client::model::vocab::ids::PaneId;
 use temor_client::model::vocab::text::Cwd;
 use temor_client::model::workspace::WorkspaceIn;
+use ui_components::base::press::{PointerButton, Press};
+use ui_components::base::time::clock::sleep;
+use ui_components::base::vocab::{Availability, DropState, RowState};
+use ui_components::components::controls::badge::{Badge, BadgeContent, BadgeTone};
+use ui_components::components::overlays::drag_ghost::DropLine;
+use ui_components::host::document::use_document_host;
+use ui_components::host::found::Found;
+use ui_components::host::reveal::reveal;
+use ui_components::prelude::*;
+use ui_components::style::busy::wait_out_busy;
+use ui_components::style::tokens::control_size::ControlSize;
 
 use super::dnd::{Dnd, Target};
 use super::focus_edge::Edge;
@@ -41,28 +40,24 @@ use temor_hub::{Desk, DragKey, TabRow, select_tab};
 #[allow(non_snake_case)]
 pub fn TabRowView(row: TabRow, pinned: bool, desk: Desk, dnd: Dnd) -> Element {
     let id = row.id;
-    let mut menu = use_signal(|| Shown::Hidden);
+    let mut menu = use_signal(|| false);
     // The pane whose segment was right-clicked: the menu offers to close it.
     let mut menu_pane = use_signal(|| None::<PaneId>);
     // The drag finds the row under the pointer from where the rows are.
     let rect = use_drag_target(id, &dnd.rects);
-    let element = use_reveal_when(row.selection == Selection::Selected);
+    let element = use_reveal_when(row.selected);
     let drop = match (dnd.over)() {
         Some(Target::Tab(over)) if over == id => DropState::Target,
         _ => match dnd.drag.phase() {
-            ds::motion::drag::DragPhase::Live {
+            ui_components::motion::drag::DragPhase::Live {
                 key: DragKey::Tab(held),
                 ..
             } if held == id => DropState::Source,
             _ => DropState::Idle,
         },
     };
-    let emphasis = match row.unread {
-        true => Emphasis::Strong,
-        false => Emphasis::Plain,
-    };
     // What runs in the tab leads the row (`row_leading`); the one dot trails it. The words are
-    // the row's own title, so their size is quire's.
+    // the row's own title, so their size is the toolkit's.
     let leading = row_leading(&row.icon);
     let closing = desk.clone();
     let trail = rsx! {
@@ -73,11 +68,11 @@ pub fn TabRowView(row: TabRow, pinned: bool, desk: Desk, dnd: Dnd) -> Element {
         }
         span {
             class: "temor-tab-close",
-            "data-selected": (row.selection == Selection::Selected).to_string(),
+            "data-selected": row.selected.to_string(),
             ToolButton {
                 icon: Icon::X,
                 size: ControlSize::Mini,
-                propagation: Propagation::Stop,
+                stop_propagation: true,
                 label: "Close tab",
                 tip: "Close this tab",
                 // The press took the keyboard to the sidebar: it goes back to the pane that
@@ -102,7 +97,7 @@ pub fn TabRowView(row: TabRow, pinned: bool, desk: Desk, dnd: Dnd) -> Element {
                     dnd: dnd.clone(),
                     onmenu: move |pane: PaneId| {
                         menu_pane.set(Some(pane));
-                        menu.set(Shown::Visible);
+                        menu.set(true);
                     },
                 }
             }),
@@ -112,7 +107,7 @@ pub fn TabRowView(row: TabRow, pinned: bool, desk: Desk, dnd: Dnd) -> Element {
         if drop == DropState::Target {
             DropLine {}
         }
-        if let (Shown::Visible, Some(at)) = (menu(), rect.rect()) {
+        if menu() && let Some(at) = rect.rect() {
             RowMenu {
                 tab: id,
                 at,
@@ -121,7 +116,7 @@ pub fn TabRowView(row: TabRow, pinned: bool, desk: Desk, dnd: Dnd) -> Element {
                 close: menu_pane(),
                 desk: desk.clone(),
                 onclose: move |()| {
-                    menu.set(Shown::Hidden);
+                    menu.set(false);
                     menu_pane.set(None);
                 },
             }
@@ -130,7 +125,7 @@ pub fn TabRowView(row: TabRow, pinned: bool, desk: Desk, dnd: Dnd) -> Element {
     let click = dnd.click.clone();
     let selecting = desk.clone();
     let place = row.place.clone();
-    let opening = tab_menu_trigger(move || menu.set(Shown::Visible));
+    let opening = tab_menu_trigger(move || menu.set(true));
     let dragging = drag_press(&dnd, DragKey::Tab(id));
     let tip = hover_text(&row);
     rsx! {
@@ -146,8 +141,8 @@ pub fn TabRowView(row: TabRow, pinned: bool, desk: Desk, dnd: Dnd) -> Element {
                 leading,
                 accessory: Accessory::Slot(trail),
                 state: RowState {
-                    selection: row.selection,
-                    emphasis,
+                    selection: row.selected,
+                    emphasis: row.unread,
                     availability: Availability::Enabled,
                     drop,
                 },
@@ -182,7 +177,7 @@ pub fn TabRowView(row: TabRow, pinned: bool, desk: Desk, dnd: Dnd) -> Element {
 /// Ctrl elsewhere, as a browser's link is opened beside the page.
 fn opens_beside(modifiers: Modifiers) -> bool {
     match cfg!(target_os = "macos") {
-        true => modifiers.intersects(Modifiers::SUPER | Modifiers::META),
+        true => modifiers.contains(Modifiers::META),
         false => modifiers.contains(Modifiers::CONTROL),
     }
 }
@@ -216,7 +211,7 @@ fn use_reveal_when(front: bool) -> Signal<Option<Rc<MountedData>>> {
     element
 }
 
-/// Scrolls the sidebar's list the least that shows `row`, found through quire's host (Blitz's own
+/// Scrolls the sidebar's list the least that shows `row`, found through the toolkit's host (Blitz's own
 /// `scroll_to` moves only the window's viewport), once now and once the list has settled: a new
 /// row is laid out before the rows around it have their final heights.
 async fn reveal_in_sidebar(row: Rc<MountedData>) {

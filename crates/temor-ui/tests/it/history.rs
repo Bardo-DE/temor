@@ -5,11 +5,11 @@
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use ds::base::vocab::ShortcutKey;
-use ds_harness::WindowHosting;
 use temor_client::{Client, ClientConfig};
 use temor_store::SqliteStore;
 use temor_ui_base::probe::Probe;
+use ui_components::base::vocab::ShortcutKey;
+use ui_harness::WindowHosting;
 
 use super::drive::{chord_with, press, type_line, wait_html, wait_until};
 use super::window::harness_building;
@@ -86,7 +86,7 @@ fn the_history_page_lists_the_session_and_opens_its_commands() {
         WindowHosting::Absent,
         move |config| config.with_context(client),
     );
-    h.resize_window(ds_blitz::Extent::new(1280, 800));
+    h.resize_window(ui_blitz::Extent::new(1280, 800));
     wait_until(&mut h, &probe, "the prompt", |s| s.contains('$'));
     type_line(&mut h, "echo seen-in-history");
     let start = Instant::now();
@@ -127,7 +127,7 @@ fn a_rows_show_history_opens_its_sessions_commands() {
         WindowHosting::Absent,
         move |config| config.with_context(client),
     );
-    h.resize_window(ds_blitz::Extent::new(1280, 800));
+    h.resize_window(ui_blitz::Extent::new(1280, 800));
     wait_until(&mut h, &probe, "the prompt", |s| s.contains('$'));
     type_line(&mut h, "echo from-this-row");
     let start = Instant::now();
@@ -138,13 +138,13 @@ fn a_rows_show_history_opens_its_sessions_commands() {
     let row = h
         .centre(".temor-side .temor-tab-box")
         .expect("the tab's row");
-    h.send(ds_harness::Input::press(
+    h.send(ui_harness::Input::press(
         row,
-        ds::base::press::PointerButton::Secondary,
+        ui_components::base::press::PointerButton::Secondary,
     ));
     h.advance(Duration::from_millis(300));
     let item = super::drive::menu_item(&mut h, "Show History");
-    h.send(ds_harness::Input::click(item.centre()));
+    h.send(ui_harness::Input::click(item.centre()));
     wait_html(&mut h, "the session's commands", |html| {
         html.contains("echo from-this-row") && html.contains("Go to Tab")
     });
@@ -266,7 +266,7 @@ fn a_reopened_session_shows_its_commands_as_cards_and_goes_on() {
         WindowHosting::Absent,
         move |config| config.with_context(client),
     );
-    h.resize_window(ds_blitz::Extent::new(1280, 800));
+    h.resize_window(ui_blitz::Extent::new(1280, 800));
     wait_until(&mut h, &probe, "the prompt", |s| s.contains('$'));
     let primary: &[ShortcutKey] = &[ShortcutKey::Super, ShortcutKey::Alt, ShortcutKey::Shift];
     chord_with(&mut h, primary, 'y');
@@ -276,7 +276,7 @@ fn a_reopened_session_shows_its_commands_as_cards_and_goes_on() {
     // The closed session is the oldest: the list's last row.
     let rows = super::drive::rects(&h, ".temor-history-list .ds-row");
     let last = rows.last().expect("a row");
-    h.send(ds_harness::Input::click(last.centre()));
+    h.send(ui_harness::Input::click(last.centre()));
     h.advance(Duration::from_millis(200));
     wait_html(&mut h, "its page", |html| html.contains("Reopen"));
     press(&mut h, ".temor-history-head .ds-button");
@@ -290,11 +290,11 @@ fn a_reopened_session_shows_its_commands_as_cards_and_goes_on() {
         },
     );
     let put = super::drive::rects(&h, ".temor-blk-kept .temor-blk-tools");
-    h.send(ds_harness::Input::click(put[0].centre()));
+    h.send(ui_harness::Input::click(put[0].centre()));
     wait_html(&mut h, "the kept command in the composer", |html| {
         super::block_list::composer_value(html).as_deref() == Some("echo was-kept")
     });
-    h.send(ds_harness::Input::key(ShortcutKey::Enter));
+    h.send(ui_harness::Input::key(ShortcutKey::Enter));
     let start = Instant::now();
     loop {
         let ran = store.commands_of(id).expect("commands");
@@ -322,7 +322,7 @@ fn a_closed_tabs_session_is_reopened_from_its_last_screen() {
     let db = state.join("temor.db");
     let probe = Probe::new();
     let mut h = super::window::harness_in("history-screen", &probe, Some(state.clone()));
-    h.resize_window(ds_blitz::Extent::new(1280, 800));
+    h.resize_window(ui_blitz::Extent::new(1280, 800));
     wait_until(&mut h, &probe, "the prompt", |s| s.contains('$'));
     super::drive::chord(&mut h, 'n');
     wait_until(&mut h, &probe, "the second tab's prompt", |s| {
@@ -368,7 +368,7 @@ fn a_closed_tabs_session_is_reopened_from_its_last_screen() {
     let rows = super::drive::rects(&h, ".temor-history-list .ds-row");
     let mut reopened = false;
     for row in rows {
-        h.send(ds_harness::Input::click(row.centre()));
+        h.send(ui_harness::Input::click(row.centre()));
         wait_html(&mut h, "a session's page", |html| {
             html.contains("class=\"temor-history-head\"")
         });
@@ -384,7 +384,7 @@ fn a_closed_tabs_session_is_reopened_from_its_last_screen() {
     }
     assert!(reopened, "no page with Reopen:\n{}", h.html());
     let start = Instant::now();
-    let cards = |h: &ds_harness::Harness| h.count(".temor-blk-kept");
+    let cards = |h: &ui_harness::Harness| h.count(".temor-blk-kept");
     while !(probe.screen().contains("shown-42-then") && cards(&h) == 0) {
         h.advance(Duration::from_millis(50));
         assert!(
@@ -469,7 +469,7 @@ fn back_leaves_the_history_page_for_the_shell() {
     }
     let probe = Probe::new();
     let mut h = super::window::harness("history-back", &probe);
-    h.resize_window(ds_blitz::Extent::new(1280, 800));
+    h.resize_window(ui_blitz::Extent::new(1280, 800));
     wait_until(&mut h, &probe, "the prompt", |s| s.contains('$'));
     let primary: &[ShortcutKey] = &[ShortcutKey::Super, ShortcutKey::Alt, ShortcutKey::Shift];
     chord_with(&mut h, primary, 'y');
@@ -496,7 +496,7 @@ fn the_history_search_field_takes_typing() {
     }
     let probe = Probe::new();
     let mut h = super::window::harness("history-search-typing", &probe);
-    h.resize_window(ds_blitz::Extent::new(1280, 800));
+    h.resize_window(ui_blitz::Extent::new(1280, 800));
     wait_until(&mut h, &probe, "the prompt", |s| s.contains('$'));
     let primary: &[ShortcutKey] = &[ShortcutKey::Super, ShortcutKey::Alt, ShortcutKey::Shift];
     chord_with(&mut h, primary, 'y');

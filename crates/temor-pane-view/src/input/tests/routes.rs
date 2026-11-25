@@ -1,7 +1,7 @@
 //! The find bar's keys, AltGr, and the routes that never reach the keymap.
 
-use chordkit::Platform;
-use dioxus::html::{Code, Key, Modifiers as Held};
+use dioxus::html::{Code, Key, Modifiers as Held, NamedKey};
+use keymap::Platform;
 use temor_panes::pane::keys::Action;
 use temor_panes::vt::{KeyAction, KeyCode, KeyInput, Modifiers};
 
@@ -13,7 +13,15 @@ use super::table::{OURS, Row, Went, ch, check, keymap_of, row, went, went_with};
 /// program's, and a Primary-form find chord is dropped like any other.
 #[test]
 fn find_keys_belong_to_the_bar_only_while_it_is_open() {
-    let esc = |held| row("Escape", Key::Escape, Code::Escape, held, Went::Program);
+    let esc = |held| {
+        row(
+            "Escape",
+            Key::Named(NamedKey::Escape),
+            Code::Escape,
+            held,
+            Went::Program,
+        )
+    };
     let close = Went::Action(Action::CloseFind);
     let rows: [(Platform, bool, Row, Went); 10] = [
         (OURS, true, esc(Held::empty()), close),
@@ -22,13 +30,13 @@ fn find_keys_belong_to_the_bar_only_while_it_is_open() {
         (
             OURS,
             true,
-            row("⌘G", ch("g"), Code::KeyG, Held::SUPER, Went::Program),
+            row("⌘G", ch("g"), Code::KeyG, Held::META, Went::Program),
             Went::Action(Action::FindNext),
         ),
         (
             OURS,
             false,
-            row("⌘G", ch("g"), Code::KeyG, Held::SUPER, Went::Program),
+            row("⌘G", ch("g"), Code::KeyG, Held::META, Went::Program),
             Went::Dropped,
         ),
         (
@@ -38,7 +46,7 @@ fn find_keys_belong_to_the_bar_only_while_it_is_open() {
                 "⌘⇧G",
                 ch("g"),
                 Code::KeyG,
-                Held::SUPER | Held::SHIFT,
+                Held::META | Held::SHIFT,
                 Went::Program,
             ),
             Went::Dropped,
@@ -48,13 +56,25 @@ fn find_keys_belong_to_the_bar_only_while_it_is_open() {
         (
             Platform::Windows,
             true,
-            row("F3", Key::F3, Code::F3, Held::empty(), Went::Program),
+            row(
+                "F3",
+                Key::Named(NamedKey::F3),
+                Code::F3,
+                Held::empty(),
+                Went::Program,
+            ),
             Went::Action(Action::FindNext),
         ),
         (
             Platform::Windows,
             false,
-            row("F3", Key::F3, Code::F3, Held::empty(), Went::Program),
+            row(
+                "F3",
+                Key::Named(NamedKey::F3),
+                Code::F3,
+                Held::empty(),
+                Went::Program,
+            ),
             Went::Program,
         ),
     ];
@@ -92,7 +112,7 @@ fn altgr_characters_reach_the_program_on_every_platform() {
 #[test]
 fn composing_releases_and_unnamed_keys_keep_their_routes() {
     let keymap = keymap_of(OURS);
-    let press = |composing, action, input: Option<chordkit::KeyInput>| Stroke {
+    let press = |composing, action, input: Option<keymap::KeyInput>| Stroke {
         input,
         key: KeyInput {
             code: KeyCode::C,
@@ -103,17 +123,14 @@ fn composing_releases_and_unnamed_keys_keep_their_routes() {
             composing,
         },
     };
-    let copy = chordkit::KeyInput::new(
-        chordkit::Modifiers::of(chordkit::Modifier::Super),
-        chordkit::Key::Char('c'),
-    );
+    let copy = keymap::KeyInput::new(Held::META, keymap::Key::Char('c'));
     // The input method owns the key while composing, even a bound one.
     let composing = press(true, KeyAction::Press, Some(copy));
     assert_eq!(route(composing, &keymap, false), Routed::Ignored);
     // A release goes to the program (which may have asked for releases), never to an action.
     let release = press(false, KeyAction::Release, Some(copy));
     assert!(matches!(route(release, &keymap, false), Routed::Shell(_)));
-    // A key chordkit has no name for is the program's.
+    // A key the keymap has no name for is the program's.
     let unnamed = press(false, KeyAction::Press, None);
     assert!(matches!(route(unnamed, &keymap, false), Routed::Shell(_)));
 }
@@ -155,17 +172,17 @@ fn kitty_flags_let_unbound_primary_chords_through() {
     let keymap = keymap_of(OURS);
     let rows = [
         (
-            row("⌘K", ch("k"), Code::KeyK, Held::SUPER, Went::Dropped),
+            row("⌘K", ch("k"), Code::KeyK, Held::META, Went::Dropped),
             false,
             Went::Dropped,
         ),
         (
-            row("⌘K", ch("k"), Code::KeyK, Held::SUPER, Went::Dropped),
+            row("⌘K", ch("k"), Code::KeyK, Held::META, Went::Dropped),
             true,
             Went::Program,
         ),
         (
-            row("⌘C", ch("c"), Code::KeyC, Held::SUPER, Went::Dropped),
+            row("⌘C", ch("c"), Code::KeyC, Held::META, Went::Dropped),
             true,
             Went::Action(Action::Copy),
         ),

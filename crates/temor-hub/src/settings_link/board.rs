@@ -6,9 +6,9 @@
 
 use std::sync::Arc;
 
-use ds::components::app::spaces::SpaceId;
 use temor_client::model::space::Project;
 use tokio::sync::watch;
+use ui_components::components::app::spaces::SpaceId;
 
 use super::space_edit::SpaceChange;
 

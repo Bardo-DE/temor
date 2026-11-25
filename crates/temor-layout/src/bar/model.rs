@@ -1,11 +1,11 @@
-//! The ⌘T bar's rows and where they come from (§7). Rows are ranked here and handed to quire's
+//! The ⌘T bar's rows and where they come from (§7). Rows are ranked here and handed to the toolkit's
 //! palette machine as they are; the palette never re-ranks.
 
-use ds_core::word::Word;
-use ds_style::space::list::SpaceId;
+use base_words::Word;
 use temor_core::vocab::ids::{FolderId, Seq, TabId};
 use temor_core::vocab::text::{CommandText, Cwd, HostAlias, PluginId};
 use temor_pane::keys::Action;
+use ui_style::space::list::SpaceId;
 
 /// How often and how lately a folder was used: larger comes first.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]

@@ -4,11 +4,11 @@
 //! global hotkey (one that works while another app has the keys) is the desktop's, not the
 //! window's.
 
-use ds::style::space::list::SpaceId;
 use temor_client::model::quick::{QuickIn, QuickOut, QuickState, quick_step};
 use temor_client::model::vocab::ids::{PaneId, TabId};
 use temor_client::model::vocab::text::Cwd;
 use temor_client::model::workspace::{Spawn, Start};
+use ui_components::style::space::list::SpaceId;
 
 use super::desk::Desk;
 use super::model::{Hub, HubRef};

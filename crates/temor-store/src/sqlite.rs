@@ -91,7 +91,7 @@ impl SqliteStore {
         Self::from_connection(Connection::open_in_memory()?)
     }
 
-    fn from_connection(db: Connection) -> Result<Self, StoreError> {
+    fn from_connection(mut db: Connection) -> Result<Self, StoreError> {
         // WAL lets a reader run while the writer commits. NORMAL skips a fsync per commit at the
         // risk of the last one on power loss, which for history is a command or two. Two writers
         // (a second window process) wait for each other up to five seconds.

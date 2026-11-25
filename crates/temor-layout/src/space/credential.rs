@@ -1,4 +1,4 @@
-//! Credentials in a profile are references to porter's account store, never values (PLAN §7):
+//! Credentials in a profile are references to accountd's account store, never values (PLAN §7):
 //! the profile says which account fills which variable, and the edge asks the store for the
 //! secret as a shell starts.
 
@@ -6,10 +6,10 @@ use serde::{Deserialize, Serialize};
 use temor_core::error::CoreError;
 use temor_core::vocab::text::EnvKey;
 
-/// The longest account id, in bytes (porter's limit).
+/// The longest account id, in bytes (accountd's limit).
 const MOST_BYTES: usize = 64;
 
-/// The id of one account in porter's store: a slug of lowercase letters and digits, then
+/// The id of one account in accountd's store: a slug of lowercase letters and digits, then
 /// letters, digits, `.`, `_` or `-`, at most 64 bytes. Checked where it is read, so a file
 /// cannot make the edge ask the store for something that is not an account.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]

@@ -1,23 +1,23 @@
-//! The four coherence rules (quire's `CONSUMING.md` section 5) for temor's window, as quire's
+//! The four coherence rules (the toolkit's `CONSUMING.md` section 5) for temor's window, as the toolkit's
 //! consumer example proves them (`examples/consumer/tests/it/coherence.rs` at its pin):
 //! 1. [`our_stylesheet_lints_clean`]: no literal design value in the window's own CSS.
 //! 2. [`rendered_markup_uses_only_styled_classes`] and [`no_raw_form_control_or_svg_is_rendered`]:
 //!    no raw markup, no class nothing styles.
-//! 3. Rule 3 (a missing component is added to quire first) is a review discipline, not a check.
-//! 4. Rule 4 (motion only through quire's timers) has no test yet: the window draws no motion of
-//!    its own (the bell's mark is a timer of the window's own, asked of quire, see FOLLOWUPS).
+//! 3. Rule 3 (a missing component is added to the toolkit first) is a review discipline, not a check.
+//! 4. Rule 4 (motion only through the toolkit's timers) has no test yet: the window draws no motion of
+//!    its own (the bell's mark is a timer of the window's own, asked of the toolkit, see FOLLOWUPS).
 
-use ds_lint::{LintConfig, Profile, Rule, assert_clean, markup};
 use temor_ui_base::probe::Probe;
 use temor_views::settings_window::SETTINGS_CSS;
 use temor_views::window_style::WINDOW_CSS;
+use ui_lint::{LintConfig, Profile, Rule, assert_clean, markup};
 
 use super::support::tools_present;
 use super::window::harness;
 
-/// What `markup` needs to know is styled: quire's own stylesheet, plus the window's.
+/// What `markup` needs to know is styled: the toolkit's own stylesheet, plus the window's.
 fn window_css() -> String {
-    format!("{}\n{WINDOW_CSS}", ds::stylesheet())
+    format!("{}\n{WINDOW_CSS}", ui_components::stylesheet())
 }
 
 /// The window's first frame as the harness renders it. Each test names its own scratch folder:
@@ -34,7 +34,7 @@ fn our_stylesheet_lints_clean() {
         WINDOW_CSS,
         &LintConfig {
             profile: Profile::Strict,
-            ..LintConfig::new(&ds::kits())
+            ..LintConfig::new(&ui_components::kits())
         },
     );
 }
@@ -46,19 +46,23 @@ fn the_settings_stylesheet_lints_clean() {
         SETTINGS_CSS,
         &LintConfig {
             profile: Profile::Strict,
-            ..LintConfig::new(&ds::kits())
+            ..LintConfig::new(&ui_components::kits())
         },
     );
 }
 
-/// Rule 2: every class the first frame carries is one quire's stylesheet or the window's styles.
+/// Rule 2: every class the first frame carries is one the toolkit's stylesheet or the window's styles.
 #[test]
 fn rendered_markup_uses_only_styled_classes() {
     if !tools_present() {
         return;
     }
     let html = first_frame("coherence-1");
-    let offences = markup(&html, &window_css(), &LintConfig::new(&ds::kits()));
+    let offences = markup(
+        &html,
+        &window_css(),
+        &LintConfig::new(&ui_components::kits()),
+    );
     let unstyled: Vec<_> = offences
         .iter()
         .filter(|offence| offence.rule == Rule::UnstyledClass)
@@ -73,7 +77,11 @@ fn no_raw_form_control_or_svg_is_rendered() {
         return;
     }
     let html = first_frame("coherence-2");
-    let offences = markup(&html, &window_css(), &LintConfig::new(&ds::kits()));
+    let offences = markup(
+        &html,
+        &window_css(),
+        &LintConfig::new(&ui_components::kits()),
+    );
     let raw: Vec<_> = offences
         .iter()
         .filter(|offence| offence.rule == Rule::RawMarkup)

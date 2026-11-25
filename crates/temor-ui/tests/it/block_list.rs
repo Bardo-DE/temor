@@ -4,18 +4,18 @@
 
 use std::time::Duration;
 
-use ds::base::press::PointerButton;
-use ds::base::vocab::ShortcutKey;
-use ds::prelude::{Point, Px};
-use ds_blitz::Extent;
-use ds_harness::{Clock, Input, WindowHosting};
 use temor_ui_base::probe::Probe;
+use ui_blitz::Extent;
+use ui_components::base::press::PointerButton;
+use ui_components::base::vocab::ShortcutKey;
+use ui_components::prelude::{Point, Px};
+use ui_harness::{Clock, Input, WindowHosting};
 
 use super::drive::{Rect, rects, started, still_rects, type_line, wait_html, wait_until};
 use super::window::harness_building;
 
 /// The heads of the cards, oldest first.
-fn heads(h: &ds_harness::Harness) -> Vec<Rect> {
+fn heads(h: &ui_harness::Harness) -> Vec<Rect> {
     rects(h, ".temor-blk-head")
 }
 
@@ -69,13 +69,13 @@ fn a_click_on_a_card_picks_it_and_a_drag_across_cards_selects_their_text() {
 
 /// Turns the wheel `clicks` over `at` (winit's sign: positive is towards older output), as the
 /// window's scroll engine takes it, and lets the list settle.
-fn wheel(h: &mut ds_harness::Harness, at: Point, clicks: f64) {
+fn wheel(h: &mut ui_harness::Harness, at: Point, clicks: f64) {
     h.send(Input::detents(at, 0.0, clicks));
     h.advance(Duration::from_millis(400));
 }
 
 /// The top of the newest card's foot, in the window.
-fn newest_foot(h: &ds_harness::Harness) -> f64 {
+fn newest_foot(h: &ui_harness::Harness) -> f64 {
     rects(h, ".temor-blk-foot").last().map_or(0.0, |r| r.y)
 }
 
@@ -322,7 +322,7 @@ fn a_picture_of_the_list_with_its_cards_and_the_composer() {
     super::drive::type_text(&mut h, "git status");
     h.advance(Duration::from_millis(500));
     let picture = h
-        .render_over(ds_harness::Backdrop::Scheme)
+        .render_over(ui_harness::Backdrop::Scheme)
         .expect("a frame");
     if let Some(path) = std::env::var_os("TEMOR_SHOT") {
         let (width, height) = (picture.width(), picture.height());
@@ -338,7 +338,7 @@ fn a_picture_of_the_list_with_its_cards_and_the_composer() {
 }
 
 /// The composer card's height, in window pixels.
-fn composer_height(h: &ds_harness::Harness) -> f64 {
+fn composer_height(h: &ui_harness::Harness) -> f64 {
     rects(h, ".temor-blk-composer").first().map_or(0.0, |r| r.h)
 }
 

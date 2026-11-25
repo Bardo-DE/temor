@@ -3,11 +3,11 @@
 //! quick terminal is in no row and keeps the find bar on its corner.
 
 use dioxus::prelude::*;
-use ds::host::measure::use_rect;
-use ds::prelude::*;
-use ds::style::tokens::control_size::ControlSize;
 use temor_client::model::vocab::ids::PaneId;
 use temor_panes::pane::keys::Action;
+use ui_components::host::measure::use_rect;
+use ui_components::prelude::*;
+use ui_components::style::tokens::control_size::ControlSize;
 
 use super::row_menu::RowMenu;
 use super::tool_button::ToolButton;
@@ -25,7 +25,7 @@ pub fn ConsoleTools(
     on_find: EventHandler<()>,
 ) -> Element {
     let more = use_rect();
-    let mut menu = use_signal(|| Shown::Hidden);
+    let mut menu = use_signal(|| false);
     rsx! {
         span { class: "temor-console-tools",
             span {
@@ -47,11 +47,11 @@ pub fn ConsoleTools(
                     size: ControlSize::Small,
                     label: "More",
                     tip: "What can be done with this tab",
-                    onclick: move |()| menu.set(Shown::Visible),
+                    onclick: move |()| menu.set(true),
                 }
             }
         }
-        if let (Shown::Visible, Some(at)) = (menu(), more.rect()) {
+        if menu() && let Some(at) = more.rect() {
             RowMenu {
                 tab: row.tab,
                 at,
@@ -59,7 +59,7 @@ pub fn ConsoleTools(
                 place: row.place.clone(),
                 close: row.split.then_some(pane),
                 desk: desk.clone(),
-                onclose: move |()| menu.set(Shown::Hidden),
+                onclose: move |()| menu.set(false),
             }
         }
     }

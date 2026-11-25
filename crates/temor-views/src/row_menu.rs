@@ -5,8 +5,6 @@
 use std::path::Path;
 
 use dioxus::prelude::*;
-use ds::host::measure::Anchor;
-use ds::prelude::*;
 use temor_client::model::menu::{Item, RowFacts, Target};
 use temor_client::model::vocab::ids::{PaneId, TabId};
 use temor_client::model::vocab::text::Cwd;
@@ -14,6 +12,8 @@ use temor_client::model::workspace::{TabsIn, WorkspaceIn};
 use temor_client::query::OnShelf;
 use temor_client::{Command, Shelf};
 use temor_schema::url::{HistoryScope, TemorUrl};
+use ui_components::host::measure::Anchor;
+use ui_components::prelude::*;
 
 use super::favourites::folder_url;
 use super::folder_row::{MoveTo, with_move_menu};

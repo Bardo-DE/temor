@@ -4,8 +4,8 @@
 //! not an alternate one, and the output has been quiet for [`QUIET_MS`].
 
 use super::list::Program;
-use ds_core::time::stamp::Stamp;
 use temor_core::vocab::ids::BlockId;
+use ui_core::time::stamp::Stamp;
 
 /// How long a listed command must have run, with no end mark, before it is offered.
 pub const SETTLE_MS: u64 = 1_500;

@@ -2,7 +2,7 @@
 //! Pure, with the time given: the edge reads the clock and keeps the counts.
 
 use super::model::Frecency;
-use ds_core::word::Word;
+use base_words::Word;
 
 /// Seconds since the Unix epoch, as the edge's clock reports them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]

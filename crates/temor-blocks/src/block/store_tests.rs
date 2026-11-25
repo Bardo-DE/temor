@@ -2,9 +2,9 @@
 //! scrollback trimming and the bound on the store.
 
 use super::{Author, Block, BlockIn, BlockOut, BlockState, BlockStore, Outcome, block_step};
-use ds_core::time::stamp::Stamp;
 use temor_core::vocab::ids::{BlockId, ExitCode, GridRow};
 use temor_core::vocab::text::CommandText;
+use ui_core::time::stamp::Stamp;
 
 /// Feeds marks through the machine into `store`, returning the final state.
 struct Shell {

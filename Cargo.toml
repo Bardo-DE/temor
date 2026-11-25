@@ -6,7 +6,7 @@ members = ["crates/*"]
 version = "0.1.1"
 edition = "2024"
 license = "MIT OR Apache-2.0"
-rust-version = "1.92"
+rust-version = "1.98"
 
 [workspace.lints.rust]
 unsafe_code = "deny"
@@ -14,37 +14,42 @@ missing_debug_implementations = "warn"
 
 [workspace.dependencies]
 # quire, pinned the desktop-wide way (.git + full rev; the tag is a comment).
-ds = { git = "https://github.com/PoHsuanLai/quire.git", rev = "65dbff767c761623b02c0cd46fffdf3ceee0bc0c" }  # 65dbff76: v0.3.53, blitz-kit 47b6ceac (blitz 7649ca62)
-ds-core = { git = "https://github.com/PoHsuanLai/quire.git", rev = "65dbff767c761623b02c0cd46fffdf3ceee0bc0c" }  # 65dbff76: v0.3.53, blitz-kit 47b6ceac (blitz 7649ca62)
-ds-style = { git = "https://github.com/PoHsuanLai/quire.git", rev = "65dbff767c761623b02c0cd46fffdf3ceee0bc0c" }  # 65dbff76: v0.3.53, blitz-kit 47b6ceac (blitz 7649ca62)
-ds-blitz = { git = "https://github.com/PoHsuanLai/quire.git", rev = "65dbff767c761623b02c0cd46fffdf3ceee0bc0c" }  # 65dbff76: v0.3.53, blitz-kit 47b6ceac (blitz 7649ca62)
-ds-desktop = { git = "https://github.com/PoHsuanLai/quire.git", rev = "65dbff767c761623b02c0cd46fffdf3ceee0bc0c" }  # 65dbff76: v0.3.53, blitz-kit 47b6ceac (blitz 7649ca62)
-ds-intents = { git = "https://github.com/PoHsuanLai/quire.git", rev = "65dbff767c761623b02c0cd46fffdf3ceee0bc0c" }  # 65dbff76: v0.3.53, blitz-kit 47b6ceac (blitz 7649ca62)
-ds-harness = { git = "https://github.com/PoHsuanLai/quire.git", rev = "65dbff767c761623b02c0cd46fffdf3ceee0bc0c" }  # 65dbff76: v0.3.53, blitz-kit 47b6ceac (blitz 7649ca62)
-ds-lint = { git = "https://github.com/PoHsuanLai/quire.git", rev = "65dbff767c761623b02c0cd46fffdf3ceee0bc0c" }  # 65dbff76: v0.3.53, blitz-kit 47b6ceac (blitz 7649ca62)
-ds-settings = { git = "https://github.com/PoHsuanLai/quire.git", rev = "65dbff767c761623b02c0cd46fffdf3ceee0bc0c" }  # 65dbff76: v0.3.53, blitz-kit 47b6ceac (blitz 7649ca62)
-ds-settings-page = { git = "https://github.com/PoHsuanLai/quire.git", rev = "65dbff767c761623b02c0cd46fffdf3ceee0bc0c" }  # 65dbff76: v0.3.53, blitz-kit 47b6ceac (blitz 7649ca62)
-quire-emoji = { git = "https://github.com/PoHsuanLai/quire.git", rev = "65dbff767c761623b02c0cd46fffdf3ceee0bc0c" }  # 65dbff76: v0.3.53
+ui-components = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+ui-core = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+base-words = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+ui-style = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+ui-blitz = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+ui-host-hooks = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+ui-desktop = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+ui-intents = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+ui-harness = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+ui-lint = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+ui-settings = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+settings-types = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+settings-store = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+settings-store-fs = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+ui-settings-page = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+ui-emoji = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 # Copied from quire/docs/workspace-deps.toml at the rev above.
-dioxus = { version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"] }
+dioxus = { version = "0.8.0-alpha.3", default-features = false, features = ["macro", "html", "hooks", "signals"] }
 serde = { version = "1", features = ["derive"] }
 unicode-width = "0.2"
-serde_json = "1"
-thiserror = "2"
-proptest = "1"
+serde_json = { version = "1" }
+thiserror = { version = "2" }
+proptest = { version = "1" }
 # The Unicode property oracle in temor-core's sanitising tests (dev only).
 icu_properties = "2"
-png = "0.18"
+png = { version = "0.18" }
 # temor-vt (lane vt).
 temor-vt-sys = { path = "crates/temor-vt-sys", default-features = false }
 temor-vt = { path = "crates/temor-vt", default-features = false }
 # temor-render (lane render). Versions are the ones quire's tree resolves at the pin above:
 # fontique as parley 0.11 uses it, swash on the same skrifa (0.44) as vello's glifo, vello_cpu 0.1
 # (the patched fork below; no second vello), wgpu 29 as quire's render stack.
-fontique = "0.11"
+fontique = { version = "0.13" }
 swash = "0.2"
-vello_cpu = { version = "0.1", default-features = false, features = ["std", "text", "u8_pipeline"] }
-wgpu = "29"
+vello_cpu = { version = "0.4", features = ["std", "text", "u8_pipeline"], default-features = false }
+wgpu = { version = "30" }
 bytemuck = { version = "1", features = ["derive"] }
 pollster = "0.4"
 temor-render = { path = "crates/temor-render", default-features = false }
@@ -60,12 +65,12 @@ temor-store = { path = "crates/temor-store" }
 temor-client = { path = "crates/temor-client" }
 temor-panes = { path = "crates/temor-panes" }
 # temor-store: SQLite, built in (FTS5 included), with the commit hook that says a write is visible.
-rusqlite = { version = "0.40", features = ["bundled", "hooks"] }
-bitflags = "2"
+rusqlite = { version = "0.43", features = ["bundled", "hooks"] }
+bitflags = { version = "2" }
 parking_lot = "0.12"
 # temor-client: another process's commits are heard by watching the store's file. The version
 # quire's ds-settings already locks.
-notify = "8.2"
+notify = { version = "8.2" }
 temor-pty = { path = "crates/temor-pty" }
 temor-shell = { path = "crates/temor-shell", default-features = false }
 temor-pane = { path = "crates/temor-pane", default-features = false }
@@ -75,47 +80,54 @@ temor-hub = { path = "crates/temor-hub" }
 temor-views = { path = "crates/temor-views" }
 temor-pane-view = { path = "crates/temor-pane-view" }
 # temor-plugins (lane plugins): P11 on bayonet. A plugin is run, never linked.
-bayonet = { git = "https://github.com/PoHsuanLai/bayonet.git", rev = "d66e243188033c1b7c74e636cb5f548f75caecb8" }
+plugin-host = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 temor-plugins = { path = "crates/temor-plugins" }
 # temor-transfer (lane blocks): the downloads shelf's store, for "Save output".
 temor-transfer = { path = "crates/temor-transfer" }
 # Test helpers shared by every crate's tests (L0; dev-dependency only).
 temor-testkit = { path = "crates/temor-testkit" }
-tokio = { version = "1", default-features = false, features = ["sync"] }
+tokio = { version = "1", features = ["sync"], default-features = false }
 # temor-remote (lane remote): the wire protocol it speaks, and SHA-256 for file stamps and the helper's identity.
 temor-wire = { path = "crates/temor-wire" }
 # temor-ui (lane remote): the helper's client, for Tier B sessions in the window.
 temor-remote = { path = "crates/temor-remote", default-features = false }
-sha2 = "0.10"
+sha2 = { version = "0.10" }
 # anyview's viewer pane and peeks (PLAN §10, D13). Same quire as above.
-anyview-core = { git = "https://github.com/PoHsuanLai/anyview.git", rev = "849c07359a6ec459a6e9649989616456a8882558" }
-anyview-fs = { git = "https://github.com/PoHsuanLai/anyview.git", rev = "849c07359a6ec459a6e9649989616456a8882558" }
-anyview-peek = { git = "https://github.com/PoHsuanLai/anyview.git", rev = "849c07359a6ec459a6e9649989616456a8882558" }
-anyview-machines = { git = "https://github.com/PoHsuanLai/anyview.git", rev = "849c07359a6ec459a6e9649989616456a8882558" }
-anyview-pane = { git = "https://github.com/PoHsuanLai/anyview.git", rev = "849c07359a6ec459a6e9649989616456a8882558" }
+anyview-core = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+anyview-fs = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+anyview-peek = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+anyview-machines = { git = "https://github.com/Bardo-DE/anyview.git", rev = "6c0b5d57dcfef3a474d6f768fdf0235088a14545" }
+anyview-pane = { git = "https://github.com/Bardo-DE/anyview.git", rev = "6c0b5d57dcfef3a474d6f768fdf0235088a14545" }
 # The desktop's portable keymap core (actions, chords, Primary per platform); temor owns no keymap.
-chordkit = { git = "https://github.com/PoHsuanLai/chordkit.git", rev = "99eec9ddd03ee345b669fcc7954ed44590724290" }
+keymap = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 
 # temor-desktop (lane desktop): the only crate that names zbus, docket or porter-client (PLAN §2).
 # docket 41ddb1c7 locks porter dcc16ada (as anyview 849c0735 does), so docket and porter-client share
 # one porter-core. porter-client is feature `dbus` only: no inference, no stoker.
 temor-desktop = { path = "crates/temor-desktop", default-features = false }
-docket-client = { git = "https://github.com/PoHsuanLai/docket.git", rev = "41ddb1c7fe4b234d638e67628f6700dba67bfa07", default-features = false, features = ["dbus"] }
-docket-core = { git = "https://github.com/PoHsuanLai/docket.git", rev = "41ddb1c7fe4b234d638e67628f6700dba67bfa07" }
+action-provider = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2", features = ["dbus"], default-features = false }
+action-vocab = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+action-wire = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+action-manifest = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+account-tailscale = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+caller-role-types = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+base-ids = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+action-core = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 # Who may call temor's provider (intentd's unit), and the stand-in a test names for it.
-docket-dbus = { git = "https://github.com/PoHsuanLai/docket.git", rev = "41ddb1c7fe4b234d638e67628f6700dba67bfa07" }
-prov = { git = "https://github.com/PoHsuanLai/porter.git", rev = "dcc16ada850559c7c8ae213cd7a9b153672e5031" }
-porter-core = { git = "https://github.com/PoHsuanLai/porter.git", rev = "dcc16ada850559c7c8ae213cd7a9b153672e5031" }
-porter-client = { git = "https://github.com/PoHsuanLai/porter.git", rev = "dcc16ada850559c7c8ae213cd7a9b153672e5031", default-features = false, features = ["dbus"] }
+action-dbus = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+provenance = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+account-core = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+account-client = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+account-client-dbus = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 # The Secret Service store a Space's secrets are kept in (temor-desktop only), under temor's own name.
-porter-secrets = { git = "https://github.com/PoHsuanLai/porter.git", rev = "dcc16ada850559c7c8ae213cd7a9b153672e5031", features = ["oo7"] }
+account-secrets = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2", features = ["oo7"] }
 # zbus on tokio, as docket and porter build it (quire CONSUMING §1: a program that owns a tokio runtime).
 # peephole: which program is calling (a pinned process judged against a table), as porter and
-# docket use it, by the same tag; temor-desktop checks the caller of `org.quire.Temor1.Run` with it.
-peephole-bus = { git = "https://github.com/PoHsuanLai/peephole", tag = "v0.1.8", default-features = false, features = ["tokio"] }
-peephole-core = { git = "https://github.com/PoHsuanLai/peephole", tag = "v0.1.8" }
+# docket use it, by the same tag; temor-desktop checks the caller of `org.bardo.Temor1.Run` with it.
+caller-identity-dbus = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2", features = ["tokio"], default-features = false }
+caller-identity-core = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 zbus = { version = "5.19", default-features = false, features = ["tokio"] }
-toml = "1"
+toml = { version = "1" }
 # The tests of temor-desktop read bus signals as streams.
 futures-util = { version = "0.3", default-features = false, features = ["std"] }
 
@@ -126,13 +138,13 @@ nix = { version = "0.31", default-features = false, features = ["user", "term", 
 rustix = { version = "1.1", default-features = false, features = ["std", "pty", "termios", "process", "fs", "event"] }
 # temor-pty on macOS: process name, directory, children and start time through proc_pidinfo (safe wrappers).
 libproc = "0.14"
-tempfile = "3"
+tempfile = { version = "3" }
 # Small shared codecs (temor-transfer, temor-ssh, temor-vt's fake, temor-pane): base64 and
 # percent coding, at the versions already in the lock file.
-base64 = "0.22"
-percent-encoding = "2"
+base64 = { version = "0.22" }
+percent-encoding = { version = "2.3" }
 # The plain line diff of an edit conflict (MIT/Apache-2.0; no dependencies without its optional features).
-jiff = "0.2"
+jiff = { version = "0.2" }
 similar = { version = "2", default-features = false, features = ["text"] }
 
 # Release binaries carry no symbol table (a third of temor's size, never loaded; a panic still
@@ -148,32 +160,41 @@ inherits = "release"
 lto = "thin"
 codegen-units = 1
 
-# Patches apply only at a workspace root, so this root repeats quire's block verbatim.
-# vello and anyrender come from our forks (github.com/PoHsuanLai/vello and /anyrender, branch
-# quire-filters): the colour matrix filter, multi-threaded filter layers and CSS filter lists, so
-# every CSS `filter` function paints on both backends; d4ae3885 lets a window renderer name the wgpu
-# backends it probes, falling back once to the default set; 03fcbe4c does not carry a skipped frame
-# into the next one on vello_hybrid; vello 84b2c9f7 draws bitmap glyphs (colour emoji from `sbix`
-# and CBDT fonts) on vello_hybrid, and 5c986661 tests it (branch fix/atlas-limit). Move back to
-# crates.io once upstream has them (blitz-kit docs/blitz-gaps.md tracks the PRs).
+# Patches apply only at a workspace root, so this root repeats bardo's block (bardo's root
+# Cargo.toml says what each fork carries): vello, anyrender and dioxus come from the Bardo-DE forks,
+# pdfrum-anyrender from pdfrum's own repository. Move back to crates.io once upstream has them.
+
 [patch.crates-io]
-vello_common = { git = "https://github.com/PoHsuanLai/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
-vello_cpu = { git = "https://github.com/PoHsuanLai/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
-vello_hybrid = { git = "https://github.com/PoHsuanLai/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
-vello_sparse_shaders = { git = "https://github.com/PoHsuanLai/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
-glifo = { git = "https://github.com/PoHsuanLai/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
-anyrender = { git = "https://github.com/PoHsuanLai/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
-anyrender_vello_cpu = { git = "https://github.com/PoHsuanLai/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
-anyrender_vello_hybrid = { git = "https://github.com/PoHsuanLai/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
-wgpu_context = { git = "https://github.com/PoHsuanLai/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
-pixels_window_renderer = { git = "https://github.com/PoHsuanLai/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
-# dioxus-core 0.7.10 can spin forever in VirtualDom::wait_for_work: a task woken and then cancelled
-# before it is polled (a use_resource restart) leaves an empty entry in the dirty-task queue that
-# pop_task never removes. Fixed upstream in DioxusLabs/dioxus#5554 (0.8-alpha only); this fork
-# (github.com/PoHsuanLai/dioxus, branch quire-0.7) backports it onto 0.7.10. Remove when quire
-# moves to dioxus 0.8.
-dioxus-core = { git = "https://github.com/PoHsuanLai/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }
-dioxus-core-types = { git = "https://github.com/PoHsuanLai/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }
-generational-box = { git = "https://github.com/PoHsuanLai/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }
-subsecond = { git = "https://github.com/PoHsuanLai/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }
-subsecond-types = { git = "https://github.com/PoHsuanLai/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }
+anyrender = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}
+anyrender_svg = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}
+anyrender_vello_cpu = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}
+anyrender_vello_gpu = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}
+dioxus = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-asset-resolver = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-cli-config = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-config-macros = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-const-vec = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-core = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-core-macro = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-core-template = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-core-types = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-document = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-history = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-hooks = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-html = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-html-internal-macro = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-rsx = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-signals = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-stores = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+dioxus-stores-macro = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+generational-box = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+glifo = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
+lazy-js-bundle = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+pdfrum-anyrender = {git = "https://github.com/PoHsuanLai/pdfrum", rev = "dea36b2adf11c1a53f5e92bfdafeba17cdf2b1de"}
+subsecond = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+subsecond-types = {git = "https://github.com/Bardo-DE/dioxus", rev = "c846221c5e4ca7a6c356a7b5df95cbe79525e247"}
+vello_common = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
+vello_cpu = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
+vello_gpu = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
+vello_gpu_shaders = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
+wgpu_context = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}

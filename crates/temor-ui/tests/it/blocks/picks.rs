@@ -5,7 +5,8 @@
 
 use std::time::Duration;
 
-use chordkit::{Key, KeyInput as Pressed, Modifiers as ChordMods, NamedKey};
+use keymap::keyboard_types::{Modifiers as ChordMods, NamedKey};
+use keymap::{Key, KeyInput as Pressed};
 use temor_client::model::block::Outcome;
 use temor_core::vocab::ids::BlockId;
 use temor_pane::keys::Action;
@@ -125,14 +126,24 @@ fn the_arrows_move_and_grow_the_pick_and_escape_or_typing_lets_go() {
         return;
     };
     let mut clock = 0;
-    let up = stroke(KeyCode::ArrowUp, Some(NamedKey::Up), Modifiers::NONE, "");
-    let down = stroke(
-        KeyCode::ArrowDown,
-        Some(NamedKey::Down),
+    let up = stroke(
+        KeyCode::ArrowUp,
+        Some(NamedKey::ArrowUp),
         Modifiers::NONE,
         "",
     );
-    let shift_up = stroke(KeyCode::ArrowUp, Some(NamedKey::Up), Modifiers::SHIFT, "");
+    let down = stroke(
+        KeyCode::ArrowDown,
+        Some(NamedKey::ArrowDown),
+        Modifiers::NONE,
+        "",
+    );
+    let shift_up = stroke(
+        KeyCode::ArrowUp,
+        Some(NamedKey::ArrowUp),
+        Modifiers::SHIFT,
+        "",
+    );
     let escape = stroke(KeyCode::Escape, Some(NamedKey::Escape), Modifiers::NONE, "");
     // Ctrl+Shift+Up with nothing picked: the newest block, though every block is in view.
     live.session.run(Action::PreviousPrompt).expect("previous");
@@ -216,8 +227,18 @@ fn bookmarks_are_set_on_the_pick_and_alt_arrows_step_between_them() {
     let Some((mut live, [a, b, c])) = three_blocks("picks-bookmarks") else {
         return;
     };
-    let alt_up = stroke(KeyCode::ArrowUp, Some(NamedKey::Up), Modifiers::ALT, "");
-    let alt_down = stroke(KeyCode::ArrowDown, Some(NamedKey::Down), Modifiers::ALT, "");
+    let alt_up = stroke(
+        KeyCode::ArrowUp,
+        Some(NamedKey::ArrowUp),
+        Modifiers::ALT,
+        "",
+    );
+    let alt_down = stroke(
+        KeyCode::ArrowDown,
+        Some(NamedKey::ArrowDown),
+        Modifiers::ALT,
+        "",
+    );
     let mut clock = 0;
     for id in [a, c] {
         let at = cell(&live, 3, header_of(&live, id) + 1);

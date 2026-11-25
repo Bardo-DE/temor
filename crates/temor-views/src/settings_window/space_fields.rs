@@ -2,8 +2,8 @@
 //! warning, and the row that adds a route.
 
 use dioxus::prelude::*;
-use ds::components::fields::field_row::FieldRow;
-use ds::prelude::*;
+use ui_components::components::fields::field_row::FieldRow;
+use ui_components::prelude::*;
 
 use super::row_parts::{AddButton, KeptField, RemoveButton};
 use temor_hub::settings_link::space_edit::route_warning;

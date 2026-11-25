@@ -10,8 +10,8 @@ publish = false
 [features]
 # The Linux desktop's services (single instance, the agent layer, the dock badge, Tailscale).
 # `--no-default-features` is the portable build, with no zbus.
-default = ["quire-desktop"]
-quire-desktop = ["temor-ui/quire-desktop"]
+default = ["desktop"]
+desktop = ["temor-ui/desktop"]
 
 [dependencies]
 temor-desktop = { workspace = true }

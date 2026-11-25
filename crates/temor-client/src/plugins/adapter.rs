@@ -1,6 +1,6 @@
 //! `agent.adapter`: what an adapter reports becomes the pane's agent status, through the same
 //! report a program's own status line makes. The host side only: an adapter's words are shown
-//! and nothing it says makes temor act (anything that does goes through docket's intents).
+//! and nothing it says makes temor act (anything that does goes through actiond's intents).
 
 use temor_pane::report::{ReportState, ReportWait, StatusLine};
 use temor_plugins::message::Phase;

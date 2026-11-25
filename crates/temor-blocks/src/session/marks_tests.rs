@@ -1,6 +1,6 @@
 //! The mark log's step: marks arriving in their three parts, and what is kept or given back.
 
-use ds_core::time::stamp::Stamp;
+use ui_core::time::stamp::Stamp;
 
 use super::{Anchor, BlockAnchors, MarkIn, MarkKind, MarkLog, MarkOut, mark_step};
 use crate::block::{BlockState, Outcome};

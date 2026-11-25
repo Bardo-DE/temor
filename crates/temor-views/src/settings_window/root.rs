@@ -1,4 +1,4 @@
-//! The root of the Settings window. quire gives this VirtualDom the same root contexts as the
+//! The root of the Settings window. The toolkit gives this VirtualDom the same root contexts as the
 //! first window (`Launch`, `Desktop`, the board); what the window keeps for itself is made here
 //! again: its look, which page is shown and the settings it draws. It opens on the page the
 //! main window asked for last ([`SettingsAsked`]) and turns to each page asked for while it is
@@ -7,10 +7,10 @@
 use std::sync::Arc;
 
 use dioxus::prelude::*;
-use ds::base::spawner::Spawner;
-use ds::prelude::*;
-use ds_blitz::TokioSpawner;
 use temor_panes::pane::keys::SettingsPane;
+use ui_components::prelude::*;
+use ui_components::spawn::Spawner;
+use ui_host_hooks::TokioSpawner;
 
 use super::edit::current;
 use super::style::SETTINGS_CSS;
@@ -30,7 +30,7 @@ pub enum Follow {
     Fixed,
 }
 
-/// The window as quire opens it.
+/// The window as the toolkit opens it.
 pub fn settings_window() -> Element {
     rsx! { SettingsShell { follow: Follow::File } }
 }
@@ -82,7 +82,6 @@ fn SettingsShell(follow: Follow) -> Element {
         Ds {
             appearance: now.settings.appearance.appearance(),
             system: now.system,
-            typeface: Some(now.settings.appearance.typeface()),
             material: Material::Window,
             extent: RootExtent::Window,
             style { {SETTINGS_CSS} }

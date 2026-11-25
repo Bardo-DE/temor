@@ -20,13 +20,13 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::time::{Duration, Instant};
 
-use ds::base::vocab::ShortcutKey;
-use ds::file_drop::drag::{FileDragInput, Offer};
-use ds::prelude::{Point, Px};
-use ds_blitz::Extent;
-use ds_harness::{Harness, Input};
 use temor_testkit::git;
 use temor_ui_base::probe::Probe;
+use ui_blitz::Extent;
+use ui_components::base::vocab::ShortcutKey;
+use ui_components::file_drop::drag::{FileDragInput, Offer};
+use ui_components::prelude::{Point, Px};
+use ui_harness::{Harness, Input};
 
 use super::drive;
 use super::drive::{chord, rows, type_line, type_text};
@@ -279,7 +279,7 @@ fn click(h: &mut Harness, at: Point) {
     h.advance(Duration::from_millis(150));
 }
 
-fn centre_of(rect: ds::prelude::Rect) -> Point {
+fn centre_of(rect: ui_components::prelude::Rect) -> Point {
     Point {
         x: Px(rect.origin.x.0 + rect.size.width.0 / 2.0),
         y: Px(rect.origin.y.0 + rect.size.height.0 / 2.0),
@@ -287,7 +287,7 @@ fn centre_of(rect: ds::prelude::Rect) -> Point {
 }
 
 /// The first terminal pane's rect (the left one of a split), and the whole pane area's right edge.
-fn first_pane(h: &Harness) -> ds::prelude::Rect {
+fn first_pane(h: &Harness) -> ui_components::prelude::Rect {
     h.rect("[aria-label=\"Terminal\"]")
         .unwrap_or_else(|| panic!("no terminal pane in the page"))
 }
@@ -677,13 +677,13 @@ fn a_working_session_across_a_local_project_a_real_host_an_agent_and_the_shelf()
                 .find(|(_, l)| l == "Allow")
                 .ok_or("no Allow button after the resize")?;
             let button = h.rect(&sel).ok_or("no Allow rect")?;
-            let inside = |r: ds::prelude::Rect| {
+            let inside = |r: ui_components::prelude::Rect| {
                 r.origin.x.0 >= -0.5
                     && r.origin.y.0 >= -0.5
                     && r.origin.x.0 + r.size.width.0 <= 600.5
                     && r.origin.y.0 + r.size.height.0 <= 400.5
             };
-            let fmt = |r: ds::prelude::Rect| {
+            let fmt = |r: ui_components::prelude::Rect| {
                 format!(
                     "({:.0},{:.0} {:.0}x{:.0})",
                     r.origin.x.0, r.origin.y.0, r.size.width.0, r.size.height.0

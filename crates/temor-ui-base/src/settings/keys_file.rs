@@ -1,10 +1,10 @@
-//! `temor/keys.conf`: the person's key changes in chordkit's line form
+//! `temor/keys.conf`: the person's key changes in the keymap's line form
 //! (`temor.split-right = Primary+Alt+N`, `copy = none`), in a file of their own. Reading is pure
 //! over the text; the file's edges are here too.
 
 use std::path::Path;
 
-use chordkit::Overrides;
+use keymap::Overrides;
 use temor_panes::pane::SettingsError;
 use temor_panes::pane::keys::{KeyIssue, is_key_action};
 
@@ -66,7 +66,7 @@ pub fn read_keys_text(path: &Path) -> Result<String, UiError> {
 pub fn write_keys(path: &Path, text: &str) -> Result<(), UiError> {
     let io = |at: &Path| {
         let path = at.to_path_buf();
-        move |source| UiError::SettingsWrite(ds_settings::SettingsError::Io { path, source })
+        move |source| UiError::SettingsWrite(settings_store_fs::SettingsError::Io { path, source })
     };
     if let Some(dir) = path.parent() {
         std::fs::create_dir_all(dir).map_err(io(dir))?;

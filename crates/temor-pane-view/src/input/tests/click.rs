@@ -2,9 +2,9 @@
 
 use std::time::Duration;
 
-use dioxus::html::{Code, Key, Location, Modifiers as Held};
-use ds::edit::raw_key::{KeyPhase, RawKey};
+use dioxus::html::{Code, Key, Location, Modifiers as Held, NamedKey};
 use temor_panes::pane::text::CellPos;
+use ui_components::edit::raw_key::{KeyPhase, RawKey};
 
 use super::super::click::{Click, MULTI_CLICK, next_click};
 use super::super::keys::stroke;
@@ -36,7 +36,7 @@ fn a_slow_press_or_another_cell_starts_again() {
 fn an_unidentified_key_is_not_sent_as_a_space() {
     let raw = RawKey {
         phase: KeyPhase::Press,
-        key: Key::Unidentified,
+        key: Key::Named(NamedKey::Unidentified),
         code: Code::Unidentified,
         modifiers: Held::empty(),
         location: Location::Standard,

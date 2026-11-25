@@ -1,14 +1,14 @@
-//! quire's raw key events as a [`Stroke`]: the physical key (from `Code`, falling back to the
+//! The toolkit's raw key events as a [`Stroke`]: the physical key (from `Code`, falling back to the
 //! logical key on a US layout), the held modifiers, and the text the layout produced, plus the
-//! same press as chordkit reads it (physical modifiers and the logical key without Shift).
+//! same press as the keymap reads it (physical modifiers and the logical key without Shift).
 
-use dioxus::html::{Code, Key, Modifiers as HeldMods};
-use ds::edit::raw_key::{KeyPhase, RawKey};
+use dioxus::html::{Code, Key, Modifiers as HeldMods, NamedKey};
 use temor_panes::vt::{KeyAction, KeyCode, KeyInput, Modifiers};
+use ui_components::edit::raw_key::{KeyPhase, RawKey};
 
 use super::route::Stroke;
 
-/// Builds the stroke for one key event from quire's raw key (the window's `RawKeySurface`),
+/// Builds the stroke for one key event from the toolkit's raw key (the window's `RawKeySurface`),
 /// with the input method's state for it. `None` for a key with no physical or known logical
 /// identity (a dead or unidentified key): it is ignored rather than sent to the program as
 /// something else.
@@ -106,7 +106,6 @@ pub fn vt_mods(held: HeldMods) -> Modifiers {
         (HeldMods::SHIFT, Modifiers::SHIFT),
         (HeldMods::CONTROL, Modifiers::CTRL),
         (HeldMods::ALT, Modifiers::ALT),
-        (HeldMods::SUPER, Modifiers::SUPER),
         (HeldMods::META, Modifiers::SUPER),
         (HeldMods::CAPS_LOCK, Modifiers::CAPS_LOCK),
         (HeldMods::NUM_LOCK, Modifiers::NUM_LOCK),
@@ -118,80 +117,17 @@ pub fn vt_mods(held: HeldMods) -> Modifiers {
     out
 }
 
-/// The press as chordkit reads it: the physical modifiers as held (the Meta flag stays Meta; the
-/// keymap folds it to the platform's key), the logical key without Shift, and whether AltGr is
-/// held, which is the toolkit's `ALT_GRAPH` flag or, where the platform reports AltGr as Ctrl and
-/// Alt alone, a press with both held that typed text. `None` for a key chordkit has no name for
-/// (a dead key, a keypad key): it goes to the program as it always did.
-pub fn pressed(key: &Key, held: HeldMods, typed: &KeyInput) -> Option<chordkit::KeyInput> {
-    let mut mods = chordkit::Modifiers::NONE;
-    for (flag, modifier) in [
-        (HeldMods::CONTROL, chordkit::Modifier::Ctrl),
-        (HeldMods::ALT, chordkit::Modifier::Alt),
-        (HeldMods::SHIFT, chordkit::Modifier::Shift),
-        (HeldMods::SUPER, chordkit::Modifier::Super),
-        (HeldMods::META, chordkit::Modifier::Meta),
-    ] {
-        if held.contains(flag) {
-            mods = mods.with(modifier);
-        }
-    }
-    let alt_gr = match held.contains(HeldMods::ALT_GRAPH) || is_altgr_text(typed) {
-        true => chordkit::AltGr::Held,
-        false => chordkit::AltGr::Released,
+/// The press as the keymap reads it: the modifiers as held (the Meta flag is the OS key), the
+/// logical key without Shift, and `ALT_GRAPH` where AltGr is held: the toolkit's own flag or,
+/// where the platform reports AltGr as Ctrl and Alt alone, a press with both held that typed
+/// text. `None` for a key the keymap has no name for (a dead key, a keypad key, composed text):
+/// it goes to the program as it always did.
+pub fn pressed(key: &Key, held: HeldMods, typed: &KeyInput) -> Option<keymap::KeyInput> {
+    let held = match is_altgr_text(typed) {
+        true => held | HeldMods::ALT_GRAPH,
+        false => held,
     };
-    Some(chordkit::KeyInput::new(mods, chordkit_key(key)?).with_alt_gr(alt_gr))
-}
-
-/// The key chordkit names for a logical key.
-fn chordkit_key(key: &Key) -> Option<chordkit::Key> {
-    use chordkit::NamedKey as N;
-    let named = |key: N| Some(chordkit::Key::Named(key));
-    match key {
-        Key::Character(text) => {
-            let mut chars = text.chars();
-            match (chars.next(), chars.next()) {
-                (Some(' '), None) => named(N::Space),
-                (Some(c), None) => Some(chordkit::Key::character(c)),
-                _ => None,
-            }
-        }
-        Key::Enter => named(N::Enter),
-        Key::Tab => named(N::Tab),
-        Key::Escape => named(N::Escape),
-        Key::Backspace => named(N::Backspace),
-        Key::Delete => named(N::Delete),
-        Key::Insert => named(N::Insert),
-        Key::Home => named(N::Home),
-        Key::End => named(N::End),
-        Key::PageUp => named(N::PageUp),
-        Key::PageDown => named(N::PageDown),
-        Key::ArrowUp => named(N::Up),
-        Key::ArrowDown => named(N::Down),
-        Key::ArrowLeft => named(N::Left),
-        Key::ArrowRight => named(N::Right),
-        Key::PrintScreen => named(N::PrintScreen),
-        other => function_number(other).and_then(chordkit::Key::function),
-    }
-}
-
-/// The number of an F1 to F12 key.
-fn function_number(key: &Key) -> Option<u8> {
-    Some(match key {
-        Key::F1 => 1,
-        Key::F2 => 2,
-        Key::F3 => 3,
-        Key::F4 => 4,
-        Key::F5 => 5,
-        Key::F6 => 6,
-        Key::F7 => 7,
-        Key::F8 => 8,
-        Key::F9 => 9,
-        Key::F10 => 10,
-        Key::F11 => 11,
-        Key::F12 => 12,
-        _ => return None,
-    })
+    keymap::KeyInput::from_logical(held, key)
 }
 
 fn logical_char(key: &Key) -> Option<char> {
@@ -210,20 +146,20 @@ fn logical_char(key: &Key) -> Option<char> {
 /// The physical key for a US layout's character, for layouts that report no physical code.
 fn logical_key(key: &Key) -> Option<KeyCode> {
     match key {
-        Key::Enter => Some(KeyCode::Enter),
-        Key::Tab => Some(KeyCode::Tab),
-        Key::Escape => Some(KeyCode::Escape),
-        Key::Backspace => Some(KeyCode::Backspace),
-        Key::Delete => Some(KeyCode::Delete),
-        Key::Insert => Some(KeyCode::Insert),
-        Key::Home => Some(KeyCode::Home),
-        Key::End => Some(KeyCode::End),
-        Key::PageUp => Some(KeyCode::PageUp),
-        Key::PageDown => Some(KeyCode::PageDown),
-        Key::ArrowUp => Some(KeyCode::ArrowUp),
-        Key::ArrowDown => Some(KeyCode::ArrowDown),
-        Key::ArrowLeft => Some(KeyCode::ArrowLeft),
-        Key::ArrowRight => Some(KeyCode::ArrowRight),
+        Key::Named(NamedKey::Enter) => Some(KeyCode::Enter),
+        Key::Named(NamedKey::Tab) => Some(KeyCode::Tab),
+        Key::Named(NamedKey::Escape) => Some(KeyCode::Escape),
+        Key::Named(NamedKey::Backspace) => Some(KeyCode::Backspace),
+        Key::Named(NamedKey::Delete) => Some(KeyCode::Delete),
+        Key::Named(NamedKey::Insert) => Some(KeyCode::Insert),
+        Key::Named(NamedKey::Home) => Some(KeyCode::Home),
+        Key::Named(NamedKey::End) => Some(KeyCode::End),
+        Key::Named(NamedKey::PageUp) => Some(KeyCode::PageUp),
+        Key::Named(NamedKey::PageDown) => Some(KeyCode::PageDown),
+        Key::Named(NamedKey::ArrowUp) => Some(KeyCode::ArrowUp),
+        Key::Named(NamedKey::ArrowDown) => Some(KeyCode::ArrowDown),
+        Key::Named(NamedKey::ArrowLeft) => Some(KeyCode::ArrowLeft),
+        Key::Named(NamedKey::ArrowRight) => Some(KeyCode::ArrowRight),
         Key::Character(s) => us_char_key(s.chars().next()?),
         _ => None,
     }

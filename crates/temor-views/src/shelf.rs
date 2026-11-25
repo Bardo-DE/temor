@@ -7,18 +7,18 @@
 //! stays). A secondary press is the one menu. A file that is still arriving shows a bar.
 
 use dioxus::prelude::*;
-use ds::base::press::{PointerButton, Press};
-use ds::base::vocab::RowState;
-use ds::components::controls::progress::model::{Progress as Share, ProgressStyle};
-use ds::components::controls::progress::view::ProgressIndicator;
-use ds::components::overlays::empty_state::EmptyForm;
-use ds::host::measure::Anchor;
-use ds::prelude::*;
-use ds::style::tokens::control_size::ControlSize;
 use temor_client::model::menu::{DownloadFacts, Item, Target};
 use temor_client::model::shelf::{
     Row as Download, RowAction as Act, RowState as Arriving, Upload, UploadState,
 };
+use ui_components::base::press::{PointerButton, Press};
+use ui_components::base::vocab::RowState;
+use ui_components::components::controls::progress::model::{Progress as Share, ProgressStyle};
+use ui_components::components::controls::progress::view::ProgressIndicator;
+use ui_components::components::overlays::empty_state::EmptyForm;
+use ui_components::host::measure::Anchor;
+use ui_components::prelude::*;
+use ui_components::style::tokens::control_size::ControlSize;
 
 use super::menu::{Pick, menu_items};
 use super::names::named;

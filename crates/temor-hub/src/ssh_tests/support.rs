@@ -147,13 +147,13 @@ impl Rig {
         let launch = Launch {
             appearance: AppearanceSource::scratch(
                 home.join("config"),
-                ds::prelude::SystemPrefs::default(),
+                ui_components::prelude::SystemSettings::default(),
             ),
             keymap: temor_ui_base::edge::keymap_for(
-                chordkit::Platform::Linux {
-                    desktop: chordkit::Desktop::Ours,
+                keymap::Platform::Linux {
+                    desktop: keymap::Desktop::Ours,
                 },
-                &chordkit::Overrides::default(),
+                &keymap::Overrides::default(),
             )
             .0,
             launcher: LauncherChoice::Setsid(setsid),

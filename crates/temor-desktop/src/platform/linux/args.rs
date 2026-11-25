@@ -3,7 +3,8 @@
 //! cannot hold.
 
 use crate::{LineRange, PaneKind, PaneRef, Placement, PortRefusal};
-use docket_core::{AppRefusal, Args, FailText, ParamName, Value};
+use action_core::{AppRefusal, FailText};
+use action_vocab::{Args, ParamName, Value};
 use std::path::PathBuf;
 
 /// The arguments of one call.

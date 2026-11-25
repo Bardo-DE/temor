@@ -2,12 +2,12 @@
 
 use std::sync::Arc;
 
-use chordkit::{ChangeCallback, Keymap, Overrides};
 use dioxus::prelude::spawn;
-use ds_core::vocab::Shortcut;
+use keymap::{ChangeCallback, Keymap, Overrides};
 use temor_client::model::split::{Direction, Goto};
 use temor_client::model::workspace::{NthTab, TabSel, TabsIn, WorkspaceIn};
 use temor_panes::pane::keys::{Action, KeyIssue, Owner, build_keymap};
+use ui_core::vocab::Shortcut;
 
 use super::desk::Desk;
 use super::model::{Hub, HubRef};
@@ -45,7 +45,7 @@ pub fn workspace_input(action: Action) -> Option<WorkspaceIn> {
 }
 
 impl HubRef {
-    /// What a person presses to run `action` in a terminal window, as quire draws a chord.
+    /// What a person presses to run `action` in a terminal window, as the toolkit draws a chord.
     pub fn shortcut_of(&self, action: Action) -> Option<Shortcut> {
         terminal_shortcut_of(&self.0.borrow().launch.keymap, action)
     }

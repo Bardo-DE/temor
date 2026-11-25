@@ -2,10 +2,10 @@ use super::{
     AgentState, PaneFocus, PresenceIn, PresenceOut, PresenceState, Seen, StatusReport,
     StatusSource, WaitKind, attention, companion_presence, presence_step,
 };
-use ds_core::vocab::{CompanionPresence, Emphasis};
 use std::collections::BTreeMap;
 use temor_core::vocab::ids::{ExitCode, PaneId, Seq};
 use temor_core::vocab::text::Note;
+use ui_core::vocab::CompanionPresence;
 
 fn report(state: AgentState, seq: u64) -> PresenceIn {
     PresenceIn::Report(StatusReport {
@@ -86,14 +86,14 @@ fn a_report_records_its_sequence() {
 fn agent_states_map_to_the_companion_orb_and_the_unread_dot() {
     use AgentState::{Done, Failed, Idle, Waiting, Working};
     #[rustfmt::skip]
-    const CASES: &[(AgentState, CompanionPresence, Emphasis)] = &[
-        (Idle,                         CompanionPresence::Idle,    Emphasis::Plain),
-        (Working,                      CompanionPresence::Working, Emphasis::Plain),
-        (Waiting(WaitKind::Permission), CompanionPresence::Waiting, Emphasis::Strong),
-        (Done(Seen::Unseen),           CompanionPresence::Idle,    Emphasis::Strong),
-        (Done(Seen::Seen),             CompanionPresence::Idle,    Emphasis::Plain),
-        (Failed(Seen::Unseen),         CompanionPresence::Idle,    Emphasis::Strong),
-        (Failed(Seen::Seen),           CompanionPresence::Idle,    Emphasis::Plain),
+    const CASES: &[(AgentState, CompanionPresence, bool)] = &[
+        (Idle,                         CompanionPresence::Idle,    false),
+        (Working,                      CompanionPresence::Working, false),
+        (Waiting(WaitKind::Permission), CompanionPresence::Waiting, true),
+        (Done(Seen::Unseen),           CompanionPresence::Idle,    true),
+        (Done(Seen::Seen),             CompanionPresence::Idle,    false),
+        (Failed(Seen::Unseen),         CompanionPresence::Idle,    true),
+        (Failed(Seen::Seen),           CompanionPresence::Idle,    false),
     ];
     for &(state, orb, weight) in CASES {
         assert_eq!(companion_presence(state), orb, "{state:?}");

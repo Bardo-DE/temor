@@ -5,12 +5,14 @@
 //! (`use_live`), so a command that finishes while the page is up appears on it.
 
 use dioxus::prelude::*;
-use ds::base::press::Press;
-use ds::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue};
-use ds::components::overlays::empty_state::EmptyForm;
-use ds::prelude::*;
-use ds::style::tokens::control_size::ControlSize;
 use temor_client::model::history::{Zone, by_day, session_title};
+use ui_components::base::press::Press;
+use ui_components::components::content::avatar::{
+    AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue,
+};
+use ui_components::components::overlays::empty_state::EmptyForm;
+use ui_components::prelude::*;
+use ui_components::style::tokens::control_size::ControlSize;
 
 use super::when_words::{day_heading, span_of};
 use temor_client::model::icon::initial_of;

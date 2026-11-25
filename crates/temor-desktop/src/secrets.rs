@@ -1,5 +1,5 @@
 //! Where a Space's secrets are kept (PLAN §7): the person's password store. The window asks
-//! through [`SecretVault`]; the Linux build keeps them in the Secret Service through porter's
+//! through [`SecretVault`]; the Linux build keeps them in the Secret Service through accountd's
 //! store ([`crate::SystemSecrets`]), and every other build has [`NoSecrets`]. A secret goes from the
 //! caller to the store and back, and nowhere else: it is not formatted into text, logged or
 //! written to a file here, and a fault names no value.

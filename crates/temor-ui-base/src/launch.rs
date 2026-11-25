@@ -52,7 +52,7 @@ pub struct Launch {
     pub settings: TerminalSettings,
     /// The keys: the desktop's conventions, the person's changes and temor's actions (see
     /// `edge::load_keymap`).
-    pub keymap: chordkit::Keymap,
+    pub keymap: keymap::Keymap,
     pub launcher: LauncherChoice,
     /// Where the window's look (theme, accent, Space look, desktop preferences) is read from.
     pub appearance: AppearanceSource,
@@ -126,15 +126,15 @@ pub struct DesktopClipboard;
 
 impl Clipboard for DesktopClipboard {
     fn write(&self, text: &str) -> Result<(), ClipboardFailed> {
-        ds_blitz::clipboard::write_text(text).map_err(|e| ClipboardFailed(e.to_string()))
+        ui_host_hooks::clipboard::write_text(text).map_err(|e| ClipboardFailed(e.to_string()))
     }
 
     fn read(&self) -> Result<String, ClipboardFailed> {
-        ds_blitz::clipboard::read_text().map_err(|e| ClipboardFailed(e.to_string()))
+        ui_host_hooks::clipboard::read_text().map_err(|e| ClipboardFailed(e.to_string()))
     }
 
     fn write_primary(&self, text: &str) -> Result<(), ClipboardFailed> {
-        ds_blitz::clipboard::write_to(ds_blitz::clipboard::ClipboardTarget::Primary, text)
+        ui_host_hooks::clipboard::write_to(ui_host_hooks::clipboard::ClipboardTarget::Primary, text)
             .map_err(|e| ClipboardFailed(e.to_string()))
     }
 }
@@ -240,7 +240,7 @@ pub(super) fn session_kit(launch: &Launch) -> SessionKit {
         opener: default_opener(),
         notify_after: settings.notify_after,
         cursor_blink: settings.cursor_blink,
-        // TODO(quire-desktop): the desktop's notification service (quire v0.2.30 has none).
+        // TODO(desktop): the desktop's notification service (the toolkit has none).
         notifier: Box::new(NoopNotifier),
         clock: Box::new(SystemClock::new()),
         shelf_dir: launch.ambient.shelf_dir(),

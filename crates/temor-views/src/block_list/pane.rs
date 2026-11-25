@@ -8,22 +8,21 @@ use std::ops::Range;
 use std::rc::Rc;
 
 use dioxus::prelude::*;
-use ds::base::text::clip::clip_chars;
-use ds::components::controls::press::Propagation;
-use ds::components::controls::scroller::handle::{ScrollerRef, use_scroller};
-use ds::components::controls::scroller::view::Scroller;
-use ds::focus::request::FocusRequest;
-use ds::host::measure::use_rect;
-use ds::prelude::*;
-use ds::root::pass_through::ExtraClass;
-use ds::style::tokens::control_size::ControlSize;
-use ds_blitz::{Sampling, TexelRect, TextureFit, TextureHandle, TextureLayer, use_gpu};
-use ds_core::geometry::units::Px;
 use temor_client::model::block::{Outcome, format_elapsed};
 use temor_client::model::session::list::{Item, KeptCard, ListBlock};
 use temor_client::model::vocab::ids::{BlockId, PaneId};
 use temor_panes::render::Palette;
 use temor_panes::vt::Rgb;
+use ui_blitz::{Sampling, TexelRect, TextureFit, TextureHandle, TextureLayer, use_gpu};
+use ui_components::base::text::clip::clip_chars;
+use ui_components::components::controls::scroller::handle::{ScrollerRef, use_scroller};
+use ui_components::components::controls::scroller::view::Scroller;
+use ui_components::focus::request::FocusRequest;
+use ui_components::host::measure::use_rect;
+use ui_components::prelude::*;
+use ui_components::root::pass_through::ExtraClass;
+use ui_components::style::tokens::control_size::ControlSize;
+use ui_core::geometry::units::Px;
 
 use super::composer::{ChoicesView, ComposerActions, ComposerCard, composer_height};
 use super::follow::{Drawn, Follow, FollowIn, FollowOut};
@@ -545,7 +544,7 @@ fn KeptHead(
                 ToolButton {
                     icon: Icon::Reply,
                     size: ControlSize::Mini,
-                    propagation: Propagation::Stop,
+                    stop_propagation: true,
                     label: "Put in Prompt",
                     tip: "Type this command at the prompt again, without running it",
                     onclick: move |()| put.call(n),
@@ -640,7 +639,7 @@ fn CardHead(
                 ToolButton {
                     icon: fold_icon,
                     size: ControlSize::Mini,
-                    propagation: Propagation::Stop,
+                    stop_propagation: true,
                     label: fold_label,
                     tip: "Fold this command's output away, or bring it back",
                     onclick: move |()| actions.fold.call(id),
@@ -663,7 +662,7 @@ fn CardHead(
                         ToolButton {
                             icon: Icon::Ellipsis,
                             size: ControlSize::Mini,
-                            propagation: Propagation::Stop,
+                            stop_propagation: true,
                             label: "More",
                             tip: "What can be done with this command",
                             onclick: move |()| {

@@ -12,7 +12,7 @@ default = ["ghostty"]
 # `FrameCapture`: reading frames out of a real `temor_vt::Terminal` (needs Zig; see temor-vt-sys).
 ghostty = ["temor-vt/ghostty"]
 # The instanced wgpu renderer. Off by default: its frames must be submitted on the window's
-# render thread, which waits for quire's render hook (v0.2.32).
+# render thread, which waits for the toolkit's render hook (v0.2.32).
 gpu = ["dep:wgpu", "dep:bytemuck"]
 # Fixtures for this crate's tests and its users' (`temor_render::testing`): the bundled fonts, a
 # frame of box-drawing characters, and with `gpu` a headless device. Turned on for this crate's
@@ -23,7 +23,7 @@ testing = ["dep:pollster"]
 thiserror = { workspace = true }
 temor-vt = { workspace = true }
 fontique = { workspace = true }
-quire-emoji = { workspace = true }
+ui-emoji = { workspace = true }
 swash = { workspace = true }
 vello_cpu = { workspace = true }
 icu_properties = { workspace = true }

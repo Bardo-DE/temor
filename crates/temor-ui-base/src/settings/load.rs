@@ -1,7 +1,7 @@
 //! Loading at launch: convert `terminal.conf` once, read `settings.toml` through the store and
 //! `keys.conf` as a file, and hand the pane its typed settings.
 
-use ds_settings::SettingsDoc;
+use settings_store::SettingsDoc;
 use temor_panes::pane::settings::TerminalSettings;
 
 use super::doc::TerminalDoc;

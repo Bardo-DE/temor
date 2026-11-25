@@ -5,12 +5,12 @@
 //! untrusted and kept inside the Space) and how many panes are open.
 
 use crate::{APP_BUS_NAME, WindowContext};
-use docket_client::ContextSource;
-use docket_core::{
-    ContextScope, ContextSnapshot, Here, Selection, TextTarget, ViewName, Visible, WindowPrivacy,
-};
-use porter_core::{AppName, Count, DataClass, LocalSpace, SpaceId};
-use prov::{Label, Labelled, Source};
+use account_core::{AppName, DataClass, LocalSpace, SpaceId};
+use action_core::{ContextSnapshot, Here, Selection, TextTarget, Visible, WindowPrivacy};
+use action_provider::ContextSource;
+use action_vocab::ViewName;
+use base_ids::Count;
+use provenance::{Label, Labelled, Source};
 
 /// Temor's snapshot of `context` for `app`.
 pub(super) fn snapshot_of(app: &AppName, context: &WindowContext) -> ContextSnapshot {
@@ -56,7 +56,7 @@ pub(super) struct WindowSource<W> {
 }
 
 impl<W: crate::WindowPort> ContextSource for WindowSource<W> {
-    fn snapshot(&self, _scope: ContextScope) -> ContextSnapshot {
+    fn snapshot(&self) -> ContextSnapshot {
         snapshot_of(&self.app, &self.window.context())
     }
 }

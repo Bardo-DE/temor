@@ -1,9 +1,9 @@
 //! The document, its schema, and its reading: defaults match the pane's, every setting has a key,
 //! and a value outside the pane's limits is refused by the file's reader.
 
-use chordkit::Overrides;
-use ds_settings::schema::{KeyKind, Schema};
-use ds_settings::{ConfigRoot, Store};
+use keymap::Overrides;
+use settings_store_fs::{ConfigRoot, Store};
+use settings_types::schema::{KeyKind, Schema};
 use temor_panes::pane::settings::{
     CursorStyle, FontChoice, NotifyAfter, ShellChoice, StartIn, TerminalSettings,
 };

@@ -1,4 +1,4 @@
-//! The grid's colours as the UI hands them in. The UI maps quire's terminal palette tokens onto
+//! The grid's colours as the UI hands them in. The UI maps the toolkit's terminal palette tokens onto
 //! this plain struct (v0.2.31), so light/dark and the Space theme apply.
 
 use temor_vt::Rgb;
@@ -24,7 +24,7 @@ pub struct Palette {
 }
 
 impl Default for Palette {
-    /// A neutral dark palette, for tests and until the UI passes quire's tokens.
+    /// A neutral dark palette, for tests and until the UI passes the toolkit's tokens.
     fn default() -> Self {
         const fn c(hex: u32) -> Rgb {
             Rgb::new((hex >> 16) as u8, (hex >> 8) as u8, hex as u8)

@@ -5,10 +5,10 @@
 
 use std::time::{Duration, Instant};
 
-use ds::base::press::PointerButton;
-use ds::prelude::{Point, Px};
-use ds_harness::{Harness, Input};
 use temor_ui_base::probe::Probe;
+use ui_components::base::press::PointerButton;
+use ui_components::prelude::{Point, Px};
+use ui_harness::{Harness, Input};
 
 use super::drive::{
     LIMIT, Rect, chord, rects, started, still_rects, type_line, wait_html, wait_until,

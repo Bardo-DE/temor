@@ -1,6 +1,6 @@
 //! Writing the key file: a binding, a reset, and the refusals that name what is in the way.
 
-use chordkit::Overrides;
+use keymap::Overrides;
 
 use super::super::{Action, bind_key, reset_all_keys, reset_key};
 use super::support::{OURS, keymap_for};

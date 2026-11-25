@@ -1,6 +1,6 @@
 //! `bar_step`: the ⌘T bar from opening to a picked row (§7).
 //!
-//! The bar ranks; quire's palette machine walks the ranked rows (the highlight, Up and Down that
+//! The bar ranks; the toolkit's palette machine walks the ranked rows (the highlight, Up and Down that
 //! stop at the ends, Enter), so no highlight is kept here. The window feeds `OpenBar::rows` to
 //! the palette as its params, sends it `Refreshed` on [`BarOut::Refreshed`], and gives back the
 //! row the palette ran as [`BarIn::Pick`].

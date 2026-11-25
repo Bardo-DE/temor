@@ -9,10 +9,10 @@ publish = false
 
 [features]
 # bayonet's fake plugin, for the example program the tests run.
-testing = ["bayonet/testing"]
+testing = ["plugin-host/testing"]
 
 [dependencies]
-bayonet = { workspace = true }
+plugin-host = { workspace = true }
 serde = { workspace = true }
 temor-schema = { workspace = true }
 thiserror = { workspace = true }

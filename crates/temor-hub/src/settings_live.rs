@@ -6,9 +6,9 @@
 use std::sync::Arc;
 
 use dioxus::prelude::spawn;
-use ds::base::spawner::Spawner;
-use ds_settings::SettingsDoc;
+use settings_store::SettingsDoc;
 use temor_client::model::offer::OfferList;
+use ui_components::spawn::Spawner;
 
 use super::desk::Desk;
 use super::model::Hub;
@@ -93,7 +93,7 @@ impl super::model::HubRef {
 
 #[cfg(test)]
 mod tests {
-    use chordkit::Overrides;
+    use keymap::Overrides;
     use temor_panes::pane::settings::{FontPoints, ShellChoice};
 
     use super::{Hub, TerminalDoc};

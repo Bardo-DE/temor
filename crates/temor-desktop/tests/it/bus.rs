@@ -2,7 +2,7 @@
 //! scratch directory, with no service directories and no connection to the person's session.
 //! The daemon is temor-testkit's; this adds the desktop's view of it.
 
-#![cfg(all(target_os = "linux", feature = "quire-desktop"))]
+#![cfg(all(target_os = "linux", feature = "desktop"))]
 
 use temor_desktop::DesktopEnv;
 

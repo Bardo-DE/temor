@@ -6,9 +6,9 @@
 //! prompt) ran nothing and makes no block.
 
 use super::model::{Author, Block};
-use ds_core::time::stamp::Stamp;
 use temor_core::vocab::ids::{BlockId, ExitCode, GridRow, GridSpan};
 use temor_core::vocab::text::CommandText;
+use ui_core::time::stamp::Stamp;
 
 /// Where a shell stands between prompts.
 #[derive(Debug, Clone, PartialEq, Eq)]

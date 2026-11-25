@@ -1,8 +1,8 @@
 //! A pane that goes, whichever way it goes, leaves nothing behind that still waits on it.
 
-use ds::components::app::spaces::SpaceId;
 use temor_client::model::workspace::WorkspaceIn;
 use temor_desktop::{CLOSED_WHILE_RUNNING, RunEnd, RunEnds, RunTicket};
+use ui_components::components::app::spaces::SpaceId;
 
 use super::run::Found;
 use super::tests::hub_after;

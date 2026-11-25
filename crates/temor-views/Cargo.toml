@@ -10,13 +10,15 @@ publish = false
 [dependencies]
 anyview-peek = { workspace = true, features = ["pane"] }
 anyview-pane = { workspace = true }
-chordkit = { workspace = true }
+keymap = { workspace = true }
 dioxus = { workspace = true }
-ds = { workspace = true }
-ds-blitz = { workspace = true }
-ds-core = { workspace = true }
-ds-settings = { workspace = true, features = ["dioxus"] }
-ds-settings-page = { workspace = true }
+ui-components = { workspace = true }
+ui-blitz = { workspace = true }
+ui-host-hooks = { workspace = true }
+ui-core = { workspace = true }
+ui-settings = { workspace = true, features = ["dioxus"] }
+settings-types = { workspace = true }
+ui-settings-page = { workspace = true }
 # temor, as the window may name it (PLAN §2b, the fence): its data and services through the
 # client, the running terminals and their engine through temor-panes, how a pane is shown
 # (temor-pane-view), the data's types.

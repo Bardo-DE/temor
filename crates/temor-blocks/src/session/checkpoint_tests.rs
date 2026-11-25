@@ -6,9 +6,9 @@ use proptest::prelude::*;
 use super::{Checkpoint, CheckpointFault, CommandRecord, MOST_HISTORY, VERSION};
 use crate::block::{Author, Block};
 use crate::session::Replay;
-use ds_core::time::stamp::Stamp;
 use temor_core::vocab::ids::{BlockId, ExitCode, GridRow, GridSpan};
 use temor_core::vocab::text::CommandText;
+use ui_core::time::stamp::Stamp;
 
 fn block(id: u64, command: &str, ended: Option<u64>, exit: Option<i32>) -> Block {
     Block {

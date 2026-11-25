@@ -1,23 +1,22 @@
-//! The person's other Tailscale computers, read from porter's account service
-//! (`org.quire.Tailnet1`, PLAN §9b, D22). temor never talks to tailscaled. With no session bus,
+//! The person's other Tailscale computers, read from the accounts service
+//! (`org.bardo.Tailnet1`, PLAN §9b, D22). temor never talks to tailscaled. With no session bus,
 //! no account service, no Tailscale account or a stopped Tailscale the list is empty.
 
 use super::bus::session_builder;
 use crate::tailnet::{TailnetChanges, Ticks};
 use crate::{DesktopEnv, DesktopError};
-use porter_client::{
-    DbusTransport, Machine, MachineChanges, MachineLink, MachineOwner, MachineSsh, Tailnet,
-    TailnetError,
-};
-use std::pin::Pin;
+use account_client::{Changes, LinkError};
+use account_client_dbus::{Bus, Tailnet};
+use account_tailscale::{Machine, MachineOwner};
+use std::future::Future;
+use std::pin::{Pin, pin};
 use std::task::{Context, Poll};
 use temor_ssh::{NodeId, TailnetHost, TailnetOwner, UnixSeconds};
-use zbus::export::futures_core::Stream;
 
 /// The tailnet list over the session bus.
 #[derive(Debug)]
 pub struct SystemTailnet {
-    transport: Option<DbusTransport>,
+    bus: Option<Bus>,
 }
 
 impl SystemTailnet {
@@ -25,7 +24,7 @@ impl SystemTailnet {
     pub async fn connect(env: &DesktopEnv) -> Result<Self, DesktopError> {
         let builder = match session_builder(env) {
             Ok(builder) => builder,
-            Err(DesktopError::NoBus) => return Ok(Self { transport: None }),
+            Err(DesktopError::NoBus) => return Ok(Self { bus: None }),
             Err(error) => return Err(error),
         };
         let connection = builder
@@ -33,14 +32,14 @@ impl SystemTailnet {
             .await
             .map_err(|error| DesktopError::bus("connect to the session bus", error))?;
         Ok(Self {
-            transport: Some(DbusTransport::over(connection)),
+            bus: Some(Bus::over(connection)),
         })
     }
 
     /// The other computers on the person's tailnet, in the account service's order; this one is
     /// left out. Empty when Tailscale is absent.
     pub async fn hosts(&self) -> Result<Vec<TailnetHost>, DesktopError> {
-        let Some(tailnet) = self.tailnet().await? else {
+        let Some(tailnet) = self.tailnet() else {
             return Ok(Vec::new());
         };
         match tailnet.machines().await {
@@ -53,7 +52,7 @@ impl SystemTailnet {
     /// first [`SystemTailnet::hosts`] so no change is missed. Already ended when Tailscale is
     /// absent.
     pub async fn changes(&self) -> Result<TailnetChanges, DesktopError> {
-        let Some(tailnet) = self.tailnet().await? else {
+        let Some(tailnet) = self.tailnet() else {
             return Ok(TailnetChanges::ended());
         };
         match tailnet.watch().await {
@@ -62,31 +61,28 @@ impl SystemTailnet {
         }
     }
 
-    async fn tailnet(&self) -> Result<Option<Tailnet>, DesktopError> {
-        let Some(transport) = &self.transport else {
-            return Ok(None);
-        };
-        match transport.tailnet().await {
-            Ok(tailnet) => Ok(Some(tailnet)),
-            Err(error) => absent_or_failed(error).map(|()| None),
-        }
+    fn tailnet(&self) -> Option<Tailnet> {
+        self.bus.as_ref().map(Bus::tailnet)
     }
 }
 
 /// No account service is the same as no computers; anything else is a failure to report.
-fn absent_or_failed(error: TailnetError) -> Result<(), DesktopError> {
+fn absent_or_failed(error: LinkError) -> Result<(), DesktopError> {
     match error {
-        TailnetError::Unreachable => Ok(()),
+        LinkError::Unreachable => Ok(()),
         other => Err(DesktopError::bus("read the Tailscale computers", other)),
     }
 }
 
-/// Porter's change stream as a source of ticks.
-struct Watch(MachineChanges);
+/// The accounts service's change signal as a source of ticks. A signal that does not parse still
+/// says the list changed, so it ticks too: the list is read again either way.
+struct Watch(Changes<()>);
 
 impl Ticks for Watch {
     fn poll_tick(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<()>> {
-        Pin::new(&mut self.0).poll_next(cx)
+        pin!(self.0.next())
+            .poll(cx)
+            .map(|change| change.map(|_| ()))
     }
 }
 
@@ -97,12 +93,12 @@ pub(super) fn host_of(machine: &Machine) -> Option<TailnetHost> {
         name: machine.name.clone(),
         dns: machine.dns.clone(),
         addresses: machine.addresses.clone(),
-        online: matches!(machine.link, MachineLink::Online),
+        online: machine.online,
         last_seen: machine
             .last_seen
             .and_then(|at| u64::try_from(at.0).ok())
             .map(UnixSeconds),
-        tailscale_ssh: matches!(machine.ssh, MachineSsh::On),
+        tailscale_ssh: machine.ssh,
         owner: match machine.owner {
             MachineOwner::Mine => TailnetOwner::Mine,
             MachineOwner::Shared => TailnetOwner::Shared,

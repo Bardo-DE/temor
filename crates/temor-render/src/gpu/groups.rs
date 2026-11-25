@@ -100,7 +100,9 @@ fn upload(
         mapped_at_creation: true,
     });
     {
-        let mut view = staging.get_mapped_range_mut(..);
+        let mut view = staging
+            .get_mapped_range_mut(..)
+            .expect("the staging buffer is mapped at creation");
         for (y, line) in copy.data.chunks_exact(row).enumerate() {
             view.slice(y * stride..y * stride + row)
                 .copy_from_slice(line);

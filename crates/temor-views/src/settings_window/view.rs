@@ -1,10 +1,10 @@
 //! The window's content: a sidebar of the four pages beside the page shown, which scrolls.
 
 use dioxus::prelude::*;
-use ds::components::chrome::sidebar::Sidebar;
-use ds::components::chrome::sidebar_model::SidebarSection;
-use ds::prelude::*;
 use temor_panes::pane::keys::SettingsPane;
+use ui_components::components::chrome::sidebar::Sidebar;
+use ui_components::components::chrome::sidebar_model::SidebarSection;
+use ui_components::prelude::*;
 
 use super::general::SchemaPage;
 use super::keyboard::KeyboardPage;
@@ -33,11 +33,7 @@ pub fn SettingsView(page: Signal<SettingsPane>) -> Element {
     let items: Vec<ListItem<SettingsPane>> = SettingsPane::ALL
         .into_iter()
         .map(|each| {
-            let selection = if each == shown {
-                Selection::Selected
-            } else {
-                Selection::Unselected
-            };
+            let selection = each == shown;
             ListItem::row(
                 each,
                 each.name(),
@@ -45,8 +41,8 @@ pub fn SettingsView(page: Signal<SettingsPane>) -> Element {
                     Row {
                         title: TextLine::from(each.name()),
                         leading: RowLeading::Icon(icon(each)),
-                        state: ds::base::vocab::RowState { selection, ..Default::default() },
-                        common: ds::root::common::Common {
+                        state: ui_components::base::vocab::RowState { selection, ..Default::default() },
+                        common: ui_components::root::common::Common {
                             aria_label: Some(each.name().to_owned()),
                             ..Default::default()
                         },

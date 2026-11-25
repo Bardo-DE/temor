@@ -1,6 +1,6 @@
 //! The platforms, the routing rule `route` applies, and keymaps built from the conventions.
 
-use chordkit::{Chord, Context, ConventionSource, Desktop, KeyInput, Keymap, Overrides, Platform};
+use keymap::{Chord, Context, ConventionSource, Desktop, KeyInput, Keymap, Overrides, Platform};
 
 use super::super::{Action, build_keymap};
 
@@ -39,7 +39,7 @@ pub(super) fn keymap_for(platform: Platform) -> Keymap {
 pub(super) fn went(keymap: &Keymap, input: &KeyInput) -> Went {
     match keymap
         .resolve(input, Context::Terminal)
-        .and_then(|named| Action::from_chordkit(&named))
+        .and_then(|named| Action::from_keymap(&named))
     {
         Some(action) => Went::Ran(action),
         None if keymap.is_primary_form(input, Context::Terminal) => Went::Dropped,

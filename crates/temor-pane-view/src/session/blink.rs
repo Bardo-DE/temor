@@ -4,9 +4,9 @@
 //! halves are counted on the session's clock from that moment; the window's timer repaints the
 //! pane when a half turns (`blink_due`).
 
-use ds_core::time::stamp::Stamp;
 use temor_client::model::pane::PaneFocus;
 use temor_panes::render::BlinkPhase;
+use ui_core::time::stamp::Stamp;
 
 use super::Session;
 

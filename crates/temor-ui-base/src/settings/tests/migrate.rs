@@ -2,7 +2,7 @@
 
 use std::path::{Path, PathBuf};
 
-use chordkit::Overrides;
+use keymap::Overrides;
 use temor_panes::pane::settings::{CursorStyle, ShellChoice};
 
 use crate::edge::Ambient;
@@ -56,7 +56,7 @@ fn the_old_text_splits_into_settings_and_keys_and_keeps_what_it_cannot_read() {
     let converted = convert_terminal_conf(OLD);
     assert_eq!(converted.doc.font.size.points(), 15.0);
     assert_eq!(converted.doc.offer.add, ["kubectl debug -it"]);
-    // The key line is in chordkit's form; the refused ones are comments, never lost.
+    // The key line is in the keymap's form; the refused ones are comments, never lost.
     let (keys, problems) = Overrides::parse(&converted.keys_text);
     assert!(problems.is_empty(), "{problems:?}");
     let ids: Vec<String> = keys.entries().iter().map(|e| e.action.id()).collect();

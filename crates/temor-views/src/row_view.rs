@@ -8,11 +8,6 @@ use std::time::Instant;
 
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
-use ds::components::chrome::split_view::model::{PaneSpec, Share, SplitAxis, SplitPane};
-use ds::components::chrome::split_view::view::SplitView;
-use ds::host::measure::use_rect;
-use ds::prelude::*;
-use ds::style::tokens::control_size::ControlSize;
 use temor_client::model::menu::{Item, Target};
 use temor_client::model::split::{Closed, SplitTree};
 use temor_client::model::stage::Layout;
@@ -20,6 +15,11 @@ use temor_client::model::vocab::ids::{PaneId, TabId};
 use temor_client::model::workspace::WorkspaceIn;
 use temor_panes::pane::keys::Action;
 use temor_schema::url::{HistoryScope, TemorUrl};
+use ui_components::components::chrome::split_view::model::{PaneSpec, Share, SplitAxis, SplitPane};
+use ui_components::components::chrome::split_view::view::SplitView;
+use ui_components::host::measure::use_rect;
+use ui_components::prelude::*;
+use ui_components::style::tokens::control_size::ControlSize;
 
 use super::folder_page::FolderPage;
 use super::history_page::HistoryPage;
@@ -111,7 +111,7 @@ fn Stage(page: PaneId, layout: Layout, desk: Desk) -> Element {
     let (toggling, closing, acting, popping) =
         (desk.clone(), desk.clone(), desk.clone(), desk.clone());
     let more = use_rect();
-    let mut menu = use_signal(|| Shown::Hidden);
+    let mut menu = use_signal(|| false);
     rsx! {
         div { class: "temor-stage",
             div { class: "temor-page-bar",
@@ -147,7 +147,7 @@ fn Stage(page: PaneId, layout: Layout, desk: Desk) -> Element {
                         size: ControlSize::Small,
                         label: "More",
                         tip: "What can be done with this page",
-                        onclick: move |()| menu.set(Shown::Visible),
+                        onclick: move |()| menu.set(true),
                     }
                 }
                 ToolButton {
@@ -180,7 +180,7 @@ fn Stage(page: PaneId, layout: Layout, desk: Desk) -> Element {
                     },
                 }
             }
-            if let (Shown::Visible, Some(anchor)) = (menu(), more.anchor()) {
+            if menu() && let Some(anchor) = more.anchor() {
                 Menu {
                     placement: MenuPlacement::Popup,
                     anchor,
@@ -196,7 +196,7 @@ fn Stage(page: PaneId, layout: Layout, desk: Desk) -> Element {
                         Pick::Item(Item::ClosePage) => acting.act(WorkspaceIn::ClosePane(Some(page))),
                         _ => {}
                     },
-                    onclose: move |()| menu.set(Shown::Hidden),
+                    onclose: move |()| menu.set(false),
                 }
             }
         }

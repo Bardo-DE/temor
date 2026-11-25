@@ -7,7 +7,6 @@ use std::collections::BTreeSet;
 use std::rc::Rc;
 
 use dioxus::prelude::*;
-use ds::base::time::clock::sleep;
 use temor_client::model::facts::FactsIn;
 use temor_client::model::quick::QuickIn;
 use temor_client::model::vocab::ids::PaneId;
@@ -15,6 +14,7 @@ use temor_client::model::vocab::text::{Cwd, TabTitle};
 use temor_client::model::workspace::{TabsIn, WorkspaceIn};
 use temor_panes::pane::{RenderHold, TransferEvent};
 use temor_panes::pty::ChildExit;
+use ui_components::base::time::clock::sleep;
 
 use super::desk::Desk;
 use super::model::Hub;

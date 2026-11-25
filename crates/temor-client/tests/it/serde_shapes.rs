@@ -1,9 +1,6 @@
 //! Stored and wire types: their serde forms, round trips, and the Spaces kit's
 //! flat payload.
 
-use ds_core::testing::word_matches_serde;
-use ds_core::time::stamp::Stamp;
-use ds_style::space::list::{SpaceId, Spaces};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use serde_json::{Value, json};
@@ -19,6 +16,9 @@ use temor_layout::space::{
     AccountRef, Credential, Pin, Place, Profile, Project, Route, Tab, TemorSpaces,
 };
 use temor_layout::split::{Axis, Direction, SplitTree};
+use ui_core::testing::word_matches_serde;
+use ui_core::time::stamp::Stamp;
+use ui_style::space::list::{SpaceId, Spaces};
 
 fn round_trips<T: Serialize + DeserializeOwned + PartialEq + std::fmt::Debug>(value: &T) -> Value {
     let json = serde_json::to_value(value).unwrap();

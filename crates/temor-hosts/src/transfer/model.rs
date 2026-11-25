@@ -1,9 +1,9 @@
 //! The downloads shelf (§9): what arrived, from where, and how far it got.
 
-use ds_core::time::stamp::Stamp;
 use serde::{Deserialize, Serialize};
 use temor_core::vocab::ids::{BlockId, Bytes, DownloadId, TabId};
 use temor_core::vocab::text::{HostName, ShelfPath};
+use ui_core::time::stamp::Stamp;
 
 /// One item on the shelf.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

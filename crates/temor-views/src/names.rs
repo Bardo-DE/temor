@@ -1,6 +1,6 @@
 //! The accessible name of a control, for the controls that need nothing else in `Common`.
 
-use ds::prelude::Common;
+use ui_components::prelude::Common;
 
 /// `Common` carrying only an accessible name: what assistive technology and tests call the
 /// control, such as a button named for the row it acts on.

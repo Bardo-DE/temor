@@ -1,9 +1,9 @@
-//! Single instance over the session bus: the first launch owns `org.quire.Temor1`, and a later
+//! Single instance over the session bus: the first launch owns `org.bardo.Temor1`, and a later
 //! launch calls `NewWindow`, `NewTab` or `Run` on it. The `.service` files in `dist/` let the bus
 //! start temor when someone calls either name while none runs.
 //!
 //! `Run` starts any program, outside any sandbox the caller is in, so it answers only temor's own
-//! forwarding launch (`temor -e`): peephole holds the caller's process from the moment it
+//! forwarding launch (`temor -e`): caller identity holds the caller's process from the moment it
 //! connected and judges it against [`CALLERS`], the images temor is installed as. A sandboxed app,
 //! another program, and a temor the person built themselves (an image they can write) are all
 //! refused. `NewWindow` and `NewTab` open only a shell, and stay open to anyone.
@@ -13,9 +13,9 @@ use crate::{
     CLOSED_WHILE_RUNNING, Claim, DesktopEnv, DesktopError, Handover, INSTANCE_BUS_NAME, Primary,
     Request, RunEnd, RunEnds, RunRequest, RunTicket,
 };
+use caller_identity_core::{PinNeed, Proof, Requirement, RoleName, Table};
+use caller_identity_dbus::{BusPeers, ManagerCheck, Offload};
 use futures_util::StreamExt;
-use peephole_bus::peephole_core::{PinNeed, Proof, Requirement, RoleName, Table};
-use peephole_bus::{BusPeers, ManagerCheck, Offload};
 use std::collections::HashMap;
 use std::ffi::{OsStr, OsString};
 use std::os::unix::ffi::{OsStrExt, OsStringExt};
@@ -29,7 +29,7 @@ use zbus::names::OwnedUniqueName;
 use zbus::{MatchRule, MessageStream};
 use zbus::{fdo, interface};
 
-const OBJECT_PATH: &str = "/org/quire/Temor1";
+const OBJECT_PATH: &str = "/org/bardo/Temor1";
 
 /// The signal a waiting launch hears when its tab closed: `(ticket t, status i)`.
 const RUN_ENDED: &str = "RunEnded";
@@ -48,10 +48,10 @@ enum Launch {
 /// most it can show and all `Run` asks for.
 const CALLERS: &str = r#"
 [[peer]]
-app  = "org.quire.Temor"
+app  = "org.bardo.Temor"
 exe  = [
-  "/opt/quire/releases/*/bin/temor",
-  "/opt/quire/current/bin/temor",
+  "/opt/bardo/releases/*/bin/temor",
+  "/opt/bardo/current/bin/temor",
   "/usr/local/bin/temor",
   "/usr/bin/temor",
 ]
@@ -67,7 +67,7 @@ fn run_callers() -> [Requirement; 1] {
 }
 
 /// The callers of the primary's bus connection, once it has one.
-type Peers = Arc<OnceLock<BusPeers<peephole_bus::peephole::RealProc>>>;
+type Peers = Arc<OnceLock<BusPeers<caller_identity_dbus::caller_identity_linux::RealProc>>>;
 
 /// Single instance on the session bus.
 #[derive(Debug, Clone)]
@@ -90,12 +90,12 @@ impl SystemInstance {
     /// after this instance became the primary.
     #[cfg(feature = "callers-for-tests")]
     pub fn vouch_for(&self, unique: &str) {
-        use peephole_bus::peephole_core::{AppKey, Pin, Standing};
+        use caller_identity_core::{AppKey, Pin, Standing};
         let peers = self.peers.get().expect("the primary's callers");
         peers.introduce(
             unique,
             Standing::Service {
-                app: AppKey::new("org.quire.Temor").expect("an app key"),
+                app: AppKey::new("org.bardo.Temor").expect("an app key"),
                 role: TERMINAL,
                 proof: Proof::Exe,
                 pin: Pin::AtConnect,
@@ -436,7 +436,7 @@ impl Service {
     }
 }
 
-#[interface(name = "org.quire.Temor1")]
+#[interface(name = "org.bardo.Temor1")]
 impl Service {
     /// Open a new window; `token` is the caller's activation token, empty when it has none.
     fn new_window(&self, token: String) -> fdo::Result<()> {

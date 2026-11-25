@@ -1,5 +1,5 @@
-//! Where the desktop's own shortcut settings come from (PLAN §6): quire's system source
-//! (`ds_blitz::system_key_source`), the one every quire app's window takes: kdeglobals on Plasma,
+//! Where the desktop's own shortcut settings come from (PLAN §6): the toolkit's system source
+//! (`ui_blitz::system_key_source`), the one every toolkit app's window takes: kdeglobals on Plasma,
 //! dconf on GNOME, the platform's conventions everywhere else, each watched for changes. temor
 //! builds its own keymap on it (terminal keys, `keys.conf`), so it asks for the source with the
 //! config home its `Ambient` names rather than the process's. Our desktop's keycap is not linked:
@@ -13,8 +13,8 @@ use std::path::Path;
 use std::sync::mpsc::{Receiver, RecvTimeoutError, channel};
 use std::time::{Duration, SystemTime};
 
-use chordkit::{ChangeCallback, Platform, SourceError, Watch};
-use ds::keys::KeySource;
+use keymap::{ChangeCallback, Platform, SourceError, Watch};
+use ui_components::keys::KeySource;
 
 use super::Ambient;
 
@@ -25,7 +25,7 @@ pub const LOOK_EVERY: Duration = Duration::from_secs(2);
 /// test's scratch folder, or the person's).
 pub fn system_keys(platform: Platform, ambient: &Ambient) -> KeySource {
     let config_home = ambient.config_home().display().to_string();
-    ds_blitz::system_key_source(platform, &|name| {
+    ui_blitz::system_key_source(platform, &|name| {
         (name == "XDG_CONFIG_HOME").then(|| config_home.clone())
     })
 }

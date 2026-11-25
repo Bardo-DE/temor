@@ -5,7 +5,6 @@
 use std::path::PathBuf;
 
 use dioxus::prelude::spawn;
-use ds_blitz::WindowHandle;
 use temor_client::desktop::{
     BadgeCount, CommandInfo, CommandRef, Exit, Focus, PaneInfo, PaneKind, PaneOpen, PaneRef,
     Placement, PortRefusal, Request, SpaceRef, WindowContext,
@@ -16,6 +15,7 @@ use temor_client::model::split::Direction;
 use temor_client::model::vocab::ids::PaneId;
 use temor_client::model::vocab::text::Cwd;
 use temor_client::model::workspace::WorkspaceIn;
+use ui_blitz::WindowHandle;
 
 use super::desk::Desk;
 use super::model::Hub;

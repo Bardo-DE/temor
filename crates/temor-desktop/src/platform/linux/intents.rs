@@ -1,24 +1,25 @@
-//! temor as an app of docket, the desktop's agent layer: `org.quire.IntentProvider1` served on
-//! the app's own bus name, `org.quire.Temor`, so the router can ask the window to list panes,
+//! temor as an app of actiond, the desktop's agent layer: `org.bardo.IntentProvider1` served on
+//! the app's own bus name, `org.bardo.Temor`, so the router can ask the window to list panes,
 //! read command output, open panes and run commands. The declarations are the embedded
-//! `dist/intents/org.quire.Temor.toml`.
+//! `dist/intents/org.bardo.Temor.toml`.
 
 use super::bus::connect;
 use super::context::{WindowSource, app_name};
 use super::perform::{RUN_TOKEN, class_of, pane_of_token, perform};
 use crate::{COMMAND_RUN_SANDBOXED, DesktopEnv, DesktopError, MANIFEST, WindowPort};
-use docket_client::{IntentProvider, SummonTarget};
-use docket_core::{
-    AppRefusal, CallClass, EntityRef, Hit, Invocation, Manifest, Outcome, Preview, SuggestAsk,
-    SummonAnswer, SummonOrigin, SummonSerial, UndoFault, UndoToken, ValidManifest, validate,
-};
-use docket_dbus::callers::{Caller, Identity, Role, intentd_only};
-use porter_core::AppName;
-use prov::{Actor, EntityId};
+use account_core::AppName;
+use action_core::{AppRefusal, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault};
+use action_dbus::callers::{Caller, Identity, actiond_only};
+use action_manifest::{Manifest, ValidManifest, validate};
+use action_provider::{IntentProvider, SummonTarget};
+use action_vocab::{CallClass, EntityRef, UndoToken};
+use action_wire::{SummonAnswer, SummonOrigin, SummonSerial};
+use caller_role_types::CallerRole;
+use provenance::{Actor, EntityId};
 use std::sync::Arc;
 
-/// intentd's app name, as the callers table names it.
-const INTENTD_APP: &str = "org.quire.Intents";
+/// actiond's app name, as the callers table names it.
+const ACTIOND_APP: &str = "org.bardo.Intents";
 
 /// temor's actions, served to the agent layer until this value is dropped.
 #[derive(Debug)]
@@ -28,8 +29,8 @@ pub struct SystemIntents {
 
 impl SystemIntents {
     /// Serve temor's actions on the session bus of `env`, answered by `window`. Claims the bus
-    /// name `org.quire.Temor`; the router calls it only after checking the owner is temor, and
-    /// temor answers only intentd, known by its unit (`intentd.service`) as `/proc` reports it.
+    /// name `org.bardo.Temor`; the router calls it only after checking the owner is temor, and
+    /// temor answers only actiond, known by its unit (`actiond.service`) as `/proc` reports it.
     pub async fn serve<W: WindowPort>(
         env: &DesktopEnv,
         window: Arc<W>,
@@ -38,7 +39,7 @@ impl SystemIntents {
     }
 
     /// [`serve`](Self::serve) on a test's private bus, where every connection is one process and
-    /// no unit names intentd: the connection whose unique name is `router` stands in for it.
+    /// no unit names actiond: the connection whose unique name is `router` stands in for it.
     /// Built only with `router-for-tests`, which nothing but this crate's tests turns on.
     #[cfg(feature = "router-for-tests")]
     pub async fn serve_for_router<W: WindowPort>(
@@ -66,23 +67,23 @@ impl SystemIntents {
             app,
             window,
         };
-        let callers = Identity::on_system(connection.clone(), intentd_only());
+        let callers = Identity::on_system(connection.clone(), actiond_only());
         if let Some(router) = router {
-            let app = AppName::parse(INTENTD_APP)
+            let app = AppName::parse(ACTIOND_APP)
                 .map_err(|_| DesktopError::Manifest("bad router name".to_owned()))?;
-            let app = porter_core::AppId {
+            let app = account_core::AppId {
                 name: app,
-                isolation: porter_core::Isolation::Unsandboxed,
+                isolation: account_core::Isolation::Unsandboxed,
             };
             callers.introduce(
                 router,
                 Caller {
                     app,
-                    role: Role::Agent,
+                    role: CallerRole::Agent,
                 },
             );
         }
-        docket_client::serve_on_with(&connection, provider, source, NoPrompt, Arc::new(callers))
+        action_provider::serve_on_with(&connection, provider, source, NoPrompt, Arc::new(callers))
             .await
             .map_err(|error| DesktopError::bus("offer temor to the agent layer", error))?;
         Ok(Self {

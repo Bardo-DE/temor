@@ -1,5 +1,5 @@
 use anyview_pane::PaneCommand;
-use ds::prelude::PaletteClose;
+use ui_components::prelude::PaletteClose;
 
 use super::viewer_find::{Escape, Reply, entry_row, escape, reply};
 

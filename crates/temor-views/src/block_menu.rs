@@ -4,9 +4,9 @@
 //! block, and Hide under a picture a lens drew.
 
 use dioxus::prelude::*;
-use ds::host::measure::Anchor;
-use ds::prelude::*;
 use temor_client::model::menu::{BlockFacts, Target};
+use ui_components::host::measure::Anchor;
+use ui_components::prelude::*;
 
 use super::menu::{Pick, menu_items};
 use temor_hub::plugins::lens::LensOffer;

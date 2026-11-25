@@ -1,14 +1,16 @@
 //! A terminal's glyph in the sidebar: the bare prompt, `>_`, drawn in outline as Warp draws its
-//! tabs, not quire's solid boxed terminal, which sits too heavy in a list of tabs.
+//! tabs, not the toolkit's solid boxed terminal, which sits too heavy in a list of tabs.
 
 use dioxus::prelude::*;
-use ds::base::vocab::CompanionPresence;
-use ds::components::companion::orb::model::OrbSize;
-use ds::components::companion::orb::view::CompanionOrb;
-use ds::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue};
-use ds::prelude::{ExternalIcon, IconSize, IconSource, IconView, RowLeading};
-use ds::style::icon::url::IconUrl;
 use temor_client::model::presence::{AgentState, companion_presence};
+use ui_components::base::vocab::CompanionPresence;
+use ui_components::components::companion::orb::model::OrbSize;
+use ui_components::components::companion::orb::view::CompanionOrb;
+use ui_components::components::content::avatar::{
+    AvatarFace, AvatarShape, AvatarSize, AvatarTone, PersonHue,
+};
+use ui_components::prelude::{ExternalIcon, IconSize, IconSource, IconView, RowLeading};
+use ui_components::style::icon::url::IconUrl;
 
 use temor_client::icons::Image;
 use temor_hub::RowIcon;

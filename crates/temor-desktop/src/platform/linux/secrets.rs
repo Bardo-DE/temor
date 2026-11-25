@@ -1,10 +1,10 @@
-//! A Space's secrets in the Secret Service, through porter's store under temor's own name, so
-//! no other program's items are read or written. No porter daemon is involved; where there is
+//! A Space's secrets in the Secret Service, through accountd's store under temor's own name, so
+//! no other program's items are read or written. No accountd daemon is involved; where there is
 //! no Secret Service (a bare session) every ask is refused in the usual words.
 
 use crate::platform::stored::{NAMESPACE, StoredSecrets};
 use crate::secrets::{SecretFault, SecretVault};
-use porter_secrets::{Namespace, Oo7NamedSecrets, Oo7Secrets};
+use account_secrets::{Namespace, Oo7NamedSecrets, Oo7Secrets};
 use tokio::runtime::Handle;
 
 /// The person's Secret Service, under temor's name.

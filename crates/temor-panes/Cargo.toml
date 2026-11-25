@@ -20,7 +20,7 @@ temor-pane = { workspace = true, features = ["ghostty"] }
 temor-vt = { workspace = true, features = ["ghostty"] }
 temor-shell = { workspace = true }
 temor-pty = { workspace = true }
-ds-core = { workspace = true }
+ui-core = { workspace = true }
 # A pane on a host (`remote`): its helper's link, through the client's connection, and the
 # window's palette as the helper takes it.
 temor-client = { workspace = true }

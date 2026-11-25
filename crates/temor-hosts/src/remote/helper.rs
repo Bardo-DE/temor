@@ -2,7 +2,7 @@
 //! A host that cannot run it stays on Tier A with no error.
 
 use super::model::Grant;
-use ds_core::word::Word;
+use base_words::Word;
 use temor_core::vocab::text::HelperHash;
 
 /// Where the helper stands on one host.

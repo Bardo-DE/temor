@@ -1,19 +1,21 @@
-//! The grid's colours from quire's terminal palette tokens (PLAN §5): the resolved scheme and
+//! The grid's colours from the toolkit's terminal palette tokens (PLAN §5): the resolved scheme and
 //! accent of the root decide them, so light and dark, and the Space look that overrides the
 //! theme, all apply to the terminal too.
 
 use std::sync::Arc;
 
 use dioxus::prelude::*;
-use ds::base::spawner::Spawner;
-use ds::prelude::{Accent, Appearance, Scheme, SpaceLook, SystemPrefs, Theme, resolve};
-use ds::style::tokens::hex::{Colour, Hex};
-use ds::style::tokens::terminal::TerminalColour;
-use ds_settings::{
-    AppName, AppearanceFile, ConfigRoot, Environment, Store, SystemPrefsSource, use_environment,
-};
+use settings_store_fs::{ConfigRoot, Store};
+use settings_types::AppName;
 use temor_panes::render::Palette;
 use temor_panes::vt::Rgb;
+use ui_components::prelude::{
+    Accent, Appearance, Scheme, SpaceLook, SystemSettings, Theme, resolve,
+};
+use ui_components::spawn::Spawner;
+use ui_components::style::tokens::hex::{Colour, Hex};
+use ui_components::style::tokens::terminal::TerminalColour;
+use ui_settings::{AppearanceFile, Environment, SystemSettingsSource, use_environment};
 
 use crate::edge::{ThemeChoice, read_theme_choice};
 
@@ -22,23 +24,23 @@ use crate::edge::{ThemeChoice, read_theme_choice};
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AppearanceSource {
     pub store: Store,
-    pub system: SystemPrefsSource,
+    pub system: SystemSettingsSource,
 }
 
 impl AppearanceSource {
-    /// The person's: `$XDG_CONFIG_HOME/quire/appearance.toml` and the desktop's portal.
+    /// The person's: `$XDG_CONFIG_HOME/bardo/appearance.toml` and the desktop's portal.
     pub fn desktop() -> Self {
         Self {
-            store: Store::new(ConfigRoot::Xdg, AppName::QUIRE),
-            system: SystemPrefsSource::Portal,
+            store: Store::new(ConfigRoot::Xdg, AppName::BARDO),
+            system: SystemSettingsSource::Portal,
         }
     }
 
     /// A scratch config tree and fixed preferences, for tests and headless runs.
-    pub fn scratch(config_dir: std::path::PathBuf, system: SystemPrefs) -> Self {
+    pub fn scratch(config_dir: std::path::PathBuf, system: SystemSettings) -> Self {
         Self {
-            store: Store::new(ConfigRoot::Scratch(config_dir), AppName::QUIRE),
-            system: SystemPrefsSource::Fixed(system),
+            store: Store::new(ConfigRoot::Scratch(config_dir), AppName::BARDO),
+            system: SystemSettingsSource::Fixed(system),
         }
     }
 }
@@ -68,12 +70,16 @@ pub fn use_window_look(source: &AppearanceSource, spawner: Arc<dyn Spawner>) -> 
 }
 
 /// The palette the root with `appearance`, `look` and `system` resolves to.
-pub fn resolved_palette(appearance: Appearance, look: &SpaceLook, system: SystemPrefs) -> Palette {
+pub fn resolved_palette(
+    appearance: Appearance,
+    look: &SpaceLook,
+    system: SystemSettings,
+) -> Palette {
     let resolved = resolve(appearance, look.theme, system);
     palette_of(resolved.scheme, resolved.accent)
 }
 
-/// The grid's palette in `scheme` with `accent`, from quire's terminal tokens.
+/// The grid's palette in `scheme` with `accent`, from the toolkit's terminal tokens.
 pub fn palette_of(scheme: Scheme, accent: Accent) -> Palette {
     // The ground is opaque (a solid token), so it is the back the translucent tokens lay over.
     let back = opaque(TerminalColour::Bg.value(scheme, accent), Hex([0, 0, 0]));

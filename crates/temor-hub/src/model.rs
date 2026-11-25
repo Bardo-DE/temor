@@ -112,7 +112,7 @@ impl Hub {
     /// A hub with no panes yet; [`Hub::start`] restores the last session or opens a first tab.
     pub fn new(launch: Launch) -> Hub {
         let (hearing, inbox) =
-            // TODO(quire-desktop): the desktop's notification service (see `NoopNotifier`).
+            // TODO(desktop): the desktop's notification service (see `NoopNotifier`).
             Hearing::start(Box::new(NoopNotifier))
                 .expect("the thread that hears the panes could not start");
         let events = hearing.events();

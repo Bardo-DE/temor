@@ -8,7 +8,6 @@
 
 use std::collections::BTreeMap;
 
-use ds_style::space::list::{SpaceId, Spaces};
 use temor_core::error::CoreError;
 use temor_core::vocab::ids::{Counter, PaneId, TabId};
 use temor_core::vocab::text::Cwd;
@@ -18,6 +17,7 @@ use temor_layout::workspace::restore::{Restored, VERSION, decode};
 use temor_layout::workspace::{
     ClosedState, KeepClosed, Workspace, WorkspaceIn, WorkspaceOut, workspace_step,
 };
+use ui_style::space::list::{SpaceId, Spaces};
 
 /// A workspace with no tab.
 pub fn empty_workspace() -> Workspace {

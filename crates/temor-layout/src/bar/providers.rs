@@ -5,9 +5,9 @@
 use super::frecency::{UnixSecs, Visits};
 use super::model::{Candidate, LayoutName, Target};
 use crate::space::{Folder, Project, Tab};
-use ds_style::space::list::{Space, SpaceId};
 use temor_core::vocab::text::{CommandText, Cwd, HostAlias};
 use temor_pane::keys::Action;
+use ui_style::space::list::{Space, SpaceId};
 
 /// A Space as the bar lists it.
 #[derive(Debug, Clone, PartialEq, Eq)]

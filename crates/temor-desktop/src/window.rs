@@ -26,7 +26,7 @@ pub enum PaneKind {
 }
 
 impl PaneKind {
-    /// The word for this kind in the desktop's intents (`dist/intents/org.quire.Temor.toml`) and
+    /// The word for this kind in the desktop's intents (`dist/intents/org.bardo.Temor.toml`) and
     /// in the pane list an agent reads.
     pub fn word(self) -> &'static str {
         match self {
@@ -103,7 +103,7 @@ pub struct CommandInfo {
 }
 
 /// An app Space and the desktop Space it is linked to, if any. The agent layer's Space id is made
-/// from these by porter; temor never formats it.
+/// from these by accountd; temor never formats it.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SpaceRef {
     /// The app's own number for the Space.

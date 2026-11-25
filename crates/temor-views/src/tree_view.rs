@@ -1,5 +1,5 @@
 //! The tab in front as its tree of panes (PLAN §7): a leaf is a terminal pane, a split is one of
-//! quire's `SplitView`s with the axis of its node and the node's share as the first pane's
+//! the toolkit's `SplitView`s with the axis of its node and the node's share as the first pane's
 //! starting size. Only this tab is drawn, so only its panes are laid out and painted.
 //!
 //! A divider the person drags is written back to the tree once the drag ends (`on_resized`), so
@@ -8,13 +8,13 @@
 use std::time::Instant;
 
 use dioxus::prelude::*;
-use ds::components::chrome::split_view::model::{
-    PaneAt, PaneSize, PaneSpec, Share as ViewShare, SplitAxis, SplitPane, UnfocusedPanes,
-};
-use ds::components::chrome::split_view::view::SplitView;
 use temor_client::model::split::{Axis, Handle, Node, Share, SplitTree};
 use temor_client::model::vocab::ids::PaneId;
 use temor_client::model::workspace::WorkspaceIn;
+use ui_components::components::chrome::split_view::model::{
+    PaneAt, PaneSize, PaneSpec, Share as ViewShare, SplitAxis, SplitPane,
+};
+use ui_components::components::chrome::split_view::view::SplitView;
 
 use super::pane_view::PaneView;
 use super::viewer_pane::ViewerView;
@@ -66,7 +66,7 @@ fn TreeNode(tree: SplitTree, at: Handle, focus: PaneId, desk: Desk, started: Ins
                     label: "Panes",
                     panes: vec![SplitPane::new(spec_of(ratio), before)],
                     axis: axis_of(axis),
-                    unfocused: UnfocusedPanes::Dim,
+                    dim_unfocused: true,
                     focused: Some(held),
                     on_resized: move |sizes: Vec<PaneSize>| {
                         if let (Some((before, after)), Some(share)) =

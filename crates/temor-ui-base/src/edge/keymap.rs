@@ -3,13 +3,13 @@
 //! temor's own actions with their defaults. The platform is read from the process environment
 //! here and nowhere else; everything after it is the pure `build_keymap`.
 
-use chordkit::{ConventionSource, Keymap, KeymapSource, Overrides, Platform, detect_process};
+use keymap::{ConventionSource, Keymap, KeymapSource, Overrides, Platform, detect_process};
 use temor_panes::pane::keys::{KeyIssue, build_keymap};
 
 use super::{Ambient, system_keys};
 
 /// The keymap for the platform this process runs on, with its problems (see [`KeyIssue`]).
-/// `CHORDKIT_PLATFORM` overrides the detection, as chordkit documents. The desktop's own
+/// `BARDO_KEYMAP_PLATFORM` overrides the detection (`keymap::OVERRIDE_VAR`). The desktop's own
 /// shortcut settings are read from where `ambient` says its config home is.
 pub fn load_keymap(overrides: &Overrides, ambient: &Ambient) -> (Keymap, Vec<KeyIssue>) {
     let platform = detect_process();

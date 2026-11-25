@@ -3,7 +3,7 @@
 //! their defaults (PLAN §6). Pure over its inputs: the platform and the source come from the
 //! caller, and nothing here reads the environment or a file.
 
-use chordkit::{
+use keymap::{
     AppId, Chord, Context, DefaultChord, Keymap, KeymapSource, Overrides, Platform, Registration,
 };
 
@@ -65,7 +65,7 @@ fn register_declared(keymap: &mut Keymap) -> Vec<KeyIssue> {
 /// One action's registration: its default (and fallback), and the standard actions it forgoes.
 /// `None` for an action with no app id of temor's.
 fn registration(app: &AppId, declared: &Declared) -> Result<Option<Registration>, SettingsError> {
-    let Some(chordkit::Action::App(id)) = declared.action.to_chordkit() else {
+    let Some(keymap::Action::App(id)) = declared.action.to_keymap() else {
         return Ok(None);
     };
     let parse = |text: &str| {
@@ -84,7 +84,7 @@ fn registration(app: &AppId, declared: &Declared) -> Result<Option<Registration>
 /// (`⌘D` on a Mac or our desktop, `Ctrl+D` elsewhere), for menus and labels. `None` when the
 /// action has no keymap entry or is unbound.
 pub fn shortcut(keymap: &Keymap, action: Action) -> Option<String> {
-    let named = action.to_chordkit()?;
+    let named = action.to_keymap()?;
     let chords: Vec<Chord> = keymap.chords_of(&named);
     chords.first().map(|chord| chord.display(keymap.platform()))
 }
@@ -92,7 +92,7 @@ pub fn shortcut(keymap: &Keymap, action: Action) -> Option<String> {
 /// The shortcut for `action` as typed in a terminal window: what a person presses there
 /// (`Ctrl+Shift+D` on Windows or KDE, where plain Ctrl is the program's), for settings help.
 pub fn terminal_shortcut(keymap: &Keymap, action: Action) -> Option<String> {
-    let named = action.to_chordkit()?;
+    let named = action.to_keymap()?;
     keymap
         .chords_in(&named, Context::Terminal)
         .first()

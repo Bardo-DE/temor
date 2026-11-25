@@ -4,11 +4,11 @@ use super::{DirectoryUse, Sources, SpaceEntry, UnixSecs, Visits, candidates, ran
 use crate::bar::{BarAction, LayoutName, RowGroup, Target};
 use crate::space::{Folder, Pin, Tab};
 use crate::split::SplitTree;
-use ds_style::space::list::SpaceId;
 use temor_core::vocab::ai::AiSwitch;
 use temor_core::vocab::ids::{FolderId, PaneId, TabId};
 use temor_core::vocab::text::{CommandText, Cwd, HostAlias, TabTitle};
 use temor_pane::keys::Action;
+use ui_style::space::list::SpaceId;
 
 const DAY: u64 = 24 * 60 * 60;
 const NOW: u64 = 1_000_000_000;

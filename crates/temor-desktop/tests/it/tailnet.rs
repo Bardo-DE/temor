@@ -1,7 +1,7 @@
-//! The Tailscale computers, read from a fake `org.quire.Tailnet1` on a private bus (what porter's
+//! The Tailscale computers, read from a fake `org.bardo.Tailnet1` on a private bus (what
 //! accountd serves; the wire is `Machines() -> a(sa{sv})` and a payload-free `Changed`).
 
-#![cfg(all(target_os = "linux", feature = "quire-desktop"))]
+#![cfg(all(target_os = "linux", feature = "desktop"))]
 
 use crate::bus::PrivateBus;
 use std::collections::HashMap;
@@ -39,7 +39,7 @@ fn row(node: &str, name: &str, online: bool, ssh: bool, owner: &str) -> Row {
 
 struct FakeTailnet;
 
-#[zbus::interface(name = "org.quire.Tailnet1")]
+#[zbus::interface(name = "org.bardo.Tailnet1")]
 impl FakeTailnet {
     fn machines(&self) -> Vec<Row> {
         vec![
@@ -52,11 +52,11 @@ impl FakeTailnet {
     async fn changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
 }
 
-/// What accountd answers a caller it does not know as the terminal (porter's `dist/callers.toml`
+/// What accountd answers a caller it does not know as the terminal (accountd's `dist/callers.toml`
 /// names temor by its systemd unit, so a launcher start is refused).
 struct RefusingTailnet;
 
-#[zbus::interface(name = "org.quire.Tailnet1")]
+#[zbus::interface(name = "org.bardo.Tailnet1")]
 impl RefusingTailnet {
     fn machines(&self) -> zbus::fdo::Result<Vec<Row>> {
         Err(zbus::fdo::Error::AccessDenied(
@@ -72,11 +72,11 @@ async fn account_service<I: zbus::object_server::Interface>(
     let connection = bus.connect().await;
     connection
         .object_server()
-        .at("/org/quire/Tailnet1", interface)
+        .at("/org/bardo/Tailnet1", interface)
         .await
         .unwrap();
     connection
-        .request_name("org.quire.Accounts1")
+        .request_name("org.bardo.Accounts1")
         .await
         .unwrap();
     connection
@@ -106,7 +106,7 @@ async fn the_machines_come_back_as_plain_hosts_and_a_change_ticks() {
     );
     assert!(box_.is_named("100.64.0.7"));
 
-    let emitter = SignalEmitter::new(&service, "/org/quire/Tailnet1").unwrap();
+    let emitter = SignalEmitter::new(&service, "/org/bardo/Tailnet1").unwrap();
     FakeTailnet::changed(&emitter).await.unwrap();
     let ticked = tokio::time::timeout(Duration::from_secs(5), changes.next()).await;
     assert_eq!(ticked.unwrap(), Some(()));
@@ -117,7 +117,7 @@ async fn no_account_service_means_no_computers() {
     let Some(bus) = PrivateBus::start() else {
         return;
     };
-    // The bus is up but nothing owns org.quire.Accounts1 (and nothing is activatable).
+    // The bus is up but nothing owns org.bardo.Accounts1 (and nothing is activatable).
     let tailnet = SystemTailnet::connect(&bus.env()).await.unwrap();
     assert!(tailnet.hosts().await.unwrap().is_empty());
 }

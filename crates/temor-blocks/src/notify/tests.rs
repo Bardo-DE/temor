@@ -1,6 +1,6 @@
 //! The notice rules: focus, the threshold, outcomes, and the limiter on a fake clock.
 
-use ds_core::time::stamp::Stamp;
+use ui_core::time::stamp::Stamp;
 
 use super::{Limiter, Notice, PaneFocus, bell_notice, finished_notice, program_notice};
 use crate::block::{Author, Block, Outcome};

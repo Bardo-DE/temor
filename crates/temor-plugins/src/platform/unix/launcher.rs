@@ -1,6 +1,6 @@
 //! Starting a plugin for one request.
 
-use bayonet::run::{RunError, Runner, Session, Timeouts};
+use plugin_host::run::{RunError, Runner, Session, Timeouts};
 
 use super::wire::Wire;
 use crate::capability::Cap;
@@ -54,7 +54,6 @@ impl From<RunError<Cap>> for PluginError {
             | RunError::Lacks { plugin, .. }
             | RunError::Cancelled { plugin } => plugin.to_string(),
             RunError::Spawn { program, .. } => program.clone(),
-            _ => String::new(),
         };
         match error {
             RunError::Cancelled { .. } => PluginError::Cancelled { plugin },

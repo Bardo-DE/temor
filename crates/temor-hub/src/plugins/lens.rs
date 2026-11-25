@@ -7,7 +7,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
-use ds::prelude::ImageSource;
+use ui_components::prelude::ImageSource;
 
 use temor_client::model::vocab::ids::BlockId;
 use temor_client::plugins::{Drawing, Plugin};

@@ -3,12 +3,12 @@
 //! and keys are the ones `terminal.conf` had (`font.family`, `cursor.style`, ...), now as TOML.
 //!
 //! Two pages' worth of keys, told apart by section: General (Shell, Notices, Shell offer) and
-//! Appearance (Text, Cursor, History; `settings_window::page_of` is the one place that says). The theme is quire's (`appearance.toml`) and is not
+//! Appearance (Text, Cursor, History; `settings_window::page_of` is the one place that says). The theme is the toolkit's (`appearance.toml`) and is not
 //! here.
 
-use ds_settings::schema::Page;
-use ds_settings::{FileName, Format, SettingsDoc};
 use serde::{Deserialize, Serialize};
+use settings_store::{FileName, Format, SettingsDoc};
+use settings_types::schema::Page;
 
 use super::schema::APP;
 use super::words::{Blinking, CursorShape, KeepWay, PagerWay, StartFolder};
@@ -16,11 +16,11 @@ use temor_panes::pane::settings::{FontPoints, LinePercent, NotifyAfter, Scrollba
 
 /// The page temor's keys are on in the Settings app: temor's own.
 fn page() -> Page {
-    Page::App(APP.0.to_owned())
+    Page::App(APP.name().to_owned())
 }
 
 /// `font.*`: the terminal's text.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ds_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "temor/settings.toml", domain = "font", page = page())]
 pub struct FontSettings {
@@ -59,7 +59,9 @@ impl Default for FontSettings {
 }
 
 /// `cursor.*`: the terminal's cursor.
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, ds_settings::SettingsSchema)]
+#[derive(
+    Debug, Clone, PartialEq, Default, Serialize, Deserialize, settings_types::SettingsSchema,
+)]
 #[serde(default)]
 #[settings(file = "temor/settings.toml", domain = "cursor", page = page())]
 pub struct CursorSettings {
@@ -78,7 +80,9 @@ pub struct CursorSettings {
 }
 
 /// `scrollback.*`: the history kept above the screen.
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, ds_settings::SettingsSchema)]
+#[derive(
+    Debug, Clone, PartialEq, Default, Serialize, Deserialize, settings_types::SettingsSchema,
+)]
 #[serde(default)]
 #[settings(file = "temor/settings.toml", domain = "scrollback", page = page())]
 pub struct ScrollbackSettings {
@@ -93,7 +97,7 @@ pub struct ScrollbackSettings {
 }
 
 /// `shell.*`: what a new pane runs.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ds_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "temor/settings.toml", domain = "shell", page = page())]
 pub struct ShellSettings {
@@ -135,7 +139,9 @@ impl Default for ShellSettings {
 }
 
 /// `notify.*`: telling the person a command finished.
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, ds_settings::SettingsSchema)]
+#[derive(
+    Debug, Clone, PartialEq, Default, Serialize, Deserialize, settings_types::SettingsSchema,
+)]
 #[serde(default)]
 #[settings(file = "temor/settings.toml", domain = "notify", page = page())]
 pub struct NotifySettings {
@@ -150,7 +156,9 @@ pub struct NotifySettings {
 }
 
 /// `offer.*`: the commands temor offers to set up blocks in (ssh, su, ...).
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, ds_settings::SettingsSchema)]
+#[derive(
+    Debug, Clone, PartialEq, Default, Serialize, Deserialize, settings_types::SettingsSchema,
+)]
 #[serde(default)]
 #[settings(file = "temor/settings.toml", domain = "offer", page = page())]
 pub struct OfferSettings {

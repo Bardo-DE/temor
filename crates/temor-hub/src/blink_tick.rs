@@ -4,7 +4,7 @@
 use std::time::Duration;
 
 use dioxus::prelude::spawn;
-use ds::base::time::clock::sleep;
+use ui_components::base::time::clock::sleep;
 
 use super::desk::Desk;
 use temor_ui_base::slot::repaint;

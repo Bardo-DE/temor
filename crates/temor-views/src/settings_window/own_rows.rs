@@ -1,15 +1,15 @@
-//! The rows of keys quire's `SettingsPage` only shows read-only: free text, a bounded number and
+//! The rows of keys the toolkit's `SettingsPage` only shows read-only: free text, a bounded number and
 //! a list of words (a pop-up button or a switch it draws itself). Each is chosen by the key's
 //! kind in the schema, never by its name, and hands a [`SettingEdit`] back as the page does.
 //!
 //! Pure rows; saving is the page's (`general`).
 
 use dioxus::prelude::*;
-use ds::components::content::label::LabelRole;
-use ds::components::fields::field_row::FieldRow;
-use ds::prelude::*;
-use ds_settings::schema::{KeyKind, KeySpec};
-use ds_settings_page::SettingEdit;
+use settings_types::schema::{KeyKind, KeySpec};
+use ui_components::components::content::label::LabelRole;
+use ui_components::components::fields::field_row::FieldRow;
+use ui_components::prelude::*;
+use ui_settings_page::SettingEdit;
 
 use super::font_row::{FontRow, is_font_key};
 use super::row_parts::{AddButton, RemoveButton};

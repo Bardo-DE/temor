@@ -6,11 +6,11 @@
 use std::path::{Path, PathBuf};
 
 use dioxus::prelude::*;
-use ds::base::press::Press;
-use ds::components::overlays::empty_state::EmptyForm;
-use ds::prelude::*;
 use temor_client::model::folder::{Entry, listed};
 use temor_client::model::history::Zone;
+use ui_components::base::press::Press;
+use ui_components::components::overlays::empty_state::EmptyForm;
+use ui_components::prelude::*;
 
 use super::when_words::modified_words;
 use temor_client::query::Folder;

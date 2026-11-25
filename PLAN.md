@@ -42,7 +42,7 @@ ordered by dependency (§11), not split into versions.
 | D12 | **Downloads shelf:** the path is configurable, defaulting to XDG Downloads for now (owner, 2026-10-10; it was temor's own data dir). It is fed by kitty file transfer (OSC 5113), iTerm2 `File=` (OSC 1337), `temor get`/`save`/`view -`, and "Save output". |
 | D13 | **anyview:** `anyview-peek` is linked in-process. An embeddable viewer pane is being proposed by anyview to its owner. Both sit behind a default-on feature, and the fallback is D-Bus `Open`. |
 | D14 | **Plugins** follow `agent-spec/plugins.md`, using the shared crate in the new public repo **bayonet** (extracted by anyview). temor's capabilities: `block.lens`, `open.provider` (shaped to match sill's launcher providers), `agent.adapter`, `row.facts`. temor has no format plugins: viewing belongs to anyview. |
-| D15 | **Portable core** (design/36): every desktop extra sits behind the `quire-desktop` feature, and `--no-default-features` must build and pass. Off our desktop the trial says "not checked". |
+| D15 | **Portable core** (design/36): every desktop extra sits behind the `desktop` feature, and `--no-default-features` must build and pass. Off our desktop the trial says "not checked". |
 | D17 | **SSH, Tier A (nothing installed on the host):** hosts are first-class (⌘T, per-Space pins, `host:path` in tabs). Shell integration and terminfo are sent with every connection, as kitty's ssh kitten does. One shared connection per host, so a split or new tab opens instantly in the same remote folder. Remote files support peek, view, and edit-locally-then-write-back, plus upload by drop. Port forwarding from the running row. Consent per host. |
 | D18 | **SSH, Tier B (`temor-remote`, an optional helper uploaded to the host):** sessions survive disconnects and reattach with the exact screen; listening ports are detected and forwarded; remote file service for live viewer panes; trial runs on the host; local agents working on remote workspaces (the agent stays local, its file and terminal calls go to the host). Installed after consent per host; the version is pinned by hash, so it updates itself. Hosts that can't run it fall back to Tier A. |
 | D19 | **(Withdrawn 2026-10-26: temor keeps no git; worktrees, if anyone wants them, are a plugin's.)** **Agent worktrees are temor's, not the agent's.** Starting an agent offers "on a new branch" (first, the default) or "in this checkout"; nothing guesses. temor creates the worktree in its own data dir, sets it up from project facts (an include list for ignored files, the Space's setup command), pins the agent's workspace to it through the gate, warns early about overlapping changes between agents with a `git merge-tree` dry run, and owns review and merge (default **Squash**). It separates files, not processes or ports, and says so. §8.2 |
@@ -119,7 +119,7 @@ temor/
     temor-client/     every operation on temor's data, and the services: ssh and the remote
                       links, transfers, facts, viewers, the desktop port (§2b)
     temor-panes/      the running terminals: each pane's engine, marks, blocks and notices
-    temor-desktop/    feature `quire-desktop`: IntentProvider1, docket and companion clients,
+    temor-desktop/    feature `desktop`: IntentProvider1, docket and companion clients,
                       LauncherEntry badge, anyview D-Bus fallback, checkpoint and trial callers
     temor-remote/     Tier B helper binary (static, Linux x86_64 and aarch64 musl): session
                       daemon on temor-pane, ports, files, trial, agent relay
@@ -131,8 +131,8 @@ temor/
                       Settings window shares; no components
     temor-views/      Dioxus views: window, sidebar, panes, blocks, command bar, pages, Settings
     temor-ui/         joins them and opens the window
-    temor/            lib + thin main; dist/ (desktop file `org.quire.Temor.desktop`, D-Bus service,
-                      systemd unit `org.quire.Temor.service`, intents manifest, skills)
+    temor/            lib + thin main; dist/ (desktop file `org.bardo.Temor.desktop`, D-Bus service,
+                      systemd unit `org.bardo.Temor.service`, intents manifest, skills)
 ```
 
 **Boundary rules** (checked by `scripts/check-layers.sh` from `cargo metadata`, and quire's
@@ -688,7 +688,7 @@ The ranking rules:
   - Every request and `context()` carry
     `porter_core::SpaceId::for_app(&AppName, LocalSpace(space.0), space.link.as_deref())`
     (porter `209aaaf`, on the desktop in batch 8). temor never formats the u64 itself.
-  - The desktop Spaces available for linking come from `org.quire.Spaces1` on accountd, through
+  - The desktop Spaces available for linking come from `org.bardo.Spaces1` on accountd, through
     porter-client `DbusTransport::spaces()` (`list`, `create`, `watch`). This is a desktop extra in
     `temor-desktop`.
   - When a linked desktop Space is removed, temor clears the link and falls back to its own Space.
@@ -729,10 +729,10 @@ The ranking rules:
   and `watch()` (a stream of `()` per Changed). `Machine { node, name, dns (no trailing dot),
   addresses, os, online, last_seen: Option<UnixSeconds>, ssh, ssh_host_keys, owner: Mine|Shared|Tagged }`;
   this computer is left out. Errors `TailnetError {Denied, Unreachable, Malformed}`; no account or a
-  stopped tailscaled gives an empty list, not an error. Wire: `org.quire.Tailnet1` at
-  `/org/quire/Tailnet1` on `org.quire.Accounts1`, `Machines() -> a(sa{sv})`, `Changed()` (keys in
+  stopped tailscaled gives an empty list, not an error. Wire: `org.bardo.Tailnet1` at
+  `/org/bardo/Tailnet1` on `org.bardo.Accounts1`, `Machines() -> a(sa{sv})`, `Changed()` (keys in
   porter FINDINGS "Lane tailnet-account"). porter's `dist/callers.toml` gives temor (app
-  `org.quire.Temor`, unit `org.quire.Temor.service`) role "terminal": Tailnet1 only.
+  `org.bardo.Temor`, unit `org.bardo.Temor.service`) role "terminal": Tailnet1 only.
 
 ### Tier A: nothing installed on the host
 - **Hosts.** They come from `~/.ssh/config` (`Host` blocks, `Include`, `ProxyJump`) into ⌘T rows,
@@ -865,7 +865,7 @@ The ranking rules:
 | **P3 Window structure** (done) | two lanes in turn: P3a (quire v0.3.x features and the §6 keys, one pane) then P3b (tabs, splits, restore). The quire v0.3.x features (SplitView axis, RawKey, palette tokens, IME area, `use_environment`, `use_window_title`, `use_space_look`/`use_space_frame`) and the §6 two-path ⌘ keys first; sidebar tabs (persistent, pinned, folders), split tree plus `SplitView`, split miniatures, drag to split and tear off, recently closed through snapshots, session restore | P1; quire `SplitView` batch |
 | **P4 Spaces** (done: Batch 2) | kit integration, `Project` payload, profiles (env, ssh-agent, dotenv), routes, ⌃1–9 | P3 |
 | **P5 Command bar and quick terminal** (done: Batch 2) | providers, fixed ranking, Run row, quick terminal | P4 |
-| **P6 Desktop integration** (done: Batches 1–2) | intents manifest, `IntentProvider1`, `context()`, D-Bus activation and systemd unit, dock badge, `quire-desktop` boundary gate | P2 |
+| **P6 Desktop integration** (done: Batches 1–2) | intents manifest, `IntentProvider1`, `context()`, D-Bus activation and systemd unit, dock badge, `desktop` boundary gate | P2 |
 | **P7 Agents** (done, except the hook bridge and the D20 gate readers, which wait on docket; agent worktrees and restore points removed 2026-10-26, the radar kept for the row's one dot; the unused D20 approval mode line code removed 2026-10-29) | `presence_step` and the radar, OSC 7501, `TEMOR_PANE_ID` socket, checkpoints, the CLI pane through docket-launch, the agent view (with docket and quire), the hook bridge (with docket), the approval mode line (D20), agent worktrees (D19; overlap spike done) | P3, P6, P10 (review view); docket |
 | **P8 Proposals** (blocked: bulkhead split; the unused proposal machine, sanitising and D21 context card code removed 2026-10-29, to be written again when it unblocks) | the context card (D21), the trial module in bulkhead, sanitising, the model call, the verdict UI, the Fix chip, the taint marker, the log record | P2, P6; bulkhead split |
 | **P9 Transfers and shelf** (done, except upload by drop) | OSC 5113/1337, `temor get/save/view`, shelf UI, upload by drop | P2 |

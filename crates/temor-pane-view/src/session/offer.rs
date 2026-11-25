@@ -2,10 +2,10 @@
 //! time on the session's clock, the screen kind and the last line. It reads; nothing here
 //! changes the session.
 
-use ds_core::time::stamp::Stamp;
 use temor_client::model::block::BlockState;
 use temor_client::model::offer::{Line, OfferList, Program, Screen, asks_for_secret};
 use temor_client::model::vocab::ids::BlockId;
+use ui_core::time::stamp::Stamp;
 
 use super::Session;
 

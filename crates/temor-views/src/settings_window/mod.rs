@@ -2,7 +2,7 @@
 //! the command bar or its page rows, and raised when it is already open. A sidebar of four pages,
 //! each a `Form` of titled groups of rows.
 //!
-//! General and Appearance draw temor's settings schema through quire's `SettingsPage`, plus rows
+//! General and Appearance draw temor's settings schema through the toolkit's `SettingsPage`, plus rows
 //! of the window's own for the text, numbers and lists the page only shows (`general`,
 //! `own_rows`, split by `pages`); every change is saved through the store (`edit`) and the open
 //! panes follow the file. Keyboard is one shortcut recorder for each action (`keyboard`,
@@ -10,7 +10,7 @@
 //! (`spaces`), changes going to the main window through the board (`board`), which holds the
 //! kit's handle.
 //!
-//! The window is quire's (`ds_blitz::open_window`), with the root contexts the first window is
+//! The window is the toolkit's (`ui_blitz::open_window`), with the root contexts the first window is
 //! given (`open`).
 
 mod edit;
@@ -42,7 +42,7 @@ pub(crate) static SETTINGS_LINE: temor_client::serial::Serial =
 pub(crate) const NO_LINE: &str = "Settings can't be changed right now.";
 pub use edit::{Edited, applied, save_edit};
 pub use keys_edit::{KeyChange, change_keys, load_view};
-pub use open::{QuireSettings, SettingsOpened, TITLE, use_settings_opened};
+pub use open::{LaunchedSettings, SettingsOpened, TITLE, use_settings_opened};
 pub use pages::page_of;
 pub use root::{settings_root, settings_window};
 pub use style::SETTINGS_CSS;

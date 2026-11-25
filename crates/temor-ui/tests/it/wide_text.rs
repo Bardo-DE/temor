@@ -4,8 +4,8 @@
 //! answering. The harness's plain `Input::key` carries no text for a non-ASCII character, so
 //! the IME is the way in.
 
-use ds_harness::Input;
 use temor_ui_base::probe::Probe;
+use ui_harness::Input;
 
 use super::drive::{chord, started, type_line, type_text, wait_until};
 

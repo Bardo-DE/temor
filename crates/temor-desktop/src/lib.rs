@@ -1,8 +1,8 @@
 //! temor's desktop integration (PLAN §2, §8.4, §9b, §11 P6). This is the one crate that names
-//! zbus, docket or porter-client; the window calls the small API below and never touches them.
+//! zbus, actiond or accountd-client; the window calls the small API below and never touches them.
 //!
 //! - **Actions for agents.** [`WindowPort`] is what the window implements (its panes, commands and
-//!   context); [`SystemIntents`] serves temor's actions from `dist/intents/org.quire.Temor.toml`
+//!   context); [`SystemIntents`] serves temor's actions from `dist/intents/org.bardo.Temor.toml`
 //!   to the desktop's agent layer and answers `context()` from [`WindowPort::context`].
 //! - **One instance.** [`SystemInstance::claim`] makes the first launch the owner of the bus name
 //!   and hands a later launch's [`Request`] (a new window or tab) to it. The files in `dist/` let
@@ -13,9 +13,9 @@
 //! - **Tailscale.** [`SystemTailnet::hosts`] lists the person's other computers as
 //!   [`temor_ssh::TailnetHost`]s, and [`SystemTailnet::changes`] says when to read again.
 //!
-//! The Linux services are behind the `quire-desktop` feature (PLAN D15). With the feature off, or
+//! The Linux services are behind the `desktop` feature (PLAN D15). With the feature off, or
 //! on another system, the same names exist and report the service as absent, so the window
-//! needs no `cfg`. The caller owns the tokio runtime that zbus runs on (docket and porter build
+//! needs no `cfg`. The caller owns the tokio runtime that zbus runs on (actiond and accountd build
 //! zbus for tokio); the one thread started here waits for an opener ([`SystemOpen`]).
 //!
 //! Types that cross threads are `Send + Sync` unless their docs say otherwise.

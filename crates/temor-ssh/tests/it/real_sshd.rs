@@ -2,7 +2,8 @@
 //! known_hosts. Its forced command swaps in a scratch HOME, so nothing in the real home is
 //! written. temor's own argv builders and master probe drive it through an `ssh` wrapper that
 //! adds `-F` with the scratch client config (ssh finds `~/.ssh` through the password database,
-//! not `$HOME`). Skipped where sshd, ssh or ssh-keygen is missing.
+//! not `$HOME`). Skipped where sshd, ssh or ssh-keygen is missing, or where an enforcing SELinux
+//! keeps an unprivileged sshd from starting a session.
 
 use std::fs;
 use std::io::{Read, Write};
@@ -64,6 +65,15 @@ fn host() -> Option<Host> {
     let (sshd, ssh, ssh_keygen) = (require("sshd")?, require("ssh")?, require("ssh-keygen")?);
     let bash = require("bash")?;
     let bash = bash.display();
+    // An enforcing SELinux confines sshd-session: run by this user, it may not move its session
+    // into the user's context, so every session dies with "/bin/bash: Permission denied".
+    if fs::read_to_string("/sys/fs/selinux/enforce").is_ok_and(|mode| mode.trim() == "1") {
+        temor_testkit::skip(
+            "an sshd this user may run (an enforcing SELinux confines sshd-session)",
+            "temor-ssh",
+        );
+        return None;
+    }
     let s = scratch();
     let w = &s.work;
     keygen(&ssh_keygen, &w.join("host_key"));

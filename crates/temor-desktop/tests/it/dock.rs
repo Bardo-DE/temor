@@ -1,6 +1,6 @@
 //! The dock badge goes out as a `LauncherEntry.Update` broadcast any dock can read.
 
-#![cfg(all(target_os = "linux", feature = "quire-desktop"))]
+#![cfg(all(target_os = "linux", feature = "desktop"))]
 
 use crate::bus::PrivateBus;
 use futures_util::StreamExt;
@@ -41,7 +41,7 @@ async fn a_badge_is_broadcast_for_temors_desktop_entry() {
         .unwrap()
         .unwrap();
     let (uri, props): (String, HashMap<String, OwnedValue>) = message.body().deserialize().unwrap();
-    assert_eq!(uri, "application://org.quire.Temor.desktop");
+    assert_eq!(uri, "application://org.bardo.Temor.desktop");
     assert_eq!(
         i64::try_from(props["count"].try_clone().unwrap()).unwrap(),
         2

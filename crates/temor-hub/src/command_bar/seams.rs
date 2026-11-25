@@ -4,9 +4,9 @@
 
 use std::rc::Rc;
 
-use ds::style::space::list::SpaceId;
 use temor_client::model::bar::{BarAction, SpaceEntry, UnixSecs};
 use temor_client::model::vocab::ai::AiSwitch;
+use ui_components::style::space::list::SpaceId;
 
 use super::resolver::{PathLookup, PathResolver};
 use temor_ui_base::edge::unix_now;

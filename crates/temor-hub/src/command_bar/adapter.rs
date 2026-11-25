@@ -1,14 +1,14 @@
-//! The bar on quire's palette machine (PLAN §7). `bar_step` ranks and says when the rows
+//! The bar on the toolkit's palette machine (PLAN §7). `bar_step` ranks and says when the rows
 //! changed; the palette walks them (the highlight, Up and Down that stop at the ends, Enter and
 //! a click) and never re-ranks. This is the glue: the rows go in as the palette's params, a
 //! `Refreshed` follows every change, and the row the palette runs goes back as the pick.
 //! Pure over the context it is given.
 
-use ds::prelude::{PaletteIn, PaletteIndex, PaletteOut, PaletteParams, PaletteState};
-use ds_core::machine::Machine;
-use ds_core::text::typed::TypedText;
-use ds_core::time::stamp::Stamp;
 use temor_client::model::bar::{BarContext, BarIn, BarOut, BarRow, BarState, RowKey, bar_step};
+use ui_components::prelude::{PaletteIn, PaletteIndex, PaletteOut, PaletteParams, PaletteState};
+use ui_core::machine::Machine;
+use ui_core::text::typed::TypedText;
+use ui_core::time::stamp::Stamp;
 
 /// The bar and the palette that walks its rows.
 #[derive(Debug, Clone, PartialEq)]

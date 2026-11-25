@@ -1,6 +1,6 @@
 //! The address at the top of the sidebar (PLAN §7, v14 B1): the folders down to what the row in
 //! front shows, as a browser's address bar says where a tab is. The home folder is `~`. Folding a
-//! long path's middle is the path bar's (quire's `PathControl`).
+//! long path's middle is the path bar's (the toolkit's `PathControl`).
 
 /// One folder (or the file at the end) on the way down.
 #[derive(Debug, Clone, PartialEq, Eq)]

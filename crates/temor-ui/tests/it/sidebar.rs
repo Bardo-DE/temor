@@ -5,16 +5,16 @@
 
 use std::time::{Duration, Instant};
 
-use ds::base::press::PointerButton;
-use ds::base::vocab::ShortcutKey;
-use ds::prelude::{Point, Px};
-use ds_blitz::Extent;
-use ds_harness::{Harness, Input};
 use temor_ui_base::probe::Probe;
+use ui_blitz::Extent;
+use ui_components::base::press::PointerButton;
+use ui_components::base::vocab::ShortcutKey;
+use ui_components::prelude::{Point, Px};
+use ui_harness::{Harness, Input};
 
-use ds::components::app::spaces::{SpaceId, Spaces};
 use temor_client::keep::older::save_spaces;
 use temor_client::model::space::Project;
+use ui_components::components::app::spaces::{SpaceId, Spaces};
 
 use super::drive;
 use super::drive::{chord, wait_until};
@@ -337,9 +337,9 @@ fn a_hidden_sidebar_peeks_from_the_edge_and_a_click_pins_it() {
     let mut h = harness("sidebar-peek", &probe);
     h.resize_window(Extent::new(1280, 800));
     wait_until(&mut h, &probe, "the prompt", |s| s.contains('$'));
-    let at = |x: f32, y: f32| ds::prelude::Point {
-        x: ds::prelude::Px(x),
-        y: ds::prelude::Px(y),
+    let at = |x: f32, y: f32| ui_components::prelude::Point {
+        x: ui_components::prelude::Px(x),
+        y: ui_components::prelude::Px(y),
     };
     h.send(Input::click(at(700.0, 300.0)));
     h.advance(Duration::from_millis(200));
@@ -447,9 +447,9 @@ fn a_row_dropped_on_a_pinned_row_pins_and_a_pinned_row_dropped_on_a_loose_one_un
     wait_until(&mut h, &probe, "the prompt", |s| s.contains('$'));
     chord(&mut h, 'n');
     chord(&mut h, 'n');
-    let centre = |b: &Box4| ds::prelude::Point {
-        x: ds::prelude::Px(((b.left + b.right) / 2.0) as f32),
-        y: ds::prelude::Px(((b.top + b.bottom) / 2.0) as f32),
+    let centre = |b: &Box4| ui_components::prelude::Point {
+        x: ui_components::prelude::Px(((b.left + b.right) / 2.0) as f32),
+        y: ui_components::prelude::Px(((b.top + b.bottom) / 2.0) as f32),
     };
     let pinned = |h: &Harness| rects(h, ".temor-side .temor-tab-box[data-pinned=true]");
     let loose = |h: &Harness| {
@@ -497,9 +497,9 @@ fn a_row_dropped_on_the_favourites_keeps_its_folder_there() {
     let mut h = harness("sidebar-favourite", &probe);
     h.resize_window(Extent::new(1280, 800));
     wait_until(&mut h, &probe, "the prompt", |s| s.contains('$'));
-    let centre = |b: &Box4| ds::prelude::Point {
-        x: ds::prelude::Px(((b.left + b.right) / 2.0) as f32),
-        y: ds::prelude::Px(((b.top + b.bottom) / 2.0) as f32),
+    let centre = |b: &Box4| ui_components::prelude::Point {
+        x: ui_components::prelude::Px(((b.left + b.right) / 2.0) as f32),
+        y: ui_components::prelude::Px(((b.top + b.bottom) / 2.0) as f32),
     };
     let tiles = |h: &Harness| rects(h, ".temor-side .temor-fav");
     // None kept: they take no room until a drag shows where to drop one.
@@ -563,13 +563,13 @@ fn a_command_press_on_a_row_opens_a_new_tab_beside_it() {
     h.advance(Duration::from_millis(300));
     assert_eq!(drive::rows(&h), 1, "a press opens nothing");
     let command = match cfg!(target_os = "macos") {
-        true => dioxus::prelude::Modifiers::SUPER,
+        true => dioxus::prelude::Modifiers::META,
         false => dioxus::prelude::Modifiers::CONTROL,
     };
     h.send(Input::Pointer(
-        ds_harness::PointerInput::new(
+        ui_harness::PointerInput::new(
             row,
-            ds_harness::PointerAction::Click(PointerButton::Primary),
+            ui_harness::PointerAction::Click(PointerButton::Primary),
         )
         .with_mods(command),
     ));
@@ -589,9 +589,9 @@ fn a_rows_menu_is_the_one_menu_and_keeps_its_folder_among_the_favourites() {
     h.resize_window(Extent::new(1280, 800));
     wait_until(&mut h, &probe, "the prompt", |s| s.contains('$'));
     let row = &rects(&h, ".temor-side .temor-tab-box")[0];
-    let at = ds::prelude::Point {
-        x: ds::prelude::Px(((row.left + row.right) / 2.0) as f32),
-        y: ds::prelude::Px(((row.top + row.bottom) / 2.0) as f32),
+    let at = ui_components::prelude::Point {
+        x: ui_components::prelude::Px(((row.left + row.right) / 2.0) as f32),
+        y: ui_components::prelude::Px(((row.top + row.bottom) / 2.0) as f32),
     };
     h.send(Input::press(at, PointerButton::Secondary));
     h.advance(Duration::from_millis(300));

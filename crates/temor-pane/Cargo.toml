@@ -30,7 +30,7 @@ ghostty = [
 ]
 
 [dependencies]
-chordkit = { workspace = true }
+keymap = { workspace = true }
 percent-encoding = { workspace = true }
 temor-pty = { workspace = true, optional = true }
 temor-shell = { workspace = true }

@@ -1,6 +1,6 @@
 //! A window that records what the desktop services asked of it.
 
-#![cfg(all(target_os = "linux", feature = "quire-desktop"))]
+#![cfg(all(target_os = "linux", feature = "desktop"))]
 
 use std::sync::Mutex;
 use temor_desktop::{

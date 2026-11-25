@@ -4,9 +4,8 @@
 //! stands for one), never on a middle press or on the press itself.
 
 use dioxus::prelude::*;
-use ds::host::measure::{RectProbe, use_rect};
-use ds::prelude::Selection;
 use temor_client::model::vocab::ids::TabId;
+use ui_components::host::measure::{RectProbe, use_rect};
 
 use super::dnd::{Dnd, RowRects, is_primary, point_of};
 use temor_hub::DragKey;
@@ -46,9 +45,6 @@ pub fn tab_menu_trigger(mut open: impl FnMut() + 'static) -> impl FnMut(MouseEve
 }
 
 /// The `data-selected` attribute for a selection.
-pub fn selected_attr(selection: Selection) -> Option<&'static str> {
-    match selection {
-        Selection::Selected => Some("true"),
-        Selection::Unselected => None,
-    }
+pub fn selected_attr(selected: bool) -> Option<&'static str> {
+    selected.then_some("true")
 }

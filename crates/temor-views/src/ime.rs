@@ -1,26 +1,26 @@
 //! The input method's glue: the IME listener on the terminal region, the cursor area it places
 //! its candidates at, the composition state the keys wait for, and the keyboard focus. The
-//! composition machine and the focus write are quire's (`ds::edit::composition`,
-//! `ds::focus::soon`), and so is the retry of the IME host seams while the document is busy
+//! composition machine and the focus write are the toolkit's (`ui_components::edit::composition`,
+//! `ui_components::focus::soon`), and so is the retry of the IME host seams while the document is busy
 //! (`write_soon_then`).
 
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use dioxus::prelude::*;
-use ds::components::editor::write_soon::{write_soon, write_soon_then};
-use ds::edit::composition::{Composing, on_ime, settle};
-use ds::edit::input::{Composition, EditInput};
-use ds::focus::select::Select;
-use ds::focus::soon::focus_soon_told;
-use ds::host::document::DocumentHost;
-use ds::host::ime::{ImeEvent, ImeListener, ImeSwitch};
-use ds::prelude::Rect;
+use ui_components::components::editor::write_soon::{write_soon, write_soon_then};
+use ui_components::edit::composition::{Composing, on_ime, settle};
+use ui_components::edit::input::{Composition, EditInput};
+use ui_components::focus::select::Select;
+use ui_components::focus::soon::focus_soon_told;
+use ui_components::host::document::DocumentHost;
+use ui_components::host::ime::{ImeEvent, ImeListener};
+use ui_components::prelude::Rect;
 
 use super::window_help::{send_text, set_focus};
-use ds::edit::pointer::EditFocus;
 use temor_client::model::pane::PaneFocus;
 use temor_ui_base::slot::Slot;
+use ui_components::edit::pointer::EditFocus;
 
 /// The region's IME state, shared by its handlers.
 #[derive(Clone)]
@@ -64,14 +64,14 @@ impl ImeGlue {
 
     /// Turns the input method on or off for the region, a frame later while the document is
     /// busy. `then` runs once the host has answered (or given up).
-    pub fn switch(&self, to: ImeSwitch, then: impl FnOnce() + 'static) {
+    pub fn switch(&self, on: bool, then: impl FnOnce() + 'static) {
         let Some(el) = self.element.borrow().clone() else {
             return then();
         };
         write_soon_then(
             Rc::clone(&self.host),
             el,
-            move |edit, el| edit.ime().switch(el, to),
+            move |edit, el| edit.ime().switch(el, on),
             move |_| then(),
         );
     }
@@ -86,7 +86,7 @@ impl ImeGlue {
         });
     }
 
-    /// Gives the region the keyboard, a frame later while the document is busy (quire's
+    /// Gives the region the keyboard, a frame later while the document is busy (the toolkit's
     /// `focus_soon_told`). `told` is called once the focus has moved: a focus the app asks for
     /// sends no focus event to the region's own handler.
     pub fn take_focus(&self, told: EventHandler<()>) {
@@ -150,7 +150,7 @@ pub fn focus_handler(
         EditFocus::Out => {
             set_focus(&slot, PaneFocus::Unfocused);
             ime.settle(&apply);
-            ime.switch(ImeSwitch::Off, || {});
+            ime.switch(false, || {});
         }
     }
 }

@@ -3,13 +3,12 @@
 //! (a caller with a chord for the action writes it with `HubRef::tooltip`).
 
 use dioxus::prelude::*;
-use ds::components::content::icon_source::IconSource;
-use ds::components::controls::button_model::{Bezel, ImagePosition};
-use ds::components::controls::press::Propagation;
-use ds::prelude::*;
-use ds::style::tokens::control_size::ControlSize;
+use ui_components::components::content::icon_source::IconSource;
+use ui_components::components::controls::button_model::{Bezel, ImagePosition};
+use ui_components::prelude::*;
+use ui_components::style::tokens::control_size::ControlSize;
 
-/// One icon button of a toolbar. `propagation` is `Propagation::Stop` where the toolbar sits over
+/// One icon button of a toolbar. `stop_propagation` is true where the toolbar sits over
 /// something that must not hear the press.
 #[component]
 #[allow(non_snake_case)]
@@ -19,7 +18,7 @@ pub fn ToolButton(
     #[props(into)] tip: String,
     #[props(default)] size: ControlSize,
     #[props(default)] availability: Availability,
-    #[props(default)] propagation: Propagation,
+    #[props(default)] stop_propagation: bool,
     onclick: EventHandler<()>,
 ) -> Element {
     rsx! {
@@ -31,7 +30,7 @@ pub fn ToolButton(
             label,
             title: Some(tip),
             availability,
-            propagation,
+            stop_propagation,
             onclick: move |_| onclick.call(()),
         }
     }

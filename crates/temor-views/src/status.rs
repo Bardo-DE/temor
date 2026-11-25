@@ -2,12 +2,12 @@
 //! status strip: the folder is in the card header and the tab's row, the title in the window's.
 
 use dioxus::prelude::*;
-use ds::components::controls::badge::{Badge, BadgeContent, BadgeTone};
-use ds::components::controls::progress::model::{Progress as Share, ProgressStyle};
-use ds::components::controls::progress::view::ProgressIndicator;
-use ds::components::overlays::tooltip::Tooltip;
-use ds::prelude::*;
 use temor_panes::vt::{Progress, ProgressState};
+use ui_components::components::controls::badge::{Badge, BadgeContent, BadgeTone};
+use ui_components::components::controls::progress::model::{Progress as Share, ProgressStyle};
+use ui_components::components::controls::progress::view::ProgressIndicator;
+use ui_components::components::overlays::tooltip::Tooltip;
+use ui_components::prelude::*;
 
 use super::names::named;
 

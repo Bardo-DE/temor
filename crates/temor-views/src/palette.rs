@@ -4,8 +4,8 @@
 
 use dioxus::prelude::ReadSignal;
 use dioxus::prelude::*;
-use ds::prelude::use_space_look;
-use ds_settings::Environment;
+use ui_components::prelude::use_space_look;
+use ui_settings::Environment;
 
 use temor_hub::HubRef;
 use temor_ui_base::notices::Notices;

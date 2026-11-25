@@ -1,8 +1,8 @@
 //! Route matching: command globs, folder prefixes and which route wins.
 
 use super::{Project, Route, SpaceRoute, route, route_folder, routes_of};
-use ds_style::space::list::{SpaceId, Spaces};
 use temor_core::vocab::text::RoutePattern;
+use ui_style::space::list::{SpaceId, Spaces};
 
 /// Space 0 is the fallback with no routes; the rest are given as patterns per Space.
 fn table(per_space: &[&[&str]]) -> Vec<(SpaceId, RoutePattern)> {

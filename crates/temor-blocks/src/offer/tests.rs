@@ -2,9 +2,9 @@ use super::{
     Answer, Line, OfferIn, OfferList, OfferOut, OfferState, PROBE_MS, Program, Reply, Screen,
     asks_for_secret, offer_step,
 };
-use ds_core::time::stamp::Stamp;
 use temor_core::vocab::ids::BlockId;
 use temor_testkit::run_steps;
+use ui_core::time::stamp::Stamp;
 
 fn program(text: &str) -> Option<Program> {
     Some(Program(text.to_owned()))

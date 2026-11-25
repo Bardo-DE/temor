@@ -6,7 +6,7 @@
 
 use std::collections::BTreeSet;
 
-use ds_core::word::Word;
+use base_words::Word;
 use proptest::prelude::*;
 use proptest::test_runner::{Config, RngAlgorithm, TestRng, TestRunner};
 

@@ -1,6 +1,7 @@
 //! Ctrl+Shift+Up and Down, driven by direct calls on a real shell.
 
-use chordkit::{Key, KeyInput as Pressed, Modifier, Modifiers as ChordMods, NamedKey};
+use keymap::keyboard_types::{Modifiers as ChordMods, NamedKey};
+use keymap::{Key, KeyInput as Pressed};
 use temor_client::model::block::Outcome;
 use temor_core::vocab::ids::BlockId;
 use temor_pane_view::input::Stroke;
@@ -28,19 +29,15 @@ fn control_shift_up_and_down_pick_blocks() {
     }
     let up = Stroke {
         input: Some(Pressed::new(
-            [Modifier::Ctrl, Modifier::Shift]
-                .into_iter()
-                .collect::<ChordMods>(),
-            Key::Named(NamedKey::Up),
+            ChordMods::CONTROL | ChordMods::SHIFT,
+            Key::Named(NamedKey::ArrowUp),
         )),
         key: KeyInput::press(KeyCode::ArrowUp, Modifiers::CTRL.with(Modifiers::SHIFT), ""),
     };
     let down = Stroke {
         input: Some(Pressed::new(
-            [Modifier::Ctrl, Modifier::Shift]
-                .into_iter()
-                .collect::<ChordMods>(),
-            Key::Named(NamedKey::Down),
+            ChordMods::CONTROL | ChordMods::SHIFT,
+            Key::Named(NamedKey::ArrowDown),
         )),
         key: KeyInput::press(
             KeyCode::ArrowDown,

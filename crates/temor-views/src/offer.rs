@@ -2,10 +2,10 @@
 //! exec` or the like has started a shell of its own. Nothing is typed into the pane before Yes.
 
 use dioxus::prelude::*;
-use ds::prelude::*;
-use ds::style::tokens::control_size::ControlSize;
 use temor_client::model::offer::Reply;
 use temor_client::model::vocab::ids::PaneId;
+use ui_components::prelude::*;
+use ui_components::style::tokens::control_size::ControlSize;
 
 use temor_hub::{Desk, use_hub};
 

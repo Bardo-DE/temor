@@ -3,8 +3,8 @@
 
 use std::time::{Duration, Instant};
 
-use ds_harness::{Harness, Input, WindowHosting};
 use temor_ui_base::probe::Probe;
+use ui_harness::{Harness, Input, WindowHosting};
 
 use super::drive::{type_line, wait_until};
 use super::window::harness_hosting;
@@ -38,9 +38,9 @@ fn the_title_is_the_programs_then_the_folder() {
         WindowHosting::Recorded,
     );
     wait_until(&mut h, &probe, "the prompt", |s| s.contains('$'));
-    h.send(Input::click(ds::prelude::Point {
-        x: ds::prelude::Px(300.0),
-        y: ds::prelude::Px(200.0),
+    h.send(Input::click(ui_components::prelude::Point {
+        x: ui_components::prelude::Px(300.0),
+        y: ui_components::prelude::Px(200.0),
     }));
     h.advance(Duration::from_millis(100));
 

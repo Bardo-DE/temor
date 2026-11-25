@@ -45,7 +45,7 @@ pub enum ProcessFact {
 pub enum RadarIn {
     /// An OSC 7501 report.
     Program(ProgramFact),
-    /// A report from an adapter over the pane socket, or from docket's roster. Reports with the
+    /// A report from an adapter over the pane socket, or from actiond's roster. Reports with the
     /// notification source are the radar's own; callers use `Notified` instead.
     Report(StatusReport),
     /// OSC 9, 99, 777 or a bell, with the text when there was any.

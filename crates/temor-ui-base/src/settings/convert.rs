@@ -2,7 +2,7 @@
 //! values the schema cannot (a family or program name, a command for the shell offer) with the
 //! same readers `terminal.conf` used, so a bad one costs only itself.
 
-use chordkit::Overrides;
+use keymap::Overrides;
 use temor_panes::pane::SettingsError;
 use temor_panes::pane::settings::{
     FontChoice, ShellChoice, TerminalSettings, font_family, offer_command, shell,

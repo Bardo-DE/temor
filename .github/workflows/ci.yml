@@ -79,9 +79,9 @@ jobs:
       - name: Portable build (no desktop extras)
         run: cargo check --workspace --no-default-features
 
-      # The [patch] block is quire's fork block exactly, checked against quire's own
-      # docs/fork-patches.toml at the pinned rev.
-      - name: The fork patches are quire's
+      # The [patch] block is bardo's fork block, checked against bardo's root Cargo.toml at the
+      # pinned tag.
+      - name: The fork patches are bardo's
         run: ./scripts/check-fork-patches.sh
 
       # The layer rules (PLAN §2): checked mechanically, because a person reading Cargo.toml will
@@ -175,7 +175,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           cache-on-failure: true
-      # `--no-default-features`: the `quire-desktop` feature (zbus, docket, porter) is our desktop's
+      # `--no-default-features`: the `desktop` feature (zbus, docket, porter) is our desktop's
       # extras; here the portable build is what is built and tested (quire design/36 rule 3).
       - name: Clippy
         run: cargo clippy --workspace --all-targets --no-default-features -- -D warnings

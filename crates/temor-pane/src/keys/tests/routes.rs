@@ -1,7 +1,8 @@
 //! What each platform does with each key in a terminal (PLAN §6). Platforms are explicit values,
 //! never the real environment.
 
-use chordkit::{AltGr, Key, KeyInput, Modifier, Modifiers, Platform};
+use keymap::keyboard_types::Modifiers;
+use keymap::{Key, KeyInput, Platform};
 
 use super::super::Action;
 use super::support::{GNOME, KDE, OURS, Went, check, keymap_for_any, went};
@@ -180,18 +181,14 @@ fn macos_takes_super_only() {
 
 #[test]
 fn altgr_characters_type_on_every_platform() {
-    let held = |mods: &[Modifier], key: Key| {
-        KeyInput::new(mods.iter().copied().collect::<Modifiers>(), key).with_alt_gr(AltGr::Held)
-    };
+    let held = |mods: Modifiers, key: Key| KeyInput::new(mods | Modifiers::ALT_GRAPH, key);
+    let ctrl_alt = Modifiers::CONTROL | Modifiers::ALT;
     let inputs = [
-        held(&[Modifier::Ctrl, Modifier::Alt], Key::Char('2')),
-        held(&[Modifier::Ctrl, Modifier::Alt], Key::Char('q')),
-        held(&[Modifier::Alt], Key::Char('e')),
-        held(
-            &[Modifier::Ctrl, Modifier::Alt, Modifier::Shift],
-            Key::Char('d'),
-        ),
-        held(&[Modifier::Super], Key::Char('c')),
+        held(ctrl_alt, Key::Char('2')),
+        held(ctrl_alt, Key::Char('q')),
+        held(Modifiers::ALT, Key::Char('e')),
+        held(ctrl_alt | Modifiers::SHIFT, Key::Char('d')),
+        held(Modifiers::META, Key::Char('c')),
     ];
     for platform in Platform::ALL {
         let keymap = keymap_for_any(platform);

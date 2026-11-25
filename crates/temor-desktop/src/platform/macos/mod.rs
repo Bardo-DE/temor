@@ -1,8 +1,8 @@
-//! The macOS desktop: the login Keychain through porter's store and the Dock tile through AppKit.
+//! The macOS desktop: the login Keychain through accountd's store and the Dock tile through AppKit.
 //! There is no session bus here, so the rest of the services (single instance, the agent layer,
 //! Tailscale, restore points) are the absent ones of `unsupported.rs`; single instance is a socket
 //! (`instance.rs`).
-//! TODO(platform:macos): the agent layer's transport once docket has one here.
+//! TODO(platform:macos): the agent layer's transport once actiond has one here.
 
 mod instance;
 
@@ -11,11 +11,11 @@ pub use instance::SystemInstance;
 use crate::platform::stored::{NAMESPACE, StoredSecrets};
 use crate::secrets::{SecretFault, SecretVault};
 use crate::{Badge, BadgeCount, DesktopEnv, DesktopError};
+use account_secrets::{KeyringNamedSecrets, KeyringSecrets, Namespace};
 use dispatch2::DispatchQueue;
 use objc2::MainThreadMarker;
 use objc2_app_kit::{NSApplication, NSRequestUserAttentionType};
 use objc2_foundation::NSString;
-use porter_secrets::{KeyringNamedSecrets, KeyringSecrets, Namespace};
 use tokio::runtime::Handle;
 
 /// A Space's secrets in the login Keychain, filed under temor's name.

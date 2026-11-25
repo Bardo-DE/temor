@@ -7,11 +7,10 @@ use crate::{
     Focus, PANE_CWD, PANE_LIST, PANE_OPEN, PANE_READ, PaneInfo, PaneKind, PaneOpen, PaneRef,
     SandboxRun, WindowPort,
 };
-use docket_core::{
-    AppRefusal, Follow, Invocation, LabelText, Outcome, Preview, UndoToken, Undoable, Value,
-};
-use porter_core::{AppName, DataClass, SpaceId};
-use prov::{Confidentiality, Effect, Integrity, Label, Labelled, Source};
+use account_core::{AppName, DataClass, SpaceId};
+use action_core::{AppRefusal, Follow, Invocation, Outcome, Preview, Undoable};
+use action_vocab::{LabelText, UndoToken, Value};
+use provenance::{Confidentiality, Effect, Integrity, Label, Labelled, Source};
 use serde_json::json;
 use std::collections::BTreeSet;
 

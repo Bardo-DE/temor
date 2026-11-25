@@ -1,10 +1,10 @@
 //! The palette a root resolves to: its ground reads as its scheme, and the ANSI slots are the
 //! colours their names say, in both schemes.
 
-use ds::prelude::{Accent, Appearance, Scheme, SpaceLook, SystemPrefs, Theme};
 use temor_panes::vt::Rgb;
+use ui_components::prelude::{Accent, Appearance, Scheme, SpaceLook, SystemSettings, Theme};
 
-use ds_settings::Environment;
+use ui_settings::Environment;
 
 use super::{dark_by_default, palette_of, resolved_palette};
 use crate::edge::{ThemeChoice, theme_choice};
@@ -37,15 +37,15 @@ fn the_space_look_theme_wins_over_the_desktop_scheme() {
         theme: Theme::Dark,
         ..SpaceLook::default()
     };
-    let light_desktop = SystemPrefs::default().with_scheme(Scheme::Light);
+    let light_desktop = SystemSettings::default().with_scheme(Scheme::Light);
     let palette = resolved_palette(Appearance::default(), &look, light_desktop);
     assert_eq!(palette, palette_of(Scheme::Dark, Accent::default()));
 }
 
 #[test]
 fn the_window_is_dark_unless_the_file_names_a_theme() {
-    let light_desktop = SystemPrefs::default().with_scheme(Scheme::Light);
-    let dark_desktop = SystemPrefs::default().with_scheme(Scheme::Dark);
+    let light_desktop = SystemSettings::default().with_scheme(Scheme::Light);
+    let dark_desktop = SystemSettings::default().with_scheme(Scheme::Dark);
     // (file, desktop, scheme the window resolves to)
     let cases = [
         (None, light_desktop, Scheme::Dark),
@@ -90,8 +90,11 @@ fn the_window_is_dark_unless_the_file_names_a_theme() {
             _ => Theme::System,
         };
         let env = dark_by_default(env, theme_choice(file));
-        let got =
-            ds::prelude::resolve(env.settings.appearance.appearance(), Theme::System, desktop);
+        let got = ui_components::prelude::resolve(
+            env.settings.appearance.appearance(),
+            Theme::System,
+            desktop,
+        );
         assert_eq!(got.scheme, want, "{file:?} on {desktop:?}");
     }
     assert_eq!(

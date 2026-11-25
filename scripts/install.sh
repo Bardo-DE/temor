@@ -120,7 +120,7 @@ pkg=$(find "$tmp/x" -mindepth 1 -maxdepth 1 -type d | head -1)
 share=$pkg/share
 
 # The activation files and the user unit name the program by its full path.
-for file in "$share/org.quire.Temor.service" "$share/org.quire.Temor1.service" "$share/systemd/org.quire.Temor.service"; do
+for file in "$share/org.bardo.Temor.service" "$share/org.bardo.Temor1.service" "$share/systemd/org.bardo.Temor.service"; do
   sed -i "s|=/usr/bin/temor\$|=$prefix/bin/temor|" "$file"
 done
 
@@ -128,11 +128,11 @@ done
 {
   echo "755 $pkg/bin/temor $prefix/bin/temor"
   echo "755 $pkg/bin/temor-remote $prefix/bin/temor-remote"
-  echo "644 $share/org.quire.Temor.desktop $prefix/share/applications/org.quire.Temor.desktop"
-  echo "644 $share/org.quire.Temor.service $prefix/share/dbus-1/services/org.quire.Temor.service"
-  echo "644 $share/org.quire.Temor1.service $prefix/share/dbus-1/services/org.quire.Temor1.service"
-  echo "644 $share/systemd/org.quire.Temor.service $prefix/lib/systemd/user/org.quire.Temor.service"
-  echo "644 $share/intents/org.quire.Temor.toml $prefix/share/quire/intents/org.quire.Temor.toml"
+  echo "644 $share/org.bardo.Temor.desktop $prefix/share/applications/org.bardo.Temor.desktop"
+  echo "644 $share/org.bardo.Temor.service $prefix/share/dbus-1/services/org.bardo.Temor.service"
+  echo "644 $share/org.bardo.Temor1.service $prefix/share/dbus-1/services/org.bardo.Temor1.service"
+  echo "644 $share/systemd/org.bardo.Temor.service $prefix/lib/systemd/user/org.bardo.Temor.service"
+  echo "644 $share/intents/org.bardo.Temor.toml $prefix/share/bardo/intents/org.bardo.Temor.toml"
   for icon in "$share"/icons/hicolor/*/apps/*; do
     echo "644 $icon $prefix/share/icons/hicolor/${icon#"$share/icons/hicolor/"}"
   done

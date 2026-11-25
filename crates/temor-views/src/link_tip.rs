@@ -1,8 +1,7 @@
-//! The tooltip for a hovered link (PLAN §6): its target, by the pointer, in quire's tooltip.
+//! The tooltip for a hovered link (PLAN §6): its target, by the pointer, in the toolkit's tooltip.
 
 use dioxus::prelude::*;
-use ds::components::overlays::tooltip::Tooltip;
-use ds::prelude::Shown;
+use ui_components::components::overlays::tooltip::Tooltip;
 
 use temor_pane_view::session::LinkTipSpot;
 
@@ -13,7 +12,7 @@ pub fn LinkTip(spot: LinkTipSpot) -> Element {
     let place = format!("left:{:.1}px;top:{:.1}px", spot.x, spot.y);
     rsx! {
         div { class: "temor-link-tip", style: place,
-            Tooltip { text: spot.target, shown: Some(Shown::Visible),
+            Tooltip { text: spot.target, shown: Some(true),
                 span { class: "temor-link-tip-spot" }
             }
         }

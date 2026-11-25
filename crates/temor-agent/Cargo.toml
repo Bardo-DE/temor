@@ -10,11 +10,12 @@ publish = false
 [dependencies]
 temor-core = { workspace = true }
 temor-schema = { workspace = true }
-ds-core = { workspace = true }
+ui-core = { workspace = true }
+base-words = { workspace = true }
 serde = { workspace = true }
 
 [dev-dependencies]
-ds-core = { workspace = true, features = ["testing"] }
+ui-core = { workspace = true, features = ["testing"] }
 
 [lints]
 workspace = true

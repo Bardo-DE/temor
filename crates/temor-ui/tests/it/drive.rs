@@ -4,10 +4,10 @@
 
 use std::time::{Duration, Instant};
 
-use ds::base::vocab::ShortcutKey;
-use ds::prelude::{Point, Px};
-use ds_harness::{Harness, Input};
 use temor_ui_base::probe::Probe;
+use ui_components::base::vocab::ShortcutKey;
+use ui_components::prelude::{Point, Px};
+use ui_harness::{Harness, Input};
 
 use super::window::harness;
 
@@ -281,7 +281,7 @@ pub(super) fn still_rects(h: &mut Harness, selector: &str) -> Vec<Rect> {
 pub(super) fn wait_selected_all(h: &mut Harness, selector: &str) {
     let start = Instant::now();
     loop {
-        let ready = h.focus_of(selector) == ds_harness::FocusState::Focused
+        let ready = h.focus_of(selector)
             && h.with_doc(|doc| {
                 let id = doc.query_selector(selector).ok().flatten()?;
                 let input = doc.get_node(id)?.element_data()?.text_input_data()?;

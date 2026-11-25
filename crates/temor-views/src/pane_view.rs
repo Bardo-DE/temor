@@ -10,20 +10,20 @@ use std::rc::Rc;
 use std::time::Instant;
 
 use dioxus::prelude::*;
-use ds::edit::raw_key::RawKey;
-use ds::file_drop::drag::FileDrop;
-use ds::file_drop::hook::use_file_drop;
-use ds::focus::request::use_focus_request;
-use ds::host::caret::InitialCaret;
-use ds::host::document::use_document_host;
-use ds::host::ime::ImeEvent;
-use ds::host::measure::use_rect;
-use ds::host::signals::HostSignals;
-use ds::prelude::*;
-use ds::root::pass_through::ExtraClass;
-use ds_blitz::{Sampling, TextureFit, TextureLayer, use_gpu};
 use temor_client::model::remote::Grant;
 use temor_client::model::vocab::ids::{BlockId, PaneId};
+use ui_blitz::{Sampling, TextureFit, TextureLayer, use_gpu};
+use ui_components::edit::raw_key::RawKey;
+use ui_components::file_drop::drag::FileDrop;
+use ui_components::file_drop::hook::use_file_drop;
+use ui_components::focus::request::use_focus_request;
+use ui_components::host::caret::InitialCaret;
+use ui_components::host::document::use_document_host;
+use ui_components::host::ime::ImeEvent;
+use ui_components::host::measure::use_rect;
+use ui_components::host::signals::HostSignals;
+use ui_components::prelude::*;
+use ui_components::root::pass_through::ExtraClass;
 
 use super::block_edit::edit_on_this_computer;
 use super::block_list::pane::{hand_list_view, lens_request};
@@ -59,7 +59,7 @@ use temor_panes::pane::keys::Action;
 use temor_ui_base::slot::{Slot, layout};
 
 /// Puts the pane on screen: it paints into `texture` from now on.
-fn show(slot: &RefCell<Slot>, texture: ds_blitz::TextureHandle) {
+fn show(slot: &RefCell<Slot>, texture: ui_blitz::TextureHandle) {
     let mut s = slot.borrow_mut();
     s.texture = Some(texture);
     s.shown = true;
@@ -68,7 +68,7 @@ fn show(slot: &RefCell<Slot>, texture: ds_blitz::TextureHandle) {
 /// Takes the pane off the screen: nothing paints into a texture that is gone. Only when the slot
 /// still paints into this view's `texture`: a split or a move mounts the pane's new view before
 /// the old one is dropped, and the old one must not take the new one's texture away.
-fn hide(slot: &RefCell<Slot>, texture: &ds_blitz::TextureHandle) {
+fn hide(slot: &RefCell<Slot>, texture: &ui_blitz::TextureHandle) {
     let mut s = slot.borrow_mut();
     if s.texture.as_ref() != Some(texture) {
         return;

@@ -7,7 +7,7 @@
 
 use std::process::ExitCode;
 
-use bayonet::wire::{WireError, read_frame, write_frame};
+use plugin_host::wire::{WireError, read_frame, write_frame};
 use temor_plugins::message::{LensBlock, Message, Request};
 use temor_plugins::{Cap, PROTOCOL};
 

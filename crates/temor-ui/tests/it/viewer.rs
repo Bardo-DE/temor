@@ -6,11 +6,11 @@
 use std::time::{Duration, Instant};
 
 use dioxus::html::Modifiers;
-use ds::base::press::PointerButton;
-use ds::base::vocab::ShortcutKey;
-use ds::prelude::{Point, Px};
-use ds_harness::{Harness, Input, PointerAction, PointerInput};
 use temor_ui_base::probe::Probe;
+use ui_components::base::press::PointerButton;
+use ui_components::base::vocab::ShortcutKey;
+use ui_components::prelude::{Point, Px};
+use ui_harness::{Harness, Input, PointerAction, PointerInput};
 
 use super::drive::{chord, focus_pane, type_line, wait_until};
 use super::support::{scratch_path, tools_present};
@@ -275,7 +275,7 @@ fn pop_out_moves_the_page_to_a_window_of_its_own() {
         &probe,
         None,
         |_| {},
-        ds_harness::WindowHosting::Absent,
+        ui_harness::WindowHosting::Absent,
         {
             let popped = popped.clone();
             move |config| config.with_context(temor_ui_base::pop_out::PopOutWindows(popped))
