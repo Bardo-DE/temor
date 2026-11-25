@@ -33,7 +33,7 @@ pub enum DrawnBy {
 /// Who draws a key of `kind`.
 pub fn drawn_by(kind: &KeyKind) -> DrawnBy {
     match kind {
-        KeyKind::Toggle { .. }
+        KeyKind::Toggle
         | KeyKind::Segmented { .. }
         | KeyKind::Menu { .. }
         | KeyKind::Fixed { .. }
