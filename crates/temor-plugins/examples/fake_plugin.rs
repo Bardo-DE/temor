@@ -1,5 +1,5 @@
 //! A plugin for temor's tests, built on `plugin_host::testing`. It answers all four capabilities and
-//! misbehaves on the wire when started with `--fault <name>` (bayonet's names).
+//! misbehaves on the wire when started with `--fault <name>` (plugin-host's names).
 //!
 //! What it answers, by request:
 //! - facts: `cluster = prod` (with a newline in the value) and one fact with no label;

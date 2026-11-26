@@ -6,7 +6,7 @@
 //! machine. It never reads a socket, never spawns and never sleeps: the caller feeds bytes in,
 //! passes the clock in, and carries out the effects it gets back.
 //!
-//! Framing follows bayonet's wire (`u32 LE json length | u32 LE payload length | JSON | payload`),
+//! Framing follows plugin-host's wire (`u32 LE json length | u32 LE payload length | JSON | payload`),
 //! so bulk bytes (terminal snapshots, file contents, pty output) cross without encoding.
 //! Messages are JSON through `serde_json`: the protocol is versioned by hand, the frames stay
 //! readable in a log, and the payload carries everything binary.

@@ -1,6 +1,6 @@
 //! The dock badge: `com.canonical.Unity.LauncherEntry.Update`, a broadcast the desktop's dock
 //! reads for a count, a progress bar and an urgent mark. actiond and ds-desktop only read it
-//! (sill's dock), so temor sends it itself.
+//! (the shell's dock), so temor sends it itself.
 
 use super::bus::connect;
 use crate::{Badge, BadgeCount, DesktopEnv, DesktopError};

@@ -1,4 +1,4 @@
-//! temor's plugins (PLAN D14, P11), on bayonet.
+//! temor's plugins (PLAN D14, P11), on plugin-host.
 //!
 //! A plugin is a program a person installs; temor runs it and never links it. This crate holds
 //! temor's side of the arrangement:

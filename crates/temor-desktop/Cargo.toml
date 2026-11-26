@@ -38,7 +38,7 @@ desktop = [
   "dep:dispatch2",
 ]
 
-# `SystemIntents::serve_for_router`: a private bus's stand-in for intentd. Only this crate's own
+# `SystemIntents::serve_for_router`: a private bus's stand-in for the intents router. Only this crate's own
 # tests turn it on (the dev-dependency below), so no build of the window contains it.
 router-for-tests = ["desktop"]
 

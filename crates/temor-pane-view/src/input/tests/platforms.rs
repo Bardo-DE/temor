@@ -7,7 +7,7 @@ use temor_panes::pane::keys::Action;
 use super::table::{KDE, OURS, Went, ch, check, row};
 
 /// Key events as our desktop delivers them, through the stroke and the router: ⌘ arrives as
-/// Super, or as Ctrl+Shift when keycap remaps it for a terminal window. Shifted keys come with
+/// Super, or as Ctrl+Shift when the key remapper rewrites it for a terminal window. Shifted keys come with
 /// the shifted character as the logical key, and still match their base key.
 #[test]
 fn our_desktop_sends_command_as_super_or_ctrl_shift() {

@@ -70,8 +70,8 @@ pub enum StatusSource {
     ProgramStatus,
     /// An `agent.adapter` plugin over temor's socket.
     Adapter(PluginId),
-    /// actiond's companion roster, for agent-view sessions.
-    Docket,
+    /// The actions service's companion roster, for agent-view sessions.
+    Companion,
     /// A notification sequence or a bell.
     Notification,
 }

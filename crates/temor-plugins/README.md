@@ -2,7 +2,7 @@
 
 temor's plugins (PLAN D14, P11): the four capabilities, their messages, and the host side that
 finds a plugin, runs it for one request and reads its answer. A plugin is a program that is run,
-never linked; the wire is bayonet's.
+never linked; the wire is plugin-host's.
 
 ## Trying a lens
 

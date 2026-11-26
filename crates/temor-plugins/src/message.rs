@@ -1,5 +1,5 @@
-//! What temor and a plugin say to each other. The shapes follow bayonet's `docs/capabilities.md`;
-//! the payloads are temor's. `open.provider` rows are the launcher provider shape (sill's), so one
+//! What temor and a plugin say to each other. The shapes follow plugin-host's `docs/capabilities.md`;
+//! the payloads are temor's. `open.provider` rows are the launcher provider shape (the shell's), so one
 //! plugin can feed both.
 
 use serde::{Deserialize, Serialize};

@@ -1,4 +1,4 @@
-# Spike P0(b): libghostty grids and kitty images in quire `TextureLayer`s
+# Spike P0(b): libghostty grids and kitty images in UI kit `TextureLayer`s
 
 Date: 2026-10-09. Plan refs: D1, D4, D13, §4b, §5.
 
@@ -12,14 +12,14 @@ Date: 2026-10-09. Plan refs: D1, D4, D13, §4b, §5.
 
 **The risky path works.** In one real window there are:
 
-- a quire `SplitView` with two panes
+- a UI-kit `SplitView` with two panes
 - a libghostty-vt terminal in each pane, painted into its own `TextureLayer`
 - kitty images
 - an anyview peek in the third region, drawing its own `TextureLayer`
 
 Both renderer strategies draw the same picture.
 
-**Recommendation: build the GPU renderer, but not on the terminal's I/O thread. Ask quire for a
+**Recommendation: build the GPU renderer, but not on the terminal's I/O thread. Ask the UI kit for a
 render hook.**
 
 - **The GPU path costs far less CPU.**
@@ -44,17 +44,17 @@ render hook.**
 - Nothing was written under `$HOME`. Runs point `XDG_CONFIG_HOME` and `XDG_CACHE_HOME` at a
   scratch directory, and the app has no settings store.
 
-### Quire and anyview pins
+### The UI kit and anyview pins
 
-- quire is pinned as asked: `git = "https://github.com/PoHsuanLai/quire.git", rev = 366dcd9`.
+- The UI kit is pinned as asked: `git = "<the UI kit's repository URL with .git>", rev = 366dcd9`.
 - The `[patch.crates-io]` block is copied from CONSUMING.md §1 and `docs/workspace-deps.toml`.
 - `anyview-peek` and `anyview-core` come from `github.com/PoHsuanLai/anyview@6f27d11`.
-- anyview pins quire `db32189` under the same `.git` spelling. P0(d)'s `www.github.com`
+- anyview pins the UI kit `db32189` under the same `.git` spelling. P0(d)'s `www.github.com`
   redirect patch unifies the two: `Cargo.lock` holds **one** `ds`, at 366dcd9.
 
 ### `src/lib.rs`: the window
 
-- `ds_blitz::launch` → `Ds` → `SplitView` with two `SplitPane`s, each holding a `TermPane`. The
+- `ui_blitz::launch` → `Ds` → `SplitView` with two `SplitPane`s, each holding a `TermPane`. The
   rest region holds `PeekRegion`, which is anyview `Pane` on `sample.png`.
 - Each `TermPane`:
   - is a parent `div` with the `onclick`
@@ -96,7 +96,7 @@ RenderState and the renderer. It:
 ### `font.rs`: fonts and atlases
 
 - Faces:
-  - quire's code face, Space Mono 400 and 700, taken from `ds::style::fonts::FACES`
+  - The UI kit's code face, Space Mono 400 and 700, taken from `ds::style::fonts::FACES`
   - fallbacks found through fontique: Adwaita Mono, Noto Sans Mono CJK, Noto Color Emoji,
     Symbola
 - swash shapes multi-codepoint graphemes and rasterises, with synthetic italic as a skew.
@@ -135,7 +135,7 @@ RenderState and the renderer. It:
   4. `submit`, then `handle.redraw()`
 - With timing on, it waits for `on_submitted_work_done`. `--no-gpu-wait` turns that off.
 
-**So quire's API does let an app render into a layer's texture on the window's device.**
+**So the UI kit's API does let an app render into a layer's texture on the window's device.**
 `use_gpu()` gives the device, `gpu.register` or `handle.replace` registers the texture, and
 `handle.redraw` shows it. That is a full GPU path, not only CPU pixels.
 
@@ -144,7 +144,7 @@ RenderState and the renderer. It:
 - `stats.rs`: per-frame records, CPU from `/proc` (process, pane thread, UI thread = main tid),
   and memory.
 - `src/bin/vtbench.rs`: a headless `vt_write` benchmark.
-- `tests/harness.rs`: the same `App` on ds-harness with `Backend::Hybrid` (the window's
+- `tests/harness.rs`: the same `App` on ui-harness with `Backend::Hybrid` (the window's
   vello_hybrid renderer on the real GPU). It covers:
   - the composition picture
   - clicks in both modes
@@ -175,7 +175,7 @@ The evidence is therefore:
   - the cursor
 
   CPU and GPU match.
-- **The whole document in quire's harness, on the same renderer and the real GPU.** These
+- **The whole document in the UI kit's harness, on the same renderer and the real GPU.** These
   pictures show the split, both terminal layers and the anyview peek (its picture is anyview's
   own `TextureLayer`):
   - `shots/harness/harness-{cpu,gpu}-80x24.png`
@@ -242,7 +242,7 @@ The evidence is therefore:
 - **Measured:** `vt_write` to texture ready.
   - CPU strategy: p50 2 ms while scrolling, about 0.1 ms per keystroke.
   - GPU strategy: GPU done 0.5 ms when uncontended, otherwise up to 16 ms.
-- **Not measurable:** presentation. quire has no presented-frame signal, and wgpu timestamp
+- **Not measurable:** presentation. The UI kit has no presented-frame signal, and wgpu timestamp
   queries need a feature that `AppConfig` cannot request (§5 known limit).
 - **Expected:** add the window's next paint (at most one refresh, 16.7 ms at 60 Hz) plus
   KWin's compositing.
@@ -274,7 +274,7 @@ would cut both columns.
   never changed. That was for a background, unfocused window, and it was tried 4 times.
 - **Window sizes set in code work.** Launching at the sizes computed for 80x24 and 200x60 gave
   exactly 80x24 and 200x60 per pane, with 4x4 device px of padding.
-- **Reflow works.** I drove it through ds-harness `resize_window` (a person's drag, which the
+- **Reflow works.** I drove it through ui-harness `resize_window` (a person's drag, which the
   coordinator allows). Both panes went from 80x24 to 68x20 in a 1093x812 device-px box, with
   5x12 px of padding. `vt resize` took 60–150 µs, and the 256-colour rows and scrollback
   reflowed (`resized-harness-*.png`).
@@ -292,9 +292,9 @@ would cut both columns.
   - at 500% zoom, both panes' text is pixel-identical and sharp
   - `Actual` floors its centring offset, so a fractional box origin did not blur
 
-### The click bug (Blitz custom widget, quire v0.2.30)
+### The click bug (Blitz custom widget, UI kit v0.2.30)
 
-I tested in ds-harness, clicking the centre of each pane.
+I tested in ui-harness, clicking the centre of each pane.
 
 | Mode | Result |
 |---|---|
@@ -310,7 +310,7 @@ One window held four layers with no conflict:
 
 - two terminal layers, each replaced or resized at runtime
 - anyview's picture layer (made with `gpu.upload` on the same device)
-- quire's `GpuProbe`
+- The UI kit's `GpuProbe`
 
 Our registrations and anyview's coexist, and resizing replaced our textures cleanly. No
 validation errors and no lost frames appeared in any run.
@@ -324,7 +324,7 @@ validation errors and no lost frames appeared in any run.
      contention is the window's render thread (acquire and present under FIFO), not the panes.
    - `queue.write_texture` from the same threads does not stall (0.03–0.6 ms).
    - **Consequence:** never submit GPU work from a terminal I/O thread. Encode and submit on
-     the window's render path. Until quire offers that, use one per-window render thread.
+     the window's render path. Until the UI kit offers that, use one per-window render thread.
 2. **A Debug libghostty passes silently for "release".**
    - libghostty-vt-sys's build.rs picks Zig `Debug` whenever cargo sets `DEBUG=true`, and any
      debuginfo setting does that, even in the `release` profile.
@@ -339,12 +339,12 @@ validation errors and no lost frames appeared in any run.
    - The spike falls back to Symbola: monochrome, and 👍🏽 and ZWJ families split into pieces.
    - **For temor:** paint COLRv1 through skrifa's colour painter into vello_cpu (already in the
      tree), or bundle a CBDT emoji font.
-4. **quire's code face is not a terminal face.**
+4. **The UI kit's code face is not a terminal face.**
    - The Space Mono subset has no box drawing, CJK or emoji.
    - Its line height is about 1.5 (the cell is 16x40 at 26 device px).
    - The spike draws box drawing procedurally (needed anyway, as Ghostty and kitty do) and falls
      back for the rest.
-   - Ask quire for a terminal code-face token with a tighter line height, or let temor set its
+   - Ask the UI kit for a terminal code-face token with a tighter line height, or let temor set its
      own.
 5. **The `Ds` root is only as tall as its content.**
    - The split was 381 px tall in a 482 px window (sized by the peek's content).
@@ -366,7 +366,7 @@ validation errors and no lost frames appeared in any run.
    crate's types are `!Send`), so the §4b I/O-thread/render-path split was not exercised here;
    P0(a) proved it headless.
 
-## Quire asks
+## UI kit asks
 
 1. **A render hook for a texture layer.** Let an app encode into its texture on the window's
    render thread, inside the frame, before the window's own submit. For example

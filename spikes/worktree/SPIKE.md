@@ -1,8 +1,8 @@
 # Spike: `git merge-tree --write-tree` as an overlap detector for agent worktrees
 
-Scope: D19 / PLAN §8.2 "Early overlap warnings". Clones only (`repo-small` = temor, `repo-large` = quire at its
+Scope: D19 / PLAN §8.2 "Early overlap warnings". Clones only (`repo-small` = temor, `repo-large` = the UI kit at its
 HEAD, 2510 tracked files, 1053 commits). Synthetic scenario repo in `synth/`. Scripts in `scripts/`.
-Environment: git 2.55.0, GIT_CONFIG_GLOBAL=/dev/null, no writes to ~/temor, ~/quire, ~/.config, ~/.cache.
+Environment: git 2.55.0, GIT_CONFIG_GLOBAL=/dev/null, no writes to ~/temor, the UI kit's checkout, ~/.config, ~/.cache.
 
 ## 1. Git behaviour
 
@@ -72,7 +72,7 @@ Notes:
 
 ## 5. Timing (median of 20 rounds, ms)
 
-| check | small (temor, 5 files) | large (quire) |
+| check | small (temor, 5 files) | large (the UI kit) |
 |---|---|---|
 | merge-tree, one pair, commits | 0.7 | 1.1 |
 | merge-tree, agent vs base | 0.7 | 0.9 |
@@ -112,7 +112,7 @@ display, and the team can tune that later without changing the algorithm.
 ## Known gaps
 
 - Textual only: semantic conflicts are invisible (§4).
-- Snapshot cost grows with worktree size (65 ms on quire); a `git status --porcelain` short-circuit for the
+- Snapshot cost grows with worktree size (65 ms on the UI kit); a `git status --porcelain` short-circuit for the
   clean case would help but was not measured.
 - Only the synthetic repo has a moved base in the scenario table; timing used an unmoved base.
 - Not tested: LFS, submodules, sparse checkouts, merge-tree on a non-linux host.

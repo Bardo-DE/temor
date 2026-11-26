@@ -1,6 +1,6 @@
 //! The ⌘T bar and the quick terminal in the window (ds-harness, event dispatch only).
 //!
-//! The ⌘ chords arrive in the Ctrl+Shift form keycap sends (the harness's keymap is our
+//! The ⌘ chords arrive in the Ctrl+Shift form key remap sends (the harness's keymap is our
 //! desktop's); the quick terminal's is ⇧⌘Y as Super+Shift+Y.
 
 use std::time::Duration;

@@ -74,7 +74,7 @@ jobs:
           cargo clippy -p temor-render --features gpu --all-targets -- -D warnings
           cargo test -p temor-render --features gpu
 
-      # The portable core builds without our desktop's extras (zbus, docket, porter): the proxy,
+      # The portable core builds without our desktop's extras (zbus and bardo's intents and accounts clients): the proxy,
       # beside the macOS runner below, for "no session bus needed".
       - name: Portable build (no desktop extras)
         run: cargo check --workspace --no-default-features
@@ -175,8 +175,9 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           cache-on-failure: true
-      # `--no-default-features`: the `desktop` feature (zbus, docket, porter) is our desktop's
-      # extras; here the portable build is what is built and tested (quire design/36 rule 3).
+      # `--no-default-features`: the `desktop` feature (zbus and bardo's intents and accounts
+      # clients) is our desktop's extras; here the portable build is what is built and tested (bardo's
+      # crates/ui/design/36-PORTABLE-CORE.md rule 3).
       - name: Clippy
         run: cargo clippy --workspace --all-targets --no-default-features -- -D warnings
       - name: Tests

@@ -2,7 +2,7 @@
 //! line of the output, as long as the line, in the width temor asks for and about six rows tall.
 //! The manifest beside it (`lens-demo.toml`) and the crate's README say how to install it.
 //!
-//! It speaks the plugin protocol on its standard input and output (bayonet's frames): it says
+//! It speaks the plugin protocol on its standard input and output (plugin-host's frames): it says
 //! hello, reads one request, answers it, and ends.
 
 use std::process::ExitCode;

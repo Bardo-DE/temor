@@ -18,7 +18,7 @@
 //! This crate draws with vello_cpu, which must be the toolkit's fork (the colour matrix and filter
 //! layers). The fork is wired by a `[patch.crates-io]` block, and `[patch]` applies only at a
 //! workspace root, so a consumer that builds `temor-render` must copy the toolkit's block into its own
-//! root `Cargo.toml`. `scripts/fork-patches.sh print` in quire prints it.
+//! root `Cargo.toml`. `scripts/fork-patches.sh print` in bardo's crates/ui prints it.
 //!
 //! Fonts come from fontique ([`FontSet`]): the system `monospace` family by default, or a named
 //! one, at a logical size. swash shapes and rasterises into a glyph cache that names each glyph by

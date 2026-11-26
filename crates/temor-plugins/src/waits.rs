@@ -1,4 +1,4 @@
-//! How long temor waits on a plugin: bayonet's three waits, with temor's defaults.
+//! How long temor waits on a plugin: plugin-host's three waits, with temor's defaults.
 
 use std::time::Duration;
 
@@ -15,7 +15,7 @@ pub struct Waits {
 }
 
 impl Default for Waits {
-    /// bayonet's own defaults: 5 s to greet, 30 s of silence, 2 s to stop.
+    /// plugin-host's own defaults: 5 s to greet, 30 s of silence, 2 s to stop.
     fn default() -> Self {
         Waits {
             hello: Duration::from_secs(5),

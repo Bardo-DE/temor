@@ -36,7 +36,7 @@ fn presence_follows_reports_focus_prompts_and_exit() {
         ("a stale seq is ignored", at(Working, Focused, 5), report(Idle, 4), Working, vec![]),
         ("an equal seq is ignored", at(Working, Focused, 5), report(Idle, 5), Working, vec![]),
         ("another source has its own sequence", at(Working, Focused, 5),
-            PresenceIn::Report(StatusReport { pane: PaneId(1), state: Idle, seq: Seq(1), source: StatusSource::Docket, note: None }),
+            PresenceIn::Report(StatusReport { pane: PaneId(1), state: Idle, seq: Seq(1), source: StatusSource::Companion, note: None }),
             Idle, vec![PresenceOut::Changed(Idle)]),
         ("waiting while unfocused notifies with the note", at(Working, Unfocused, 1), report(Waiting(WaitKind::Permission), 2),
             Waiting(WaitKind::Permission),

@@ -67,7 +67,7 @@ text_newtype!(
     ErrorLine
 );
 text_newtype!(
-    /// A plugin's id, as bayonet's discovery names it.
+    /// A plugin's id, as plugin-host's discovery names it.
     PluginId
 );
 text_newtype!(

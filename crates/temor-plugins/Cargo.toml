@@ -1,6 +1,6 @@
 [package]
 name = "temor-plugins"
-description = "temor's plugins (PLAN D14, P11): its four capabilities, their messages, and the host side that finds a plugin, runs it for one request and reads its answer. Built on bayonet; a plugin is a program that is run, never linked."
+description = "temor's plugins (PLAN D14, P11): its four capabilities, their messages, and the host side that finds a plugin, runs it for one request and reads its answer. Built on plugin-host; a plugin is a program that is run, never linked."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -8,7 +8,7 @@ rust-version.workspace = true
 publish = false
 
 [features]
-# bayonet's fake plugin, for the example program the tests run.
+# plugin-host's fake plugin, for the example program the tests run.
 testing = ["plugin-host/testing"]
 
 [dependencies]

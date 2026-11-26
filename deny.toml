@@ -6,6 +6,19 @@
 [graph]
 targets = ["x86_64-unknown-linux-gnu"]
 
+[advisories]
+# Each ignore says why it is safe to carry and what would end it; a new advisory fails CI.
+ignore = [
+    # syntect (the viewer pane's highlighter, through bardo's anyview-text) reads its own built-in dump with it.
+    { id = "RUSTSEC-2025-0141", reason = "bincode unmaintained but complete; syntect reads only its own built-in dump with it" },
+    { id = "RUSTSEC-2024-0436", reason = "paste: compile-time proc macro only, no runtime exposure; arrives through image's exr and pulp" },
+    { id = "RUSTSEC-2026-0192", reason = "ttf-parser unmaintained, no known flaw; reached only through winit's client-side frame (sctk-adwaita)" },
+    # zbus 5's companion crates, folded into zbus 6. Remove when the desktop moves to zbus 6.
+    { id = "RUSTSEC-2026-0370", reason = "zvariant folded into zbus 6; no known flaw" },
+    { id = "RUSTSEC-2026-0371", reason = "zbus_names folded into zbus 6; no known flaw" },
+    { id = "RUSTSEC-2026-0372", reason = "zvariant_derive folded into zbus 6; no known flaw" },
+]
+
 [licenses]
 allow = [
     "MIT",
@@ -34,7 +47,7 @@ exceptions = [
 # MPL is file-level copyleft: fine to link or depend on, never to paste source from. That
 # position is about the *licence*, so encoding it per-crate would be busywork. Several crates
 # arrive under it by unrelated routes (stylo, app_units, cssparser and selectors in blitz; option-ext
-# through dirs; cosmic-dbus-networkmanager and freedesktop-desktop-entry in the shell), and the
+# through dirs; freedesktop-desktop-entry in the desktop), and the
 # versions churn.
 #
 # Depending on them obliges us to make *those files'* source available, which their registries

@@ -62,7 +62,7 @@ Review leftovers that didn't block a merge. Each one names the lane it came from
 
 ## temor-render (lane/render, reviewed at f4ead2c)
 - [x] The app must call `Palette::apply` on every new terminal before its first frame and on theme
-      change; grid colours from quire's terminal tokens once v0.2.31 is tagged. §5
+      change; grid colours from the UI kit's terminal tokens once v0.2.31 is tagged. §5
       (done: P3a 91eaf50 and 5bccf7d; temor-pane `engine/term.rs`)
 - [ ] No device-level tests for atlas retries or the oversize-image skip (the GPU path itself is
       wired through `use_gpu` in `view/pane_view.rs`). §5
@@ -71,19 +71,19 @@ Review leftovers that didn't block a merge. Each one names the lane it came from
 - [x] Kitty unicode-placeholder (virtual) placements are not drawn; selection changes recompose the
       whole pane; CPU clips glyph overhang to the row, GPU does not. §5 (done: Batch 23)
 
-## quire v0.3.1 (b9b9c03b) — bump in R1, features in P3
+## UI kit v0.3.1 (b9b9c03b) — bump in R1, features in P3
 - [x] Bump the pin to `rev = "b9b9c03bf166f0e2be834518b2dd1ee76b4de7f5"  # v0.3.1` (done in R1a; the
       IME machine copy is dropped in 5f852bf, now `ds::edit::composition` and `RawKeySurface`).
 - [x] IME candidate area: `ime().switch(On)` then `cursor_area` with the layer origin plus the caret
       cell, through the host seam with a Busy retry (5f852bf; `view/window_help.rs`, `view/ime.rs`).
-      Not seen on a real fcitx5 yet, and ds-harness has no IME host to test it (leftover below).
+      Not seen on a real fcitx5 yet, and ui-harness has no IME host to test it (leftover below).
 - [x] Theme: the palette is re-applied on each `use_environment` change and on a Space look change
       (5bccf7d; `view/theme.rs`; the follower is `view/palette.rs`, a child inside the `Ds` root that
       reads `use_space_look()` there). `use_space_frame()` is not followed: its frame
       variables are sidebar ink, and P3a has no sidebar (P3b). Window title: `use_window_title` (fefac1e).
 - [x] IME on the pane's TextureLayer: `switch(On)` first, `cursor_area` with the caret in window-logical
-      px, Busy retried (5f852bf). quire's `EditSurface` retry is private, so `view/ime.rs` keeps its own.
-- [x] Add quire's coherence test (examples/consumer/tests/it/coherence.rs), adapted (e318913).
+      px, Busy retried (5f852bf). The UI kit's `EditSurface` retry is private, so `view/ime.rs` keeps its own.
+- [x] Add the UI kit's coherence test (examples/consumer/tests/it/coherence.rs), adapted (e318913).
 - [x] Keys (PLAN §6, answered by whopper): every ⌘ action is bound to Ctrl+Shift+key and Super+key;
       a pane chord is ⌘ by its form, never `is_command` (2f9cf18). Tests at input level:
       Ctrl+Shift+C and Super+C copy (New Tab does not exist yet, so Copy stands in), Ctrl+C and an
@@ -92,16 +92,16 @@ Review leftovers that didn't block a merge. Each one names the lane it came from
 
 ## temor-ui / temor (lane/app, P1, reviewed at f783a2a)
 - [ ] The window and pane columns are still flex divs (`.temor-window`, `.temor-pane` in
-      `view/window_style.rs`). quire has `Column` now (the sidebar uses it); move them to it. §5
+      `view/window_style.rs`). The UI kit has `Column` now (the sidebar uses it); move them to it. §5
       (the root extent, palette tokens and theme change are done: 91eaf50, 5bccf7d)
-- [x] quire asks (whopper offline; saved in /mnt/data/cargo/temor-lanes/pending-quire-asks.md): IME
+- [x] UI kit asks (whopper offline; saved in /mnt/data/cargo/temor-lanes/pending-ui-kit-asks.md): IME
       cursor area API, runtime window title, theme-change signal, consumer coherence test. Now in
-      quire v0.3.1 and used (5f852bf, fefac1e, 5bccf7d, e318913). §6
+      the UI kit (then v0.3.1) and used (5f852bf, fefac1e, 5bccf7d, e318913). §6
 - [x] OSC 52 writes are received and dropped (`TODO(P9)` in `session/lifecycle.rs`), and the
       hyperlink hover target preview is not built. Bell, title, notifications, cwd and progress
       are shown (P2, P3). §6, §7 (done: session/osc52.rs; link hover tip in view/link_tip.rs)
 - [ ] Settings are temor's own typed file at $XDG_CONFIG_HOME/temor/terminal.conf; move to
-      ds-settings when quire provides it. §6 (check: ds-settings is already used for the theme in
+      ui-settings when the UI kit provides it. §6 (check: ui-settings is already used for the theme in
       `view/theme.rs`; is it ready for temor's own keys?)
 - [ ] Per-cell text reads cost ~3 FFI calls per cell: measure search on a large scrollback. §5
 - [ ] Output read just before a resize may be parsed at the new size (the usual SIGWINCH window).
@@ -121,8 +121,8 @@ Review leftovers that didn't block a merge. Each one names the lane it came from
 
 ## Platform (owner): OS-specific stubs to implement on real machines
 Each one sits behind a `platform/` edge trait, marked `// TODO(platform:<os>)`.
-- [x] macOS keymap: the primary modifier is Cmd (bind Cmd chords, not keycap's Ctrl+Shift);
-      temor-core terminal/chord.rs and keymap.rs defaults. §6 (done: keys on chordkit, Primary per
+- [x] macOS keymap: the primary modifier is Cmd (bind Cmd chords, not the key remapper's Ctrl+Shift);
+      temor-core terminal/chord.rs and keymap.rs defaults. §6 (done: keys on keymap, Primary per
       platform; `macos_uses_command_only` in temor-ui input tests)
 - [x] Link opener and private runtime dir (macOS: `open`, `open -R`, temor-shell's 0700 folder; the
       Windows stubs remain). §6
@@ -134,13 +134,13 @@ Each one sits behind a `platform/` edge trait, marked `// TODO(platform:<os>)`.
       callers see none.
 - [ ] macOS trial sandbox: none (bwrap is Linux-only), so proposals say "not checked". Decide whether
       anything replaces it (`sandbox-exec` is deprecated). §8.3
-- [x] (done in bulkhead 0467c14: `CannotSandbox::RestrictedByAppArmor` reads
-      `kernel.apparmor_restrict_unprivileged_userns` when the probe fails; temor shows it once it links bulkhead, P8) Ubuntu 24.04+: unprivileged user namespaces are restricted by AppArmor; detect this, report
+- [x] (done in the sandbox crates at 0467c14: `CannotSandbox::RestrictedByAppArmor` reads
+      `kernel.apparmor_restrict_unprivileged_userns` when the probe fails; temor shows it once it links the sandbox crates, P8) Ubuntu 24.04+: unprivileged user namespaces are restricted by AppArmor; detect this, report
       `NoSandbox`, and document the profile. §8.3
 - [ ] macOS: the window, a tab and a shell, color emoji and CJK, a second launch adding a tab, and
       the app bundle were looked at on one Mac. Not yet checked: IME composition, fullscreen and
       resizing, Dock badge and Keychain against the real system (their unit tests use fakes), and
-      touchpad scrolling (quire's scroll-latched-lift, PR 49). Consider a
+      touchpad scrolling (the UI kit's scroll-latched-lift, PR 49). Consider a
       `cargo check --target aarch64-apple-darwin` CI job (Zig can cross-build libghostty).
 - [x] macOS transfer edge: `temor-transfer` receives files through one-name-at-a-time `openat` with
       `O_NOFOLLOW` (platform/unix.rs). Still open: `sync_folder` syncs, but a case-insensitive
@@ -149,15 +149,15 @@ Each one sits behind a `platform/` edge trait, marked `// TODO(platform:<os>)`.
 - [x] temor-ssh private runtime dir and regular-file reads on macOS. §9b
 - [ ] macOS: `temor-remote` (the helper for Linux hosts) has no macOS build; macOS hosts stay Tier A.
       Its tests are ignored there. §9b
-- [ ] macOS: the agent layer's transport (docket has none here), so restore points and the agent
+- [ ] macOS: the agent layer's transport (the intents router has none here), so restore points and the agent
       socket are absent; `temor -e` is never handed to a running temor (no bus, and the socket takes
       only a new window or tab).
 - [ ] macOS: Option-as-Alt is on for both Option keys (temor-pane platform/mod.rs); make it a setting
       (off, left, right, both). Right Option then types the layout's characters.
 - [ ] Review of PR #27 (2026-10-21):
-      - [x] quire-emoji's `prefer_colour` runs for each pane's font set and on every font change. Where
+      - [x] ui-emoji's `prefer_colour` runs for each pane's font set and on every font change. Where
         no system emoji family has COLR, it walked the font folders and read the whole COLRv1 file
-        (about 10 MB) each time. quire v0.3.38 finds the file once per process (quire-emoji pinned
+        (about 10 MB) each time. The UI kit (then v0.3.38) finds the file once per process (ui-emoji pinned
         at 9844ccac, done 2026-10-21; a COLRv1 font installed while temor runs is seen after a
         restart).
       - macOS single instance (temor-desktop platform/macos/instance.rs): a launch that times out
@@ -171,7 +171,7 @@ Each one sits behind a `platform/` edge trait, marked `// TODO(platform:<os>)`.
       side are unsupported today.
 
 ## App icon (in dist/, wire up when packaging)
-- Linux: `dist/icons/hicolor/<N>x<N>/apps/org.bardo.Temor.png` (16–512) installs under `$prefix/share/icons/hicolor/`; the desktop entry already says `Icon=org.bardo.Temor`. Window icon at runtime: set from the 256/512 PNG once quire lands its window-icon setter (queued: launch-config field plus `WindowHost::set_icon`).
+- Linux: `dist/icons/hicolor/<N>x<N>/apps/org.bardo.Temor.png` (16–512) installs under `$prefix/share/icons/hicolor/`; the desktop entry already says `Icon=org.bardo.Temor`. Window icon at runtime: set from the 256/512 PNG once the UI kit lands its window-icon setter (queued: launch-config field plus `WindowHost::set_icon`).
 - macOS: `scripts/package-macos.sh` builds `.icns` from `dist/icons/source/org.bardo.Temor-1024.png` into temor.app (ad-hoc signed; a Developer ID signature and notarisation are the owner's).
 - Windows (owner): `dist/windows/temor.ico` (6 sizes) into the exe resources.
 
@@ -193,50 +193,50 @@ Each one sits behind a `platform/` edge trait, marked `// TODO(platform:<os>)`.
       its own two-variant enum when R1b touches rows. (done: `Wrap`)
 
 ## R1b (lane/r1b)
-- [ ] Blocks stay in temor-core (L2) because they use `vocab` ids and quire's `Stamp`. An embedder of
+- [ ] Blocks stay in temor-core (L2) because they use `vocab` ids and the UI kit's `Stamp`. An embedder of
       temor-pane gets raw OSC 133 events (`MarkBegin`/`Prompt`/`Anchor`) but no block model. Move the
-      block machine into temor-pane with its own id/time types once an embedder (anyview, sill) needs it.
+      block machine into temor-pane with its own id/time types once an embedder (anyview, the shell) needs it.
 
 ## P3a (lane/p3a: keys, layout and tokens, theme, title, IME, coherence)
-- [x] quire asks: (1) a column or stack layout component (v0.3.1 has only SplitView); (2)
+- [x] UI kit asks: (1) a column or stack layout component (v0.3.1 has only SplitView); (2)
       `focus_landing_told` is `pub(crate)` at v0.3.1 (the v0.3.1 notes say public); (3) EditSurface's
       Busy retry (`write_soon`) is private, so `view/ime.rs` keeps its own 16-try loop; (4)
       `RawKeySurface` takes no style, pointer or wheel handlers and sizes nothing: the grid needs an
       inner element and a sheet rule for the surface's class (`view/window.rs` `WINDOW_CSS`); (5)
-      `.ds-texture-layer` has no rule in quire's sheet (the coherence test allows that one class). §6
-      (done in quire by v0.3.6; temor's side is the "Adopt" item under quire v0.3.4, v0.3.6)
+      `.ds-texture-layer` has no rule in the UI kit's sheet (the coherence test allows that one class). §6
+      (done in the UI kit by v0.3.6; temor's side is the "Adopt" item under UI kit v0.3.4, v0.3.6)
 - [x] A keymap setting replaces both command forms of its action, which gives the chord back to the
       program; a bare Ctrl chord is refused with the ⌘ forms named (review fixes). §6
 - [x] Unbound Super+letter reaches the program as text (as before P3a). Ghostty drops unbound ⌘ keys;
       decide the same here. §6 (done: dropped, f689008)
 - [x] KWin takes Meta+T/W/D/V globally on KDE, so those Super forms never reach temor there; the
       desktop's reserved chords are with whopper. §6
-      (2026-10-14, owner's choice: on Plasma temor gets keycap's `terminal` profile, Cmd+letter as
-      Ctrl+Shift+letter, which chordkit's KDE keymap reads; Cmd+D and Cmd+Shift+D arrive as one
+      (2026-10-14, owner's choice: on Plasma temor gets the key remapper's `terminal` profile, Cmd+letter as
+      Ctrl+Shift+letter, which keymap's KDE keymap reads; Cmd+D and Cmd+Shift+D arrive as one
       chord there. Before, its class matched no list and it got `default`, so Cmd+T reached the
-      shell as Ctrl+T. Installed in ~/.local/bin/keycap-focus; keycap branch
-      `temor-plasma-terminal` (b6d5594) for its repo. The installed keycap binary (Oct 3)
-      predates the `keymap-aware` profile; reinstalling keycap is the owner's.)
+      shell as Ctrl+T. Installed in ~/.local/bin/bardo-key-remap-focus; the key remapper branch
+      `temor-plasma-terminal` (b6d5594) for its repo. The installed key remapper binary (Oct 3)
+      predates the `keymap-aware` profile; reinstalling the key remapper is the owner's.)
 - [x] The cursor never blinked: the renderer ignored libghostty's blink flag and nothing timed
       it. Done: the terminal's default cursor blinks (`DEFAULT_CURSOR_BLINK`, applied with a
       cursor-style reset at start, which also applies `cursor.style` to the first prompt),
       programs can ask for a steady one, the focused pane's cursor is left out in each off half
       (600 ms) and shows solid from each key, paste or focus; `cursor.blink = off` turns it off.
-- [x] IME candidate placement is untested: ds-harness has no IME host, and the owner's fcitx5 is the only
-      real check. §6 (done 2026-10-16 on fcitx5: quire 3cfe32c4 carries the blitz-shell fix)
+- [x] IME candidate placement is untested: ui-harness has no IME host, and the owner's fcitx5 is the only
+      real check. §6 (done 2026-10-16 on fcitx5: the UI kit at 3cfe32c4 carries the blitz-shell fix)
 - [x] The window title is untested in the harness (no window host there); only the rule is tested. §7 (done: tests/it/window_title.rs)
-- [x] Per-workspace Space looks: the window draws `SpaceLook::default()` until sill publishes them. §5
+- [x] Per-workspace Space looks: the window draws `SpaceLook::default()` until the shell publishes them. §5
       (done: Batch 2 spaces, the root takes `spaces.look()` in `view/window.rs`)
 - [x] The palette follows the Space look (read inside `Ds`, `view/palette.rs`) but not
       `use_space_frame()` (the sidebar's ink; P3b). The look itself is `SpaceLook::default()` until
-      sill publishes per-workspace looks, so no change reaches it yet. §5 (done: Batch 1 and 2,
+      the shell publishes per-workspace looks, so no change reaches it yet. §5 (done: Batch 1 and 2,
       the sidebar reads `use_space_frame()` in `view/tab_sidebar.rs`, the look comes per Space)
 - [ ] `real_shells_*` and `a_five_mebibyte_paste_arrives_intact` time out under a parallel
       `cargo test -p temor-ui` (fish startup, a 15 s wait); they pass alone. §13
 
 ## P3b (lane/p3b: tabs, splits, session restore)
 - [x] Window integration is not done: the window still shows one session. The workspace model
-      (temor-core `workspace`) is not driven by the window yet, and the sidebar (quire `Sidebar`
+      (temor-core `workspace`) is not driven by the window yet, and the sidebar (the UI kit `Sidebar`
       with tab rows), the split miniature, the `SplitView` tree, drag to split and tear, and the
       `use_space_frame()` sidebar ink are not built. §7 (done: Batch 1 window)
 - [x] The session file (`temor-ui::edge::session_file`) is written and read, but the window does
@@ -252,15 +252,15 @@ Each one sits behind a `platform/` edge trait, marked `// TODO(platform:<os>)`.
       the plain tab since Batch 2)
 - [x] The pane ignores the workspace actions (`Session::run` no-op) until the window routes them
       to the workspace step. §6 (done: Batch 1, `Session::take_asked` hands them to the hub)
-- [x] quire ask: `SplitView` reports no finished drag, so a dragged divider is not written back
-      to the tree (`view/tree_view.rs`; the starting share is used, and the unread dot is quire's
+- [x] UI kit ask: `SplitView` reports no finished drag, so a dragged divider is not written back
+      to the tree (`view/tree_view.rs`; the starting share is used, and the unread dot is the UI kit's
       `Badge`). (check: v0.3.14's `SplitView` has `on_shown`; is that the report?)
-      (done: quire v0.3.20's `SplitView` has `on_resized`; the share goes to the tree as
+      (done: the UI kit's `SplitView` (from v0.3.20) has `on_resized`; the share goes to the tree as
       `WorkspaceIn::SetShare`, the split found by the panes on either side of its divider;
       `resizing::a_dragged_divider_keeps_its_place_through_a_tab_switch`)
 - [x] ⌃⌘= is bound to Ctrl+Shift+= and Ctrl+Super+=. The Ctrl+Super form is not a ⌘ chord under
       the terminal rule (it has Ctrl), so the owner should confirm this binding. §6 (obsolete: keys
-      moved to chordkit; equalize is `Primary+Ctrl+=`, else ⌥⌘0 where Primary is Ctrl+Shift)
+      moved to keymap; equalize is `Primary+Ctrl+=`, else ⌥⌘0 where Primary is Ctrl+Shift)
 
 ## Batch 1 (2026-10-10: window, spaces, desktop, ssh, remote, transfers, agents)
 Written without builds by Sonnet lanes; compiled, fixed and gated together by the orchestrator.
@@ -269,10 +269,10 @@ Items below are each lane's leftovers and the orchestrator's decisions.
 ### window
 
 
-- quire ask: `SplitView` takes a starting share (used) but reports no finished drag, so a divider the
+- UI kit ask: `SplitView` takes a starting share (used) but reports no finished drag, so a divider the
   person drags is not written back to the tree. It stays where it was dragged until the tab's
   structure changes (`view/tree_view.rs`). Ask: an `on_resized(index, Share)` handler.
-- quire ask: a named unread badge (a token-styled `Badge` dot is used, `view/tab_row.rs`).
+- UI kit ask: a named unread badge (a token-styled `Badge` dot is used, `view/tab_row.rs`).
 - Snapshot sidecars: libghostty's snapshot is one opaque block, so "cap at 4 MiB, keep the newest
   part" cannot cut it. A snapshot over the cap is not stored (`edge/sidecar.rs`, `Session::snapshot`).
   A real cap needs the pane to trim its scrollback first (temor-vt) or a text-based store.
@@ -282,7 +282,7 @@ Items below are each lane's leftovers and the orchestrator's decisions.
 - Blitz panic on Restart (node.rs:1573) was not reproduced (nothing runs here). Temor-side changes:
   the restart now happens a frame after the press, element handles of the input method are dropped
   when a pane leaves the page (`ImeGlue::release`), and no pane measures a handle across an unmount.
-  If it still panics, the node left behind is a quire/Blitz one (a hovered node of the removed
+  If it still panics, the node left behind is a UI-kit/Blitz one (a hovered node of the removed
   banner); report it upstream with the harness test `restarting_an_ended_shell_*`.
 - Pinning a tab, folders and renaming have no controls yet (the model and sidebar support them).
 - A restored pinned tab types its command into the new shell (`hub/act.rs` `type_command`); it does
@@ -302,14 +302,14 @@ Items below are each lane's leftovers and the orchestrator's decisions.
 - Wiring for the window lane:
   - Space switching: `Action::SelectSpace(n)` -> `Spaces::at(n-1)`.
   - New tabs: `space::launch(space, project, dotenv_text, runtime)` gives cwd, env, agent plan and credential list.
-  - The edge reads `dotenv_path(project)`, starts the agent at `AgentPlan::socket` (folder `<runtime>/temor`, mode 0700), asks porter for each `Credential`, and spawns.
+  - The edge reads `dotenv_path(project)`, starts the agent at `AgentPlan::socket` (folder `<runtime>/temor`, mode 0700), asks the accounts service for each `Credential`, and spawns.
   - Routes: `routes_of(spaces.list())` then `route(command, &routes)` / `route_folder(cwd, &routes)`.
   - Quick terminal: `quick_step`, then on `Promote` call `quick::adopt(&workspace_of(space), pane, cwd)`. `adopt` exists because `WorkspaceIn` has no "adopt a running pane" input.
-- Palette: `bar_step` keeps its own highlight and `OpenBar.rows` (kept from P3). To sit on quire's `PaletteState`, temor-ui feeds `OpenBar.rows` as `PaletteParams { rows }` and sends `Refreshed` on `BarOut::Refreshed`. The adapter lives in temor-ui because temor-core cannot depend on the `ds` views crate. Once that is wired, the duplicate highlight in `OpenBar` can go.
+- Palette: `bar_step` keeps its own highlight and `OpenBar.rows` (kept from P3). To sit on the UI kit's `PaletteState`, temor-ui feeds `OpenBar.rows` as `PaletteParams { rows }` and sends `Refreshed` on `BarOut::Refreshed`. The adapter lives in temor-ui because temor-core cannot depend on the `ds` views crate. Once that is wired, the duplicate highlight in `OpenBar` can go.
 - Ctrl+1..9 Space chords:
   - Plain Ctrl+digit is the only form. Super+digit is reserved, and Ctrl+Shift+digit is the tab chord.
   - It is a bare Ctrl chord and so takes Ctrl+2..7 (NUL, ESC..US) from programs that want them. Owner decision: keep, or move to a chord with Alt.
-  - quire's own note says Ctrl+digit is the desktop's workspace switch "left free of apps"; check on KDE that KWin does not take Ctrl+1..9 first.
+  - The UI kit's own note says Ctrl+digit is the desktop's workspace switch "left free of apps"; check on KDE that KWin does not take Ctrl+1..9 first.
   - The keymap can't rebind them (not in `Action::ALL`, and bare Ctrl is refused); add settings keys if wanted.
 - Quick terminal closing ends the shell (throwaway). A "hide, keep running" mode is a different state machine; ask the owner.
 - The quick terminal's hotkey is a model input only (`QuickIn::Toggle`). A global hotkey needs the desktop/portal edge (TODO(platform)); no `Action` was added.
@@ -319,7 +319,7 @@ Items below are each lane's leftovers and the orchestrator's decisions.
 - `closed.rs` `next_seq` now saturates instead of overflowing; a pure sequence number, so no refusal path.
 
 #### Orchestrator decisions (2026-10-10)
-- ⌃1–9 stays the Space switch (PLAN §6), but must use quire's `SwitchChord` definition, not a hand-coded Ctrl+digit table; fix at merge.
+- ⌃1–9 stays the Space switch (PLAN §6), but must use the UI kit's `SwitchChord` definition, not a hand-coded Ctrl+digit table; fix at merge.
 - Quick terminal hotkey toggles: hide and keep the shell while temor runs; it isn't saved with the session unless promoted ("Move to Space").
 - At merge: temor-ui session/keys.rs add `Action::SelectSpace(_)`; edge/session_file.rs add `_` arms for `Restored`/`FreshWhy`.
 
@@ -330,30 +330,30 @@ Items below are each lane's leftovers and the orchestrator's decisions.
   state (reads must return from a snapshot, they run on the bus task), then at startup
   `SystemInstance::new(env).claim(&Request::NewWindow)`; on `Claim::Primary` call
   `SystemIntents::serve(&env, window)`, keep the `Primary` and `SystemIntents` alive, and drive
-  `primary.next()`. Needs a tokio runtime and `ds-settings/tokio` (zbus is built on tokio here,
-  as docket and porter build it).
+  `primary.next()`. Needs a tokio runtime and `ui-settings/tokio` (zbus is built on tokio here,
+  as the intents router and the accounts service build it).
 - temor-ui must depend on temor-desktop with `default-features = false` and forward its own
   `desktop` feature, or the portable build pulls zbus.
-- Action names are `temor.*`, not `terminal.*` as PLAN §8.4 writes them: docket's validator
+- Action names are `temor.*`, not `terminal.*` as PLAN §8.4 writes them: the intents router's validator
   requires the app name's last element as prefix. PLAN should say so.
-- `context()`: docket's ContextSnapshot has no field for the focused pane's folder or the last
+- `context()`: the intents router's ContextSnapshot has no field for the focused pane's folder or the last
   block, and temor declares no entities. cwd and the last command are served by the actions
   `temor.pane.cwd` / `temor.command.read` (they taint the session). If the companion should get
   them in `context()`, temor needs entity kinds (`temor.pane`, `temor.command`) in the manifest.
 - The Space in `Invocation.space` is not mapped to the window's Spaces yet; the window decides
   which Space an action acts in. `SpaceRef` is only used to label `context()`.
-- Dock badge: nothing in ds-desktop or docket sends `LauncherEntry.Update` (sill only reads it), so
+- Dock badge: nothing in ui-desktop or the intents router sends `LauncherEntry.Update` (the shell only reads it), so
   `SystemDock` emits the signal itself at object path `/com/canonical/unity/launcherentry/1`.
   A dock that keys on the path (none known) would need the libunity hash.
-- Porter identifies the terminal by its systemd unit (`org.bardo.Temor.service`). A temor started
+- The accounts service identifies the terminal by its systemd unit (`org.bardo.Temor.service`). A temor started
   from the launcher or a shell is not that unit, so Tailnet1 may answer `Denied`. `SystemTailnet`
   returns that as an error (not an empty list); the window should show the group as absent.
-- Dependency copies: docket abbb62c pins porter 55d1ade, the Tailnet reader is porter a7c11d2, so
-  two copies of porter-core are in the tree. temor only touches the a7c11d2 copy through
-  `porter_client::Machine`. When docket has a rev pinning a7c11d2 or later, bump docket and
-  prov/porter-core to it and the duplicate goes.
-- `porter-client` (feature `dbus`) still pulls porter-provider, porter-secrets and porter-service
-  (oo7 keyring etc.). Ask porter for a `tailnet`-only feature if the build weight matters.
+- Dependency copies: the intents router at abbb62c pins the accounts service at 55d1ade, the Tailnet reader is the accounts service at a7c11d2, so
+  two copies of account-core are in the tree. temor only touches the a7c11d2 copy through
+  `account_client::Machine`. When the intents router has a rev pinning a7c11d2 or later, bump the intents router and
+  prov/account-core to it and the duplicate goes.
+- `account-client` (feature `dbus`) still pulls account-provider, account-secrets and account-service
+  (oo7 keyring etc.). Ask the accounts service for a `tailnet`-only feature if the build weight matters.
 - `DBusActivatable=true` plus `org.freedesktop.Application` is not implemented; activation is
   by the two bus names in dist/. Add it if the launcher should activate temor that way.
 - Platform TODOs: macOS dock badge and single instance, Windows taskbar badge and single
@@ -364,17 +364,17 @@ Items below are each lane's leftovers and the orchestrator's decisions.
 - Add `temor-desktop` and its tests (need `dbus-daemon`) to the TEMOR_REQUIRE_TOOLS list.
 
 #### Orchestrator decisions (2026-10-10)
-- Two porter-core copies (docket abbb62c pins porter 55d1ade; porter-client is a7c11d2): accepted until docket moves; asked the agent session for a docket rev on porter ≥ a7c11d2.
+- Two account-core copies (the intents router at abbb62c pins the accounts service at 55d1ade; account-client is a7c11d2): accepted until the intents router moves; asked the agent session for an intents router rev on the accounts service ≥ a7c11d2.
 - `temor.pane` / `temor.command` entity kinds and richer `context()`: P12 (companion context).
-- Launcher starts must run as the unit so porter grants Tailnet1: set `DBusActivatable=true` in dist/org.bardo.Temor.desktop (the launcher then activates org.bardo.Temor, and D-Bus starts it through `SystemdService=`). Do at merge.
-- UPDATE: pin docket 1b905edc5303c9f2241f8a5f6358968ece8dde36 and porter (prov, porter-core, porter-client) b12886e4d047d9763a4dccfa9fa3ce92084483ca (includes a7c11d2) at merge, for one porter-core. Batch 10 later: porter a1a07f5 (additive).
+- Launcher starts must run as the unit so the accounts service grants Tailnet1: set `DBusActivatable=true` in dist/org.bardo.Temor.desktop (the launcher then activates org.bardo.Temor, and D-Bus starts it through `SystemdService=`). Do at merge.
+- UPDATE: pin the intents router at 1b905edc5303c9f2241f8a5f6358968ece8dde36 and the accounts service (prov, account-core, account-client) b12886e4d047d9763a4dccfa9fa3ce92084483ca (includes a7c11d2) at merge, for one account-core. Batch 10 later: the accounts service at a1a07f5 (additive).
 
 ### ssh
 
 
 #### For the window (temor-ui / temor-desktop) to wire
 - Host list: `merge_hosts(&load_host_list(..), &tailnet_hosts)` -> `HostRow`s; group by `HostRow::group()`,
-  dim `presence() == Offline`, connect with `destination()`. The desktop lane maps porter's `Machine`
+  dim `presence() == Offline`, connect with `destination()`. The desktop lane maps the accounts service's `Machine`
   to `temor_ssh::TailnetHost` (`online`/`ssh` are `Presence`/`TailscaleSsh` enums, not bools).
 - Session start: `consent::gate(book, Who{key, alias})` -> ask one question at a time (`Gate::Ask`),
   then `RunMode::Bootstrap(policy)` -> `BootstrapScript::build_with(.., BootstrapOptions::with_terminfo(policy))`,
@@ -420,7 +420,7 @@ Items below are each lane's leftovers and the orchestrator's decisions.
 
 #### Not done (needs something outside this lane)
 - **Trial runs on the host and the agent relay** (`Request::RunTrial`, `Request::Relay`): need
-  bulkhead's trial module and its shared path/limit/redaction code. The daemon does not advertise
+  the sandbox crates' trial module and its shared path/limit/redaction code. The daemon does not advertise
   `Capability::Trial` / `Capability::Relay`; both requests answer `RemoteError::Unsupported`.
   `src/daemon/dispatch.rs` is the one place to add them.
 - **Chunked uploads**: `WriteFile` carries the whole file in one frame, so `Client::upload` stops at
@@ -554,7 +554,7 @@ Nothing here was compiled or run (batch rule). The orchestrator's first build wi
 - The `.worktreeinclude` name is unverified (PLAN says so). The matcher is a small gitignore subset (no `!`).
 - Not built: the "Leftover branches" list (needs `git worktree list` parsing), SSH/Tier B worktrees, `Open pull request` (outcome only), the shell split on conflict.
 - Semantic overlap is invisible by design; the UI must show `TEXT_OVERLAP_ONLY`.
-- D20: `LaunchFact`/`GateFact` need real readers (docket-launch profile, docket session). `ModeChange::Asks` has no gate API yet.
+- D20: `LaunchFact`/`GateFact` need real readers (the intents router's launch profile, the intents router session). `ModeChange::Asks` has no gate API yet.
 - D21: sizes are bytes of the text; no token estimate. The sent list stores the chip text (the log is local); decide retention.
 - Cargo.lock was edited by hand (tempfile dev-dep on temor-core and temor-pane, rustix on temor-pane); let cargo rewrite it.
 
@@ -565,33 +565,33 @@ Nothing here was compiled or run (batch rule). The orchestrator's first build wi
 - Duplicate commit message 6cf65ed/71ed891: fine, leave history.
 
 ### orchestrator (merge)
-- [x] Space switch: no default chord until the desktop rule settles (quire leaves Ctrl+digit to the desktop; the shell owns Super+digit); asked the agent session.
-      (done: settled as `SwitchChord::Unbound`, `view/space_ui.rs`; see Keys on chordkit)
+- [x] Space switch: no default chord until the desktop rule settles (the UI kit leaves Ctrl+digit to the desktop; the shell owns Super+digit); asked the agent session.
+      (done: settled as `SwitchChord::Unbound`, `view/space_ui.rs`; see Keys on keymap)
 - [x] Unbound Ctrl+Shift chords are dropped. Once a program turns on kitty keyboard flags they are distinct keys; forward them then instead of dropping.
-      (obsolete: the same item lives under Keys on chordkit, "Forward Primary-form chords")
+      (obsolete: the same item lives under Keys on keymap, "Forward Primary-form chords")
 - [x] `temor save` STARTED-before-consent (transfers decision) not yet done. (done: 8e55667)
-- [x] The Restart panic (Blitz node.rs:1573) was not reproduced; the regression test runs it in the harness. If it still happens on the desktop, take it to quire/Blitz with a backtrace (RUST_BACKTRACE=1).
-      (done: quire v0.3.4's hover-card guard fixed it; the restart test runs again)
+- [x] The Restart panic (Blitz node.rs:1573) was not reproduced; the regression test runs it in the harness. If it still happens on the desktop, take it to the UI kit/Blitz with a backtrace (RUST_BACKTRACE=1).
+      (done: the UI kit's hover-card guard (v0.3.4) fixed it; the restart test runs again)
 
-## quire v0.3.4, v0.3.6
-- [x] Bumped to v0.3.4 (e0d1ed48; v0.3.3 lacked `ds-blitz/src/layout_chain.rs`). The hover-card guard fixes the Restart panic; `restarting_an_ended_shell_gives_a_new_prompt_and_keeps_the_window_alive` runs again. quire now styles `.ds-texture-layer`, so the coherence exemption is gone.
-- [ ] Still to adopt from quire: `Column` for the window and pane columns (the sidebar has it);
+## UI kit v0.3.4, v0.3.6
+- [x] Bumped to v0.3.4 (e0d1ed48; v0.3.3 lacked `ui-blitz/src/layout_chain.rs`). The hover-card guard fixes the Restart panic; `restarting_an_ended_shell_gives_a_new_prompt_and_keeps_the_window_alive` runs again. The UI kit now styles `.ds-texture-layer`, so the coherence exemption is gone.
+- [ ] Still to adopt from the UI kit: `Column` for the window and pane columns (the sidebar has it);
       `ds::focus::soon::focus_landing_told`; `write_soon` (`view/ime.rs` keeps its own loop);
-      RawKeySurface `style` and pointer/wheel props (the grid still uses an inner div); ds-harness
+      RawKeySurface `style` and pointer/wheel props (the grid still uses an inner div); ui-harness
       `WindowHosting::Recorded` (`window_titles()`, `window_icon()`); `WindowIcon` and
       `with_icon` (X11 and Windows; Wayland takes the desktop entry's icon).
       `SwitchChord::Unbound` is in (`view/space_ui.rs`).
 
-## Keys on chordkit (lane/keys, chordkit d6fed65)
-- [x] chordkit 338b717 (ba094c6 fixes the fallback where the default is plain Ctrl in a terminal): temor forgoes "show fonts" and "new", so ⌘T is new tab (⌘N free); equalize has the fallback ⌥⌘0 (Ctrl+Shift+Alt+0 where Primary is Ctrl+Shift); a person's chord revives an action refused at start (focus left/right on "Other" Linux, where Ctrl+Alt arrows switch Spaces).
-- [x] chordkit FINDINGS: a fallback where the default collides (chordkit eb0deff). On "Other" Linux, Focus Left and Right fall back to Primary+Alt+H and L (done 2026-10-20). Toggle Sidebar is the standard action, as in mailo.
-- [x] keycap 0d9abbf adds the `keymap-aware` profile (⌘ arrives as Super); temor's desktop entry asks for it with `X-Keycap-Profile=keymap-aware`. A still-remapped window falls back to chordkit's Ctrl+Shift alias, where ⌘⇧D reads as ⌘D.
+## Keys on keymap (lane/keys, keymap at d6fed65)
+- [x] keymap at 338b717 (ba094c6 fixes the fallback where the default is plain Ctrl in a terminal): temor forgoes "show fonts" and "new", so ⌘T is new tab (⌘N free); equalize has the fallback ⌥⌘0 (Ctrl+Shift+Alt+0 where Primary is Ctrl+Shift); a person's chord revives an action refused at start (focus left/right on "Other" Linux, where Ctrl+Alt arrows switch Spaces).
+- [x] keymap FINDINGS: a fallback where the default collides (keymap at eb0deff). On "Other" Linux, Focus Left and Right fall back to Primary+Alt+H and L (done 2026-10-20). Toggle Sidebar is the standard action, as in mailo.
+- [x] The key remapper at 0d9abbf adds the `keymap-aware` profile (⌘ arrives as Super); temor's desktop entry asks for it with `X-Key-Remap-Profile=keymap-aware`. A still-remapped window falls back to keymap's Ctrl+Shift alias, where ⌘⇧D reads as ⌘D.
 - [x] Forward Primary-form chords to the program under the kitty keyboard flags (route.rs) instead of the drop. (done: input/route.rs)
-- [x] Desktop shortcut sources: keycap on our desktop, `chordkit-kde`, `chordkit-gnome` (edge/keymap.rs uses `ConventionSource` only), plus `KeymapSource::watch` to reload and re-register. (done: edge/keymap_source.rs)
-- [x] quire v0.3.6 (8ce6d4b, chordkit ba094c6, maps ALT_GRAPH): one chordkit in the tree. temor still routes its own window keys; moving to quire's `ds::keys` resolver is a later step.
-- [x] Wire `keys::{shortcut, terminal_shortcut}` into menus when they show shortcuts. (Batch 26: the sidebar and more menus; quire draws none in context menus)
+- [x] Desktop shortcut sources: the key remapper on our desktop, `keymap-kde`, `keymap-gnome` (edge/keymap.rs uses `ConventionSource` only), plus `KeymapSource::watch` to reload and re-register. (done: edge/keymap_source.rs)
+- [x] The UI kit (then v0.3.6; 8ce6d4b, keymap at ba094c6, maps ALT_GRAPH): one keymap in the tree. temor still routes its own window keys; moving to the UI kit's `ds::keys` resolver is a later step.
+- [x] Wire `keys::{shortcut, terminal_shortcut}` into menus when they show shortcuts. (Batch 26: the sidebar and more menus; the UI kit draws none in context menus)
 - [ ] The old `keys.<action> = ctrl+shift+c` lines now report "no setting called"; say so in the user docs when settings are documented.
-- [x] Space switch: `SelectSpace(n)` is chordkit's switch-to-space standard action; no platform binds
+- [x] Space switch: `SelectSpace(n)` is keymap's switch-to-space standard action; no platform binds
       it live in a terminal, so it is reached from the Spaces menu only. The bar has no Space rows
       yet: nothing sets `BarSeams::spaces`, so it stays `NoSpaces` (Batch 2 bar). (done: `KitSpaces` rows in the bar)
 - [x] temor-ssh `files::an_awkward_path_is_fetched_edited_and_written_back` flaked once with ETXTBSY (a fake `ssh` script written while another test thread forked). Retry the spawn on ExecutableFileBusy in the test helper, or write the fakes before the threads start.
@@ -621,7 +621,7 @@ Written without builds by Sonnet lanes; merged, compiled, fixed and gated togeth
 - Starting a Space's ssh-agent blocks the window thread for up to 2 s on that Space's first new shell. Move to a worker. The agent edge is untested (no test starts `ssh-agent`/`ssh-add`).
 - A passphrase-protected key cannot be added (no terminal, no askpass): the person is told, the Space opens without the agent.
 - Project root, profile (env, dotenv, key, credentials) and routes have no editor yet: they live in `spaces.json`. Wants a Space settings page (and a warning for empty or all-star route patterns).
-- The delete question from the kit says "Everything on disk is not affected. Only X's look and settings go." It does not say that the Space's tabs close. Ask quire for a hook on that text.
+- The delete question from the kit says "Everything on disk is not affected. Only X's look and settings go." It does not say that the Space's tabs close. Ask the UI kit for a hook on that text.
 - "Move Tab Here" is in the menu of the Space you right-click; a "Move tab to Space" submenu on tab rows (listing the other Spaces) would be nicer, and the bar's "Move to Space" row.
 - The kit's `use_keys()` inside `use_spaces` runs outside the `Ds` root (hook is called in `App`), so it makes a default keymap that is never read (`SwitchChord::Unbound`, no `on_key`).
 - Space `link` (desktop Space following) is stored by the kit but unused here.
@@ -650,14 +650,14 @@ Written without builds by Sonnet lanes; merged, compiled, fixed and gated togeth
 - Quick terminal global hotkey: TODO(platform): a desktop/portal shortcut that works while another app has the keys. Only the in-app chord exists.
 - Quick terminal size is fixed (CSS percentages in `view/window_style.rs`); no resize, no per-screen placement.
 - The bar's field takes the keyboard, so ⌘T does not close an open bar (Escape and a click outside do). If wanted, a `claim` on `CommandPalette` can take the chord.
-- quire ask: a `PaletteIn::Select(PaletteIndex)` so a controlled palette's `on_select` goes through the machine; today `BarModel::selecting` rebuilds `PaletteState::open(query, index)`.
+- UI kit ask: a `PaletteIn::Select(PaletteIndex)` so a controlled palette's `on_select` goes through the machine; today `BarModel::selecting` rebuilds `PaletteState::open(query, index)`.
 - Focus return after Escape relies on the pane's existing "take the keyboard back when it becomes the keyboard pane" effect (`pane_view.rs` `had_keyboard`); the scenario `the_bar_opens_ranks_runs_and_hands_the_keys_back` checks it, nothing here proves it on a real window.
 
 ### desktop
 
-- Credentials (item 5): done since (Secret Service; see the Settings section). temor-desktop exposes nothing over porter for secrets, and the
-  spaces lane's `CredentialSource` trait is not on this base. Needed from porter: a client for
-  the secrets store through `porter-client` (a `Secrets`-style handle over `DbusTransport::over(conn)`
+- Credentials (item 5): done since (Secret Service; see the Settings section). temor-desktop exposes nothing over the accounts service for secrets, and the
+  spaces lane's `CredentialSource` trait is not on this base. Needed from the accounts service: a client for
+  the secrets store through `account-client` (a `Secrets`-style handle over `DbusTransport::over(conn)`
   with `get(name)` for a Space-scoped item, plus its `Denied` error), and then a `SystemSecrets` in
   temor-desktop::platform::linux that maps it to `CredentialSource`. Wire it in
   `app/desktop.rs::serve` next to the tailnet feed, and add a `credentials: Arc<dyn CredentialSource>`
@@ -681,7 +681,7 @@ Written without builds by Sonnet lanes; merged, compiled, fixed and gated togeth
   it in the background once the workspace step has a way.
 - `temor.command.run_sandboxed` answers "not available yet" until the trial module (P8) exists.
 - A second launch's NewWindow opens a new tab (temor has one window); it does not raise or focus
-  the window. Raising needs an `AppHandle`/activation token from ds-blitz.
+  the window. Raising needs an `AppHandle`/activation token from ui-blitz.
 - `Exit::Unknown` was added to temor-desktop (command ended, status not reported); it reads as
   `null` in `temor.command.list`, same as Running. If agents need to tell them apart, add an
   `"ended"` field in `perform.rs::command_list`.
@@ -690,7 +690,7 @@ Written without builds by Sonnet lanes; merged, compiled, fixed and gated togeth
   `current_thread` runtime on its own thread is the fallback.
 - A tailnet read that is `Denied` is retried only when `Changed` ticks (and the watch itself fails
   with Denied too, so the feed stays empty until the next launch). Launching through the unit
-  (DBusActivatable, orchestrator decision) is what makes porter grant it.
+  (DBusActivatable, orchestrator decision) is what makes the accounts service grant it.
 - Cargo.lock was edited by hand (temor: temor-desktop, tokio; temor-ui: temor-desktop, temor-ssh);
   cargo will normalise it.
 
@@ -700,7 +700,7 @@ Written without builds by Sonnet lanes; merged, compiled, fixed and gated togeth
 - [ ] `view::host_list::HostList { desk }` is still mounted nowhere (a sidebar section, if wanted).
       The ⌘T bar lists the hub's host rows through `hub::HostRows` (P18, 79ebb19).
 - [x] The desktop lane provides the tailnet: `hub::TailnetHandle(Arc<dyn TailnetFeed>)` as a root context
-      (read in `view/window.rs` with `try_consume_context`), or call `Hub::set_tailnet`. It maps porter's
+      (read in `view/window.rs` with `try_consume_context`), or call `Hub::set_tailnet`. It maps the accounts service's
       `Machine` to `temor_ssh::TailnetHost`. (done: `view/window.rs` calls `Hub::set_tailnet`)
 - [ ] ⌘T: a new tab or split of a host pane is a session on the same host (spec). With the bar, ⌘T opens the
       bar instead; decide whether the bar's "new tab" from a host pane means the host or a local shell.
@@ -726,7 +726,7 @@ Written without builds by Sonnet lanes; merged, compiled, fixed and gated togeth
 - [ ] A plain session (consent refused) cannot start in the pane's folder (no remote command to carry it).
 - [ ] The restored tab of a host reconnects on launch and may ask for a password then.
 - [x] A reopened closed tab (`Start::Scrollback`) loses its host (the mapping is dropped with the pane). (done: `ssh_note_closed`/`ssh_reclaim`)
-- [ ] Offline tailnet rows are `Availability::Disabled` (quire dims them and takes no press); a machine that
+- [ ] Offline tailnet rows are `Availability::Disabled` (the UI kit dims them and takes no press); a machine that
       is offline in the tailnet but reachable another way cannot be opened from the list.
 - [ ] The forward row's local port is any free port when the same number is taken; the person is not asked.
 - [ ] `ForwardFault::LocalPortTaken` has no message path in practice (a free port is picked first).
@@ -739,16 +739,16 @@ Written without builds by Sonnet lanes; merged, compiled, fixed and gated togeth
       typed in the bar for a host with no open pane. (done: `edit_when_up`)
 - [ ] OSC 52 / transfers / notifications consent stays in `remote::HostConsent` (FOLLOWUPS Batch 1 ssh).
 
-## Quire asks
+## UI kit asks
 - [ ] A `Toolbar`/row layout component for the host banner's text field + buttons (uses `.temor-host-line`).
-      (check: quire v0.3.14 has a `Toolbar` in `chrome/`; is it usable inside a banner?)
+      (check: the UI kit (then v0.3.14) has a `Toolbar` in `chrome/`; is it usable inside a banner?)
 
 ## Platform TODOs
 - `platform/open_file.rs`: `UnsupportedFile` stub for macOS/Windows (`TODO(platform:macos)`,
   `TODO(platform:windows)`); Linux uses `xdg-open`.
 
 ## Tests not run (nothing compiled in this lane)
-- hub/ssh_tests/* (stand-in `ssh`/`scp` in /tmp/tmr-<pid>-<name>, setsid needed), tests/it/ssh.rs (ds-harness).
+- hub/ssh_tests/* (stand-in `ssh`/`scp` in /tmp/tmr-<pid>-<name>, setsid needed), tests/it/ssh.rs (ui-harness).
 
 ### shelf
 
@@ -784,11 +784,11 @@ Written without builds by Sonnet lanes; merged, compiled, fixed and gated togeth
   files sent out.
 - `Wanted` serves only regular shelf files (`kitty::serve`); folders are not offered.
 - Shelf UI: a `Disclosure` in the sidebar foot with `Row`s; a long list grows the foot instead of scrolling
-  (needs quire's scroll container for the foot, CONSUMING §11). Thumbnails and drag-out are not drawn.
+  (needs the UI kit's scroll container for the foot, CONSUMING §11). Thumbnails and drag-out are not drawn.
   Reveal is `xdg-open` on the folder (TODO(platform:linux): FileManager1.ShowItems); macOS and Windows
   are stubs in `platform/files.rs`.
-- `Harness::file_drag` is `pub(crate)` in ds-harness at 8ce6d4b, so the drop is tested through
-  `Session::drop_files` (real bash), not by a harness drag. Ask quire to make it public.
+- `Harness::file_drag` is `pub(crate)` in ui-harness at 8ce6d4b, so the drop is tested through
+  `Session::drop_files` (real bash), not by a harness drag. Ask the UI kit to make it public.
 - The banner is one question at a time (queue); there is no badge for questions waiting in other tabs.
 - `temor save` over a non-temor terminal now fails after ~3 s with "nothing answered" (was 60 s); the
   next wait is 60 s so a person has time to answer. A terminal that never says STARTED but does ask
@@ -804,9 +804,9 @@ Nothing was compiled or run (batch rule). The orchestrator's first build will fi
 - Merge back offers Squash only. Merge, Rebase onto base and Open pull request need the review view (P10) first. A leftover can be opened or discarded, not merged.
 - A merge that stops on conflicts opens a plain shell tab in the checkout (not a split) and leaves the checkout mid-merge as git left it; the conflicted file list is in the notice only.
 - After a successful merge the worktree is removed, but its tab's shell is still in the removed folder.
-- Tier B / SSH worktrees; D20 mode line (Sandbox / Asks) needs docket readers; hook bridge, agent view.
+- Tier B / SSH worktrees; D20 mode line (Sandbox / Asks) needs the intents router readers; hook bridge, agent view.
 - Restore is offered from the tab's focused pane's run only; marks are labelled "Before turn N".
-- The tab's tooltip (state words, mode) is not set; the orb has no words of its own besides quire's aria label.
+- The tab's tooltip (state words, mode) is not set; the orb has no words of its own besides the UI kit's aria label.
 
 ## Decisions I took, to check
 - Checkpoints are taken when a pane known to run an agent (foreground process name, or the `app` it reported over 7501 or the socket, in `KNOWN_AGENTS`) goes Idle/Done/Failed -> Working. A build tool reporting 7501 (`app=cargo`) shows its status but gets no checkpoints. Every turn takes one ref; nothing prunes them (`refs/temor/checkpoints/*` grow). Consider skipping a snapshot whose tree equals the last one.
@@ -820,18 +820,18 @@ Nothing was compiled or run (batch rule). The orchestrator's first build will fi
 
 ## Verify first in the harness
 - The tab menu (`AgentTabMenu`) is rendered inside the Row's content; if a pick bubbles to the Row and selects the tab, move it out next to the Row.
-- `Menu::<AgentPick>` / `Sheet` / `Button { onclick: EventHandler::new(..) }` props were written from the quire sources at 8ce6d4b, not compiled.
+- `Menu::<AgentPick>` / `Sheet` / `Button { onclick: EventHandler::new(..) }` props were written from the UI kit sources at 8ce6d4b, not compiled.
 - `ShortcutKey::Super + Shift + u` in `tests/it/agents_window.rs` reaches the keymap as `Super+Shift+U`.
 - A socket path must stay under 104 bytes: harness scratch names are short for that (`ag-orb`, `ag-sock`).
 
-## quire asks
+## UI kit asks
 - A multi-line body for `Alert` (the restore plan is a `Sheet` with one `Label` per file for now).
 - A `Menu` anchored to a `Row` that does not bubble its picks to the row.
 
-## Agent checkpoints move to docket (decided 2026-10-10)
-- [x] docket owns per-turn checkpoints: it uses temor's git-ref approach (private index, hidden ref), keeps the last 20 per run, drops them after 14 days, and skips agents that keep their own (Claude Code /rewind). When the interface is frozen (a list per run, plus restore with a dry-run plan), temor stops snapshotting (hub/agents/checkpoints.rs, temor-core checkpoint git) and shows docket's list and restore. Until then temor's refs stay, and temor adds no pruning.
-      Update (2026-10-10): the interface is frozen (~/rs-wt/checkpoints/DESIGN.md §3, §5, §8, §9). Migration starts when the agent session sends the docket sha:
-      - delete temor-core checkpoint/* and the hub's checkpoint jobs, and call docket's CheckpointList / CheckpointPlan / `checkpoints.restore`;
+## Agent checkpoints move to the intents router (decided 2026-10-10)
+- [x] The intents router owns per-turn checkpoints: it uses temor's git-ref approach (private index, hidden ref), keeps the last 20 per run, drops them after 14 days, and skips agents that keep their own (Claude Code /rewind). When the interface is frozen (a list per run, plus restore with a dry-run plan), temor stops snapshotting (hub/agents/checkpoints.rs, temor-core checkpoint git) and shows the intents router's list and restore. Until then temor's refs stay, and temor adds no pruning.
+      Update (2026-10-10): the interface is frozen (~/rs-wt/checkpoints/DESIGN.md §3, §5, §8, §9). Migration starts when the agent session sends the intents router sha:
+      - delete temor-core checkpoint/* and the hub's checkpoint jobs, and call the intents router's CheckpointList / CheckpointPlan / `checkpoints.restore`;
       - move undo_ref to refs/temor/undo/<n>;
       - at start, prune refs/temor/checkpoints/* older than 14 days, with no import;
       - add `_` arms for the non-exhaustive SessionEntry.
@@ -851,7 +851,7 @@ there is no input box of temor's own (Warp's needs its own vim emulation and com
       read from .git only, with no dirty marker on the prompt line (the chips show changes now).
 - [ ] zsh: without a terminal description that can move the cursor up (an unknown TERM), the
       typing line starts with one space, because zsh draws no prompt whose last line is empty.
-- [ ] quire asks: a compact icon-button group surface (the toolbar uses `.temor-block-tools`
+- [ ] UI kit asks: a compact icon-button group surface (the toolbar uses `.temor-block-tools`
       CSS); a sticky overlay surface with an opaque material and a bottom hairline;
       `text-overflow: ellipsis` in Blitz (the header cuts with `clip_chars`).
 - [x] Warpify-style offer: for a typed `ssh`, `docker exec` or `sudo -i` inside a tab, offer
@@ -873,7 +873,7 @@ together.
   outside temor calls them.
 - Remote calls send the default cell size (8×16) and no palette for now.
 - The offer bar stays a bar under the pane (it resizes the pane), like the host banners. An
-  overlay waits for a quire sticky surface.
+  overlay waits for a UI-kit sticky surface.
 
 ### Next (most visible first)
 - [x] (Batch 4) Tier B sessions get no shell integration, so no blocks, cards, chips or folder reports.
@@ -922,10 +922,10 @@ together.
       (5977500)
 - Lane notes in full: `/mnt/data/cargo/temor-lanes/followups-b3-*.md`.
 
-## Batch 14 (merged 2026-10-10: pins and P19 checkpoints on docket, first part)
-Pins: quire v0.3.9 (7ce3a85), docket bd83d5e, porter 9c01699 (Machine.link / Machine.ssh, ported
-in temor-desktop), and almanac 0fdbcfd and stoker 4a0bd9e through the lock. One copy each of quire,
-porter-core and docket.
+## Batch 14 (merged 2026-10-10: pins and P19 checkpoints on the intents router, first part)
+Pins: the UI kit (then v0.3.9, 7ce3a85), the intents router at bd83d5e, the accounts service at 9c01699 (Machine.link / Machine.ssh, ported
+in temor-desktop), and the memory service at 0fdbcfd and the model layer at 4a0bd9e through the lock. One copy each of the UI kit,
+account-core and the intents router.
 
 - Done:
   - temor's own snapshotting is gone (temor-core `checkpoint/`, the hub's jobs);
@@ -933,8 +933,8 @@ porter-core and docket.
   - `refs/temor/checkpoints/*` older than 14 days are swept at start, with no import;
   - List, Plan and Perform `checkpoints.restore` sit behind temor-desktop's `CheckpointPort`;
   - Restore is held back while the pane's agent is Working (a stopgap).
-- [x] Batch 15 (docket DESIGN §11 and §12, with the shas coming through sill). Pane agents get
-      docket watches, not full sessions:
+- [x] Batch 15 (the intents router DESIGN §11 and §12, with the shas coming through the shell). Pane agents get
+      intents-router watches, not full sessions:
       - `CheckpointWatch { workspace, label, rewind }` when an agent starts in a pane
         (`rewind = Agent` for Claude Code, so the list says "not saved: this agent keeps its
         own");
@@ -946,13 +946,13 @@ porter-core and docket.
       watch's id.
 - [x] Batch 15: grey Restore out from `CheckpointList.turn: TurnState`, and drop the pane-local
       Working stopgap. A CheckpointList literal needs `turn`.
-- [x] Batch 15: temor shows the plan only, with no confirm of its own. sill's hold-to-confirm
+- [x] Batch 15: temor shows the plan only, with no confirm of its own. The shell's hold-to-confirm
       sheet is the one confirmation.
-- [ ] docket lists `org.bardo.Temor` under `cli` in its intentd.toml now (Batch 15 notes). Left:
+- [ ] The intents router lists `org.bardo.Temor` under `cli` in its intents config now (Batch 15 notes). Left:
       Perform still sends `Origin::InWindowField` (temor-desktop `platform/linux/checkpoints.rs`);
       check it against the cli role.
-- [ ] quire's context menu drops disabled items and has no per-item tooltip, so "Wait for the
-      agent to finish" is an info row (quire ask).
+- [ ] The UI kit's context menu drops disabled items and has no per-item tooltip, so "Wait for the
+      agent to finish" is an info row (UI kit ask).
 - Lane notes: `/mnt/data/cargo/temor-lanes/followups-b14-ckpt.md`.
 
 ## Batch 4 (merged 2026-10-10: Tier B finishing)
@@ -968,9 +968,9 @@ porter-core and docket.
 - Lane notes: `/mnt/data/cargo/temor-lanes/followups-b4-*.md`.
 
 ## Batch 15 (merged 2026-10-10: pins and P19 part 2, checkpoint watches)
-Pins: quire v0.3.12 (faecc7a), docket 864c03d, porter a83b575, and almanac 20bf1a4 through the lock.
+Pins: the UI kit (then v0.3.12, faecc7a), the intents router at 864c03d, the accounts service at a83b575, and the memory service at 20bf1a4 through the lock.
 
-- Pane agents get docket watches:
+- Pane agents get intents-router watches:
   - Watch on first sight (rewind = Agent for agents that keep their own history, such as
     `claude`; a table in temor-core);
   - Mark on Idle→Working;
@@ -978,7 +978,7 @@ Pins: quire v0.3.12 (faecc7a), docket 864c03d, porter a83b575, and almanac 20bf1
   - Close when the agent exits or the pane ends.
 - Calls run off the UI thread, one at a time per pane. Failures are logged once per pane.
 - Restore greys out from the list's `turn`; the pane-local stopgap is gone.
-- temor's sheet is a preview ("What restoring changes", with Close and "Restore…"). sill's
+- temor's sheet is a preview ("What restoring changes", with Close and "Restore…"). The shell's
   hold-to-confirm sheet is the one confirmation.
 - Orchestrator decision: an exited agent's Restore list stays until the pane ends, since that's
   when undoing is wanted.
@@ -986,7 +986,7 @@ Pins: quire v0.3.12 (faecc7a), docket 864c03d, porter a83b575, and almanac 20bf1
       agents close their watch when the pane ends.
 - [x] (landed with anyview 397012b) P10 viewers are written and pass their tests on branch `b15/view` (anyview-pane 3d52a9b,
       zeroize 1.9.0 for anyview's pdf crate). They wait for anyview's Batch 15 sha, which uses
-      quire v0.3.12; with today's sha the lock would hold two quires. Peek isn't built (it needs
+      the UI kit (then v0.3.12); with today's sha the lock would hold two copies of the UI kit. Peek isn't built (it needs
       `anyview-fs` and anyview-peek's `pane` feature).
 - Lane notes: `/mnt/data/cargo/temor-lanes/followups-b15-*.md`.
 
@@ -1055,20 +1055,20 @@ together.
 - [ ] Offer: nushell history isn't cleaned and the zsh prelude prints a parse error there; dash
       prints "source: not found" once; nushell has no pty scenario; fish history deletion is only
       checked with piped input.
-- [x] (Batch 17) Remote: no ds-harness scenario for Retry (needs a fake ssh that asks for a password);
+- [x] (Batch 17) Remote: no ui-harness scenario for Retry (needs a fake ssh that asks for a password);
       `edge/remote_install.rs` is 307 lines; a half-received send can repeat after a reconnect.
 - [x] (Batch 17) Edit: stream large files; conflict wording could name the "same time, other contents" case.
 - [x] Facts: `.python-version` and `pyproject.toml` aren't read; a huge untracked tree is slow. (done)
 - [x] (Batch 17) Peek: OSC 8 `file://` links show no card; the card's size is estimated; `view/pane_view.rs`
       is over 300 lines (split the pointer and key wiring).
-- [x] (Batch 17) Desk: an `Include`d ssh config edited in place isn't noticed; quire ask: confirm
+- [x] (Batch 17) Desk: an `Include`d ssh config edited in place isn't noticed; UI kit ask: confirm
       `focus_with_token` acts on an X11 startup id; a place-only recall starts shells in the
       Space's folder, not each pane's.
 - Lane notes in full: `/mnt/data/cargo/temor-lanes/followups-b5-*.md`.
 
 ## Batch 16 pins (2026-10-11)
-quire v0.3.14 (c404fb0), docket 312cd27, porter 83ac0fa, anyview 6c325c9, and almanac ac4bc03,
-stoker 4a0bd9e, blitz-kit 25b5099 and chordkit ba094c6 through the lock. One copy each; no code
+the UI kit (then v0.3.14, c404fb0), the intents router at 312cd27, the accounts service at 83ac0fa, anyview 6c325c9, and the memory service at ac4bc03,
+the model layer at 4a0bd9e, blitz-embed at 25b5099 and keymap at ba094c6 through the lock. One copy each; no code
 changes.
 
 - [x] anyview #100: find in a viewer pane. `PaneHandle::find(query)` / `end_find()` and
@@ -1137,7 +1137,7 @@ fixed and gated together. anyview be8c91c.
 - [x] "Edit locally" from a block's output in a host pane: the hub entry exists
       (`Desk::host_edit`); the block menu item and which text it passes are open. (Batch 26)
 - [ ] Find in the bar: Esc closes the whole bar; no harness scenario (needs a mounted viewer).
-- [ ] quire asks: `Column` with a zero gap and a fill option; a `write_soon` that returns its value.
+- [ ] UI kit asks: `Column` with a zero gap and a fill option; a `write_soon` that returns its value.
       `focus_landing_told` no longer calls `told`, so temor keeps its own.
 - [ ] Offer: nushell history isn't cleaned (no delete command); the probe line stays in history;
       the one-text `InnerLoadLine::build` is used only by tests.
@@ -1192,41 +1192,41 @@ merged, fixed and gated together. anyview c91ec0a.
   - a window-title scenario; heavy tests share a lock.
 - Merge work:
   - a host's clipboard-write answer is kept in the consent book and applied to its panes;
-  - the launch token is Wayland's only (quire reads `DESKTOP_STARTUP_ID` itself);
+  - the launch token is Wayland's only (the UI kit reads `DESKTOP_STARTUP_ID` itself);
   - a hold whose end straddles the inline-file scanner's pieces is seen;
   - test fixes: hold offsets, a scratch runtime for viewer copies, the socket and fingerprint
     tests wait for the first session, titles held by a sleep, the keys watch reads its first
     time before its thread starts.
 
 ### Orchestrator decisions
-- terminal.conf stays temor's own file: its parser is in temor-pane (L1, no quire) and its key
-  lines are chordkit's. ds-settings would need a line-form format; not asked for now.
+- terminal.conf stays temor's own file: its parser is in temor-pane (L1, no UI kit) and its key
+  lines are keymap's. ui-settings would need a line-form format; not asked for now.
 - A plain session (setup refused) never has a `cd` typed: it starts in the host's home.
 - The first OSC 52 read gets an empty answer rather than blocking the pane's I/O thread.
-- quire answers (whopper, 2026-10-11): v0.3.16 brings SplitView's finished-drag report, a
+- UI kit answers (whopper, 2026-10-11): v0.3.16 brings SplitView's finished-drag report, a
   zero-gap `Column`, a returning `write_soon`, an icon-button group, an offer-bar overlay,
   menus that keep disabled items with tooltips, and a banner action row. `chrome::Toolbar` is
   the window's toolbar, not a banner row. `text-overflow: ellipsis` waits on Blitz (#893): use
   `.ds-truncate` or `text::clip_chars` until then.
 
 ### Next
-- [ ] quire v0.3.16 (one re-pin): adopt the finished-drag report, `Column`, `write_soon`, the
+- [ ] The UI kit (then v0.3.16; one re-pin): adopt the finished-drag report, `Column`, `write_soon`, the
       icon-button group, the offer-bar overlay, the menu tooltips and the banner row.
 - [x] Byte progress for uploads (a progress hook on temor-remote's `Client::upload`). (done: Batch 20)
 - [x] anyview ask: a "could not be opened" request, so a failed file offers another app (anyview 75f1f86, `PaneRequest::NotOpened`; done 2026-10-11).
-- [x] quire ask: tell Esc from a click outside on the palette (quire v0.3.35 `PaletteClose`; a click outside closes the bar at once, done 2026-10-20).
-- [x] keycap: our desktop's shortcuts come through keycap-client's `KeycapSource` (95f41dc, the rev casement reads).
-- [ ] keycap-client is gone (2026-10-19): the desktop's shortcuts come from quire's
+- [x] UI kit ask: tell Esc from a click outside on the palette (the UI kit's `PaletteClose` (v0.3.35); a click outside closes the bar at once, done 2026-10-20).
+- [x] The key remapper: our desktop's shortcuts come through the key remap client's key source (95f41dc, the rev the compositor reads).
+- [ ] key-remap-client is gone (2026-10-19): the desktop's shortcuts come from the UI kit's
       `system_key_source`, as mailo's do, so temor builds on macOS and Windows past it. On our desktop
-      a person's own keycap bindings no longer reach temor's keymap; the ⌘-style conventions do, and
-      `X-Keycap-Profile=keymap-aware` still keeps ⌘ apart from Ctrl. temor builds its keymap on
-      `system_key_source` itself, so a source a launcher injects (quire's `with_keymap_source`) does
-      not reach it; bringing keycap's bindings back means building on the injected `KeySource`.
+      a person's own key remapper bindings no longer reach temor's keymap; the ⌘-style conventions do, and
+      `X-Key-Remap-Profile=keymap-aware` still keeps ⌘ apart from Ctrl. temor builds its keymap on
+      `system_key_source` itself, so a source a launcher injects (the UI kit's `with_keymap_source`) does
+      not reach it; bringing the key remapper's bindings back means building on the injected `KeySource`.
 - [x] Mark host panes remote where `ssh.panes` gets its entry (today the facts read does it). (done: Batch 20)
 - [x] Run `search_bench` and decide on a row-text path for search (2026-10-15: glance as text).
 - [ ] Offer: zsh keeps the probe line; nushell history isn't cleaned. (2026-10-16: no probe at all
       when the command line names the shell, as Warp does; plain `ssh host` still asks.)
-- [x] OSC 52 primary/selection clipboards: a copy that names `p` or `s` goes to the primary selection (quire v0.3.35 `ClipboardTarget`, done 2026-10-20). Reading the primary selection still answers from the clipboard's copy.
+- [x] OSC 52 primary/selection clipboards: a copy that names `p` or `s` goes to the primary selection (the UI kit's `ClipboardTarget` (v0.3.35), done 2026-10-20). Reading the primary selection still answers from the clipboard's copy.
 - Lane notes in full: `/mnt/data/cargo/temor-lanes/followups-b18-*.md`.
 
 ## Open now (updated 2026-10-14)
@@ -1238,7 +1238,7 @@ sections above are the lanes' own notes; this list is the one to read.
 2. ~~Cards: bottom anchor, bold prompt, more menu, DropTab minimum.~~ Done 2026-10-14.
 3. ~~Chips on older blocks' headers.~~ Done 2026-10-14.
 
-### Done 2026-10-14: the terminal follows the page zoom (quire#19, pinned with anyview 4280bc2)
+### Done 2026-10-14: the terminal follows the page zoom (UI kit PR 19, pinned with anyview 4280bc2)
 
 ### Doing now (owner, 2026-10-14: "do 1 2 3, match mailo with 4")
 1. ~~One Space: no Space name in the head and no lone dot; a right click on the foot is the
@@ -1253,55 +1253,55 @@ sections above are the lanes' own notes; this list is the one to read.
 - [x] blitz-shell hard-wired keys before the app heard them: Ctrl or Super with `=`, `-` and `0`
   zoomed the page whatever else was held (Equalize zoomed too, Ctrl+_ zoomed out), and Alt+D,
   Alt+H and Alt+T drew its debug overlays. Fixed upstream: blitz-shell's `BuiltinKeys::Off`,
-  ds-blitz's `ShellKeys::App` with zoom as a window request (`WindowHost::page_zoom`), and
-  chordkit's Bigger, Smaller and Actual Size as Ctrl or ⌘ with `=` (labelled `+`), `-` and `0`,
+  ui-blitz's `ShellKeys::App` with zoom as a window request (`WindowHost::page_zoom`), and
+  keymap's Bigger, Smaller and Actual Size as Ctrl or ⌘ with `=` (labelled `+`), `-` and `0`,
   also in a terminal. temor binds them as Zoom In, Zoom Out and Actual Size (also in the command
-  bar), and Equalize moved to ⌥⌘= (Ctrl+Shift+Alt+0 where Primary is Ctrl+Shift). Pins: quire
-  163957e0, anyview 776abe1, chordkit 6ef5493, keycap 794f9de, Blitz 531fb43d, blitz-kit 2ecef10.
+  bar), and Equalize moved to ⌥⌘= (Ctrl+Shift+Alt+0 where Primary is Ctrl+Shift). Pins: the UI kit
+  163957e0, anyview 776abe1, keymap at 6ef5493, the key remapper at 794f9de, Blitz 531fb43d, blitz-embed at 2ecef10.
   Done 2026-10-15.
 - Ctrl+_ (Ctrl+Shift+-) never reaches the shell as undo off our desktop: it is dropped as an
-  unbound Primary chord. chordkit#3 (55a62b2) folds Shift+- into `_`, so it is the program's;
-  Whopper bundles it with the next quire bump. (keycap's ⌘= and ⌘- on our desktop already work:
-  a raw press keeps Shift apart from the key, so keycap's Ctrl+Shift is read as ⌘ first.)
-- quire: tell Esc from a click outside on the palette. (Batch 18 Next)
+  unbound Primary chord. keymap PR 3 (55a62b2) folds Shift+- into `_`, so it is the program's;
+  Whopper bundles it with the next UI kit bump. (the key remapper's ⌘= and ⌘- on our desktop already work:
+  a raw press keeps Shift apart from the key, so the key remapper's Ctrl+Shift is read as ⌘ first.)
+- The UI kit: tell Esc from a click outside on the palette. (Batch 18 Next)
 - Blitz: `text-overflow: ellipsis` (#893). (Batch 18 decisions)
-- chordkit: a fallback where the default collides. (Keys on chordkit)
-- ds_blitz: primary and selection clipboards for OSC 52. (Batch 18 Next)
-- P8 Proposals: bulkhead split (fresh `TurnRef` per Ask, "edited" vs "replaced", U+2800).
+- keymap: a fallback where the default collides. (Keys on keymap)
+- ui_blitz: primary and selection clipboards for OSC 52. (Batch 18 Next)
+- P8 Proposals: the sandbox crates split (fresh `TurnRef` per Ask, "edited" vs "replaced", U+2800).
   (temor-core)
-- P11 Plugins (bayonet), P12 Companion context (companion). (PLAN §11)
+- P11 Plugins (plugin-host), P12 Companion context (companion). (PLAN §11)
 - Ghostty upstream, with the owner's OK: OSC 1337 `File=` through UNKNOWN_SEQUENCE, per-cell
   hyperlink id, libghostty-rs wrappers; iTerm2 multipart files dropped before temor (check).
   (temor-vt)
 
-### Settings window (owner, 2026-10-15: settings.toml, keys in their own file, quire's page first, all four pages)
-- [x] Batch 21: settings are ds-settings tables in `~/.config/temor/settings.toml` (font, cursor,
+### Settings window (owner, 2026-10-15: settings.toml, keys in their own file, UI kit's page first, all four pages)
+- [x] Batch 21: settings are ui-settings tables in `~/.config/temor/settings.toml` (font, cursor,
   scrollback, shell, notify, offer), key changes in `keys.conf` (bind refuses a held chord and
   names its action; reset one or all), `terminal.conf` converted once and kept as
   `terminal.conf.old`, both files followed live (font and cursor reach open panes), and
   `temor --write-schema <dir>`. Lane notes: `/mnt/data/cargo/temor-lanes/followups-b21-settings.md`
   (PLAN §6/§14 text to fold in, the key and label table).
-- [x] The window: General, Appearance, Keyboard, Spaces on quire's `ds-settings-page`
-  (quire c62994d0), opened by ⌘, and a command bar row; open-or-raise copied from mailo's
-  `SettingsOpened`. Waits for anyview, keycap and sill to re-pin to quire c62994d0 and chordkit
+- [x] The window: General, Appearance, Keyboard, Spaces on the UI kit's `ui-settings-page`
+  (the UI kit at c62994d0), opened by ⌘, and a command bar row; open-or-raise copied from mailo's
+  `SettingsOpened`. Waits for anyview, the key remapper and the shell to re-pin to the UI kit at c62994d0 and keymap
   55a62b2 (Whopper, after the owner's login testing). (landed: 5b7cb01)
-- Open: quire's `Page` has only the app, so General and Appearance are told apart by section.
+- Open: the UI kit's `Page` has only the app, so General and Appearance are told apart by section.
   Closed (Batch 24): `notify.after` reaches open panes; the converter's comments vanishing at the
   next save is accepted (`terminal.conf.old` keeps everything).
 - [x] Space credentials are kept in the desktop's password store (Secret Service through
-  porter-secrets, namespace "temor"); a missing or locked store says so. The unlock prompt is
+  account-secrets, namespace "temor"); a missing or locked store says so. The unlock prompt is
   untested on a real desktop.
 - [x] A new tab from a host pane opens on the host, as a split does; the bar's "New tab on this
   computer" opens a local one.
 
 ### Owner's call (closed 2026-10-15, owner: "close them out fully autonomously"; Batch 24)
-- [x] quire f47b05c8 (anyview f4c8608): the chips draw quire's Folder, GitBranch and Diff glyphs.
+- [x] The UI kit at f47b05c8 (anyview f4c8608): the chips draw the UI kit's Folder, GitBranch and Diff glyphs.
   Pinned tabs keep temor's own tile: `PinTiles` has no orb face, counts instead of the news dot,
   its own drag (temor's moves tabs between tiles and rows), and only the solid terminal glyph.
 - [x] Agent note: the tab's hover text carries it (it already did; now tested).
 - [x] The 720 px breakpoint stays: the sidebar hides under 720 px, as Mac sidebars collapse in
   narrow windows, and ⌘⇧L shows it at any width.
-- [x] keycap `temor-plasma-terminal` merged as keycap d2eae05 (Whopper, owner approved); temor pins it.
+- [x] The key remapper branch `temor-plasma-terminal` merged (d2eae05; Whopper, owner approved); temor pins it.
 - [x] Recordings in the pane stay deferred: they open in their own app until mpv-wgpu settles.
 - [x] "New tabs start in" (General > Shell): as usual (tabs at home, splits in the pane's folder),
   the current folder, or the home folder. A Space's project folder still wins.
@@ -1350,12 +1350,12 @@ the gate now runs the GPU tests headless and has hw-tools on its PATH):
       candidates sat at the window's corner. blitz-shell turns the IME on with no capabilities,
       so winit drops every cursor area. A one-line fix (enable with the cursor area) moved them
       under the caret; sent to Whopper (`temor-lanes/blitz-ime-cursor-area.patch`). Close when
-      quire's blitz rev carries it. (P3a) (done: quire 3cfe32c4, blitz 5c755366; the candidates
+      the UI kit's blitz rev carries it. (P3a) (done: the UI kit at 3cfe32c4, blitz 5c755366; the candidates
       open under the caret on the private display)
 
 ### Small temor items left
 - [x] Host panes have chips and peek through the helper; the folder chip since Batch 23 (the helper reports the host's home). No hub scenario test of host facts yet.
-- Adopt quire v0.3.16 (pinned 2026-10-11 with anyview 75f1f86): SplitView `on_resized`, `Column`
+- Adopt the UI kit (then v0.3.16; pinned 2026-10-11 with anyview 75f1f86): SplitView `on_resized`, `Column`
   (`ColumnGap::None`), `write_soon_then`, `IconButtonGroup`, `PinnedBar`, `BannerActionRow`, menu
   tips, `DotFace::Foot`. Planned with the look work (block tools as an icon group, a pinned typing
   line). (UI pass, 2026-10-11)
@@ -1382,16 +1382,16 @@ owner's display). Done: temor's prompt in every shell whatever PS1 the startup f
 default (Fedora's /etc/bashrc set PS1, so the cards never showed; `TEMOR_PROMPT=shell` keeps the
 person's own); a split pane no longer goes blank (the old view's drop took the new view's
 texture); a click leaves nothing selected; the status line and tab rows are spaced and fade
-long text; anyview's `NotOpened` offers "Open in another app"; quire v0.3.16 pinned.
+long text; anyview's `NotOpened` offers "Open in another app"; the UI kit (then v0.3.16) pinned.
 - [x] The look (owner to confirm): bolder cards with padding and the run time and exit code in
   the header; icon-only block tools; no status footer; the typing line pinned to the pane's bottom
-  while the screen is not full; one surface for window, sidebar and pane (a quire ask for a flat
+  while the screen is not full; one surface for window, sidebar and pane (a UI-kit ask for a flat
   app-shell look); dark by default (owner, 2026-10-11).
   (done in Batch 19 and the sidebar pass; the pinned typing line is under Open now.)
 - [x] Design audit (2026-10-11, private artifact https://claude.ai/artifact/QZJUJwoLf5cSKodekfSdAh): 3 critical (five text colours under 4.5:1, the find field not taking the keyboard, no collapse or pane minimum below ~800 px), 8 high (four grounds in two temperatures, accent on six jobs, a ring around the focused pane, flat cards, the floating toolbar sentence, the typing line repeating the card, a 10 px status strip, `user@host:path` tab names), 6 medium (sidebar foot, actions missing from the bar, find bar layout, sans versus mono, the miniature, first launch).
-- [x] Sizes (same audit, measured with the ignored `size_audit` harness test): three control sizes in the sidebar foot (New tab is `ControlSize::Small`), tab rows at 40 (155 when split) off quire's 28/32/36 ladder with no vertical padding, a 28 px tools bar on an 18 px terminal row with `--r-panel`, seven type sizes (10 to 16), the command bar's rows not concentric (quire), paddings off the 4 px grid, the closed Downloads hint overlapping the foot buttons.
+- [x] Sizes (same audit, measured with the ignored `size_audit` harness test): three control sizes in the sidebar foot (New tab is `ControlSize::Small`), tab rows at 40 (155 when split) off the UI kit's 28/32/36 ladder with no vertical padding, a 28 px tools bar on an 18 px terminal row with `--r-panel`, seven type sizes (10 to 16), the command bar's rows not concentric (the UI kit), paddings off the 4 px grid, the closed Downloads hint overlapping the foot buttons.
   (the audit and sizes: done in Batch 19 and the sidebar pass.)
-- [x] ds-harness break-it tests: window size sweep, divider drags past both ends, collapse and
+- [x] ui-harness break-it tests: window size sweep, divider drags past both ends, collapse and
   restore, keyboard-only use, resize with a menu or the bar open.
   (done, `tests/it/resizing.rs`: a dragged divider kept through a tab switch, dragged past both
   ends, every control inside the window from 400x360 to 1920x1080 with typing after, keys alone
@@ -1405,7 +1405,7 @@ card header colours without dim (folder 5.92:1, branch 6.81:1 dark; 5.33 and 5.7
 by default when appearance.toml names no theme; the sidebar hides under 720 px and Super+Shift+L
 (⌘⇧L) shows or hides it at any width; a side-by-side split keeps 40 columns per pane (60 refused
 splits in most laptop windows); a 16 px terminal inset (8 top); tabs named by program or folder
-with "branch · state"; tab rows on quire's 36 ladder; the miniature a trailing hairline glyph;
+with "branch · state"; tab rows on the UI kit's 36 ladder; the miniature a trailing hairline glyph;
 the foot's New tab at Regular size and the closed Downloads hint laid out no more; no status
 strip (a hovered link shows in a tooltip, progress overlays the pane's bottom edge); bold
 command rows; "exit 1 · 4 ms" meta and three hover tools (copy output, re-run, more) in the card's
@@ -1413,7 +1413,7 @@ header row; no typing-line fill and no repeated branch chip; no pane focus ring;
 keyboard, sits top right with a "1 of 21" count and chevrons; every action in the command bar
 with its shortcut, under section headers; a first-launch hint line.
 Merge fixes: a finished card keeps its input anchor (bold rows, and the anchor leaked); the find
-count redraws after the delayed search; tab rows set plain text (quire's Code tone is a chip);
+count redraws after the delayed search; tab rows set plain text (the UI kit's Code tone is a chip);
 the bar runs the sidebar action through the desk.
 - [x] Bottom-anchor the primary screen (the typing line pinned to the pane's bottom): needs one
   row offset in the render view and the fit, used by every grid-to-pixel map; spike with a window.
@@ -1423,7 +1423,7 @@ the bar runs the sidebar action through the desk.
   session's hit tests, mouse reports, gutter, chips, metas and tools read the same lowered fit
   (`Session::placed`). The grid's size never changes, so the program is not resized. The
   first-launch hint moved over the prompt. Checked in a private window: new pane, cards, a click
-  picking the block under it. ds-harness doesn't paint, so it has no test there; the renderer has
+  picking the block under it. ui-harness doesn't paint, so it has no test there; the renderer has
   unit tests.)
 - [x] `gutter_geometry` returns one padding: the meta, tools and chips rows ignore the 8 px top inset. Done: it returns the side and top insets apart (`Gutter`), and the meta and tools sit on the header line.
 - [x] Card text sat low in its card (owner): the rule ran along the top of the blank line above the header. Done: a band can begin and end across a row's middle (`Cut`), so the rule crosses that blank line and each card has half a line above its header and below its last row. Warp keeps about 14 px; ours is half a row (about 9 px).
@@ -1447,17 +1447,17 @@ the bar runs the sidebar action through the desk.
 - [x] `Chrome.cwd`, `title` and `link` are unread; remove. (done)
 - [x] The more menu unmounts with the hover tools if the pointer leaves the pane.
   (done 2026-10-14: while it is up its block is `held`, and the tools stay for it.)
-- [x] The selected card fill is still the accent at 12%; neutral once quire's selection lands.
+- [x] The selected card fill is still the accent at 12%; neutral once the UI kit's selection lands.
   Done: the foreground at 8%.
-- [x] quire asks (q20, q21 → v0.3.17): flat sidebar (`SidebarFill::Flat`), neutral source-list
+- [x] UI kit asks (q20, q21 → v0.3.17): flat sidebar (`SidebarFill::Flat`), neutral source-list
   selection, concentric palette rows, `RunTone::Mono` (tab names and branches), and
   `RowLeading::Element` (the orb leads a tab while an agent works or waits; a terminal glyph
   otherwise). Adopted at the v0.3.17 re-pin. The sidebar's branch lost its changes dot (it read
   as a stray mark beside "· idle"; the card's chips show the counts).
-- [x] Porter/docket batch 18 (docket 1695cff, porter ee3c63e, almanac 5678345): taken with
+- [x] Accounts service and intents router batch 18 (the intents router at 1695cff, the accounts service at ee3c63e, the memory service at 5678345): taken with
   anyview 5ec7c56 (#109).
-- [x] Porter/docket batch 20 (docket afe9314, porter bfd909a, almanac 4eabd9e): taken with
-  anyview d571cb0 (#115). No CheckpointList literal here, so docket's new restore-point label
+- [x] Accounts service and intents router batch 20 (the intents router at afe9314, the accounts service at bfd909a, the memory service at 4eabd9e): taken with
+  anyview d571cb0 (#115). No CheckpointList literal here, so the intents router's new restore-point label
   needs no change; showing it is open.
 - [x] The nushell offer load is quadratic: the load text is one `sh -c '...'` program over many
   lines, and nushell's line editor repaints the whole open quote for every line it receives
@@ -1489,7 +1489,7 @@ the bar runs the sidebar action through the desk.
   (done 2026-10-14, owner: "yes match the new chips": the facts the prompt's chips showed are kept
   for the block it becomes, `Session::keep_header_facts`, and its header line carries the same
   chips on the block's own ground (a failed or picked block's fill) and clear of its meta.)
-- [x] quire ask: folder, git-branch and diff glyphs in `Icon`. The chips draw Lucide's (ISC,
+- [x] UI kit ask: folder, git-branch and diff glyphs in `Icon`. The chips draw Lucide's (ISC,
   NOTICE) as symbolic SVGs until then (`view/fact_chips.rs`). A long folder is clipped at its end (no ellipsis on Blitz);
   cutting the start (keeping the last folders) needs a start-side ellipsis. (Settled: the Lucide
   glyphs stay; Batch 25 cuts a long folder at its start, `view/folder_fit.rs`.)
@@ -1520,37 +1520,37 @@ the bar runs the sidebar action through the desk.
   folder and an × that closes that pane, a hairline between, the pane with the keys in ink),
   replacing the miniature; the foot is mailo's: Downloads (a button with a dot, its list in a
   popover) at the start, the Space dots at the centre, and one chevron (New Tab, Reopen Closed Tab,
-  New Space, Hide Sidebar) at the end, no `+`. Tooltips on whole rows are quire's `Tooltip` hooked
+  New Space, Hide Sidebar) at the end, no `+`. Tooltips on whole rows are the UI kit's `Tooltip` hooked
   to a block `HoverTarget` (`view/row_tip.rs`). `view/split_row.rs`, `pinned_tabs.rs`,
   `side_menu.rs`, `tab_sidebar.rs`, `shelf.rs`.
 - [x] Sidebar, the rest of the mailo pass (2026-10-14): hidden, the sidebar peeks from the window's
-  edge as mailo's does (quire's `EdgePeek` in a zero-width host at the edge; a click on the edge
+  edge as mailo's does (the UI kit's `EdgePeek` in a zero-width host at the edge; a click on the edge
   pins it); pinned tiles drag as Arc's do (onto another tile to take its place, onto a row to be
   unpinned there, a row dropped on a tile is pinned there; `TabsIn::Place`, `dnd::resolve`); a
   split of three or more panes keeps the focused pane's name and squeezes the others to their
   glyphs. A pinned tab still never joins a split (the core keeps its panes).
-- [x] Sidebar, after the mailo pass (settled: temor keeps its own tiles): (1) quire's `PinTiles` draws accounts only; a glyph face
+- [x] Sidebar, after the mailo pass (settled: temor keeps its own tiles): (1) the UI kit's `PinTiles` draws accounts only; a glyph face
   (`PinFace::Glyph`) would let temor use it and its drag-to-reorder instead of its own tiles
-  (quire change: owner's OK). (2) Hidden, mailo's sidebar peeks from the window's edge (quire's
+  (the UI kit change: owner's OK). (2) Hidden, mailo's sidebar peeks from the window's edge (the UI kit's
   `EdgePeek`); temor's still snaps away. (3) Pinned tiles cannot be dragged to reorder or onto a
   row to join a split yet. (4) Arc squeezes a split of three or four panes to glyphs; temor's
   segments only narrow (unconfirmed from screenshots how Arc draws one unselected).
 - [x] The tab's glyph (2026-10-14, owner: "too solid"): rows, pinned tiles and split segments draw
   the bare outline prompt `>_`, as Warp's tabs do (Warp's own terminal icon is the prompt with no
-  box), not quire's solid boxed terminal. Lucide's `terminal` (ISC, NOTICE) as a symbolic mask,
+  box), not the UI kit's solid boxed terminal. Lucide's `terminal` (ISC, NOTICE) as a symbolic mask,
   `view/tab_glyph.rs`.
 
 ## Colours: Apple 2025 palette (owner, 2026-10-15)
-Owner picked: ANSI dark = Apple increased-contrast dark hues (normal 8E8E93 FF6165 4AD968 FEDF43 5CB8FF EA8DFF 3BDDEC D1D1D6, brights 30% toward white); light from Apple's increased-contrast light set; accent follows the system, normal value for fills, increased-contrast value for text-like uses (cursor, links, chip text); state colours: done green, waiting orange, error red, git indigo, folder secondary label, Space dots from Apple's 12 hues. Asked Whopper for the quire ds-style PR (accent_table.rs, terminal.rs, status tokens). temor uses the tokens after the next re-pin. Preview: https://claude.ai/artifact/Awot7u7G8teHqa1kTa5jLj
+Owner picked: ANSI dark = Apple increased-contrast dark hues (normal 8E8E93 FF6165 4AD968 FEDF43 5CB8FF EA8DFF 3BDDEC D1D1D6, brights 30% toward white); light from Apple's increased-contrast light set; accent follows the system, normal value for fills, increased-contrast value for text-like uses (cursor, links, chip text); state colours: done green, waiting orange, error red, git indigo, folder secondary label, Space dots from Apple's 12 hues. Asked Whopper for the UI kit ui-style PR (accent_table.rs, terminal.rs, status tokens). temor uses the tokens after the next re-pin. Preview: https://claude.ai/artifact/Awot7u7G8teHqa1kTa5jLj
 Whopper's colour batch (pending): --ok/--warn/--danger to Apple values (may step if a 4.5:1 gate fails); the person's accent stays macOS's eight; all 12 hues as --tag-* and --signal-*, git = --signal-git; SettingsPage gets `page: Option<Page>` (replace `pages::page_of`). On landing: the sidebar tone (preview-colours 460cd1c) uses --ok/--danger; the git chip moves to --signal-git; Space dots to --tag-*.
-Landed (2026-10-15): quire 3f2b194, chordkit 55a62b2 (Ctrl+Shift+- is the program's Ctrl+_), keycap e4dd317, anyview 85d92c4; the Settings window; Apple colours; sidebar glyph green/red by the last command. quire's `SettingsPage { page }` names a page of the desktop's Settings app (`Page::App("temor")` is one page), so temor's own General/Appearance split stays in `settings_window::pages::page_of`. Setting a Space credential is refused until the porter-backed `CredentialSource` implements `set_secret`/`remove_secret`.
+Landed (2026-10-15): the UI kit at 3f2b194, keymap at 55a62b2 (Ctrl+Shift+- is the program's Ctrl+_), the key remapper at e4dd317, anyview 85d92c4; the Settings window; Apple colours; sidebar glyph green/red by the last command. The UI kit's `SettingsPage { page }` names a page of the desktop's Settings app (`Page::App("temor")` is one page), so temor's own General/Appearance split stays in `settings_window::pages::page_of`. Setting a Space credential is refused until the accounts service-backed `CredentialSource` implements `set_secret`/`remove_secret`.
 - [x] Flaky forward test: it now waits for the refusal among the notices, so a held local port
   doesn't matter (checked with 3000 held).
 
 ## Batch 25 (render and UI lanes, merged 2026-10-16)
 Landed: the CPU draws glyph overhang into the outer padding; the GPU draws a frame whose own glyphs
 outgrow the atlas in groups of rows; a hub test of a host pane's chips; resize tests for the
-sidebar, an open menu and 150%/200%; a long folder chip cut at its start; quire's `write_soon_then`,
+sidebar, an open menu and 150%/200%; a long folder chip cut at its start; the UI kit's `write_soon_then`,
 `Column` and `BannerActionRow`. Left:
 - [x] Placement id collisions: Ghostty now comes from our fork (github.com/PoHsuanLai/ghostty,
       branch `temor`), whose `INTERNAL_ID` placement key tells the terminal's ids from the
@@ -1584,7 +1584,7 @@ tell an edit from a replacement, U+2800 reads as a space, pipelines named by the
 before Ghostty drops them, ⌘F in a viewer pane, Edit Locally in a host pane's block menu, menu
 shortcuts in the sidebar and more menus, a `host:path` with an IPv6 address told to use a HostName,
 temor-remote's socket folder tightened, the edit copy kept while a conflict waits, and **P11
-plugins** (crate `temor-plugins` on bayonet fe489cf: `row.facts` on the sidebar row, `open.provider`
+plugins** (crate `temor-plugins` on plugin-host at fe489cf: `row.facts` on the sidebar row, `open.provider`
 rows in the bar, `block.lens` and `agent.adapter` host sides). Left:
 - [x] Plugins, the drawing side (Batch 27): a header per plugin in the bar (`Section::Plugin`),
       plugin facts as chips (`ChipKind::Plugin`, kept on older headers), "Show with <plugin>" and
@@ -1598,10 +1598,10 @@ rows in the bar, `block.lens` and `agent.adapter` host sides). Left:
       from the unshrunk height (`room.rs` `whole_rows` vs `view/lens_picture.rs`), leaving blank room
       under it; room under the grid's last row sits below the bottom padding (`metrics/layout.rs`
       `band_of`).
-- [ ] Plugins: the built-in Claude Code and git adapters rewritten as plugins; detent's Extensions
+- [ ] Plugins: the built-in Claude Code and git adapters rewritten as plugins; the Settings app's Extensions
       page (lists `Catalog::plugins()`/`problems()`, never reachable from an agent); a sandbox.
-- [x] (done in bulkhead 0467c14: `CannotSandbox::RestrictedByAppArmor` reads
-      `kernel.apparmor_restrict_unprivileged_userns` when the probe fails; temor shows it once it links bulkhead, P8) Ubuntu 24.04+ user namespaces → `NoSandbox`: belongs beside bulkhead's runner, which temor does
+- [x] (done in the sandbox crates at 0467c14: `CannotSandbox::RestrictedByAppArmor` reads
+      `kernel.apparmor_restrict_unprivileged_userns` when the probe fails; temor shows it once it links the sandbox crates, P8) Ubuntu 24.04+ user namespaces → `NoSandbox`: belongs beside the sandbox crates' runner, which temor does
       not link yet (P8).
 - [x] Done while a save is checking or uploading waits for it and closes after, as an editor does;
       a save that does not get there keeps the copy and says so (owner: "standard behavior").
@@ -1609,7 +1609,7 @@ rows in the bar, `block.lens` and `agent.adapter` host sides). Left:
       is unit-tested only without a viewer.
 - Lane notes in full: `/mnt/data/cargo/temor-lanes/followups-b26-*.md`.
 
-## quire v0.3.33 (2026-10-18)
+## UI kit v0.3.33 (2026-10-18)
 
 - [x] A save that found `settings.toml` damaged moves it aside (`Saved::kept_at`,
       `<name>.bad-<seconds>`) before writing a new one, and the person is told where it went: a
@@ -1621,10 +1621,10 @@ rows in the bar, `block.lens` and `agent.adapter` host sides). Left:
       a converted `terminal.conf` went. The exact lines still go to stderr for the log. A key the
       version does not read is not mentioned.
 - [ ] The edge strip's click may not pin a hidden sidebar, depending on how the frames fall
-      (quire `EdgePeek` with `HoverIntent`). `sidebar::a_hidden_sidebar_peeks_from_the_edge_and_a_click_pins_it`
+      (the UI kit `EdgePeek` with `HoverIntent`). `sidebar::a_hidden_sidebar_peeks_from_the_edge_and_a_click_pins_it`
       passes 10 of 10 when the harness advances 600–900 ms per step; driven in 25 ms steps (waiting
       until the press would land on `.ds-edge`), the click leaves it peeking, unpinned, 8 runs in 10.
-      The test keeps its steps and waits on the pin itself. Raised with Whopper for quire.
+      The test keeps its steps and waits on the pin itself. Raised with Whopper for the UI kit.
 - [ ] `blocks::shells::real_shells_make_one_block_per_command_with_its_output_and_status` failed once
       at its block comparison (shells.rs:27) in six full `it` runs; 8 runs alone passed. The message
       was not kept; catch it the next time it shows.
@@ -1654,27 +1654,27 @@ rows in the bar, `block.lens` and `agent.adapter` host sides). Left:
       `WatchOwner::Terminal` session outlives the agent until the pane ends or a different agent
       takes the pane. A status report never clears a known command line, and a plain session
       opened before the line was known is opened again once with it. Waits for the
-      docket batch that carries `recognise`, `SeenCommand` and `checkpoint_watch_agent`, and a
+      the intents router batch that carries `recognise`, `SeenCommand` and `checkpoint_watch_agent`, and a
       relock of temor-desktop (it now names temor-pty).
-- [ ] The watch sends docket the agent's command line from its program word on, so the agent's
+- [ ] The watch sends the intents router the agent's command line from its program word on, so the agent's
       own arguments still go: a prompt given on the command line, `codex -c key=…`, and node's
-      `--require` / `--env-file` paths when the agent runs as `node …/cli.js`. docket only reads
+      `--require` / `--env-file` paths when the agent runs as `node …/cli.js`. The intents router only reads
       the program and the conversation id from it and never stores or logs it, but the words
       cross the bus. Cutting to the words `agents.toml`'s `resume` template names needs that
-      template on temor's side, or a docket call that takes the program word alone first.
+      template on temor's side, or an intents router call that takes the program word alone first.
 - [ ] A plain watch (opened from an agent's status report before its command line was read) is
       upgraded to the recognised one only when no turn runs, by closing it and opening another:
       the turns marked on the plain session leave the Restore list. Naming the open session in
-      place needs a docket call (the router's `name_watched_agent` is not on the bus).
+      place needs an intents router call (the router's `name_watched_agent` is not on the bus).
 - [ ] A different program in front always replaces the watch (`Need::Replace`), so an agent run
       by another agent (claude running codex in the same pane) closes the outer agent's session
       and its turns leave the Restore list. Keeping the outer session needs a rule for nested
       foregrounds (the outer one's session stays while an inner program runs).
-- [ ] `org.bardo.Temor1.Run` answers only temor's installed image (peephole, `Exe`, pinned at
+- [ ] `org.bardo.Temor1.Run` answers only temor's installed image (caller identity, `Exe`, pinned at
       connect; `instance::CALLERS`). A temor the person built is refused, so a checkout's
       `temor -e` aimed at a running checkout temor is refused too, and that launch then starts as
       a window of its own (`join` treats a failed claim as no desktop). If that gets in the way of
-      development, peephole's developer rows are the seam, in debug builds only.
+      development, caller identity's developer rows are the seam, in debug builds only.
 - [ ] `temor -e` waits for its tab (Temor1.Run returns a ticket; `RunEnded(ticket, status)` goes to
       the waiting launch alone). When no temor runs and the bus cannot start one (no activation
       file: a checkout, or no session bus), the launch is the window itself and lives until temor
@@ -1689,7 +1689,7 @@ rows in the bar, `block.lens` and `agent.adapter` host sides). Left:
 - [ ] Leftovers from the duplication fixes (wave 2 is on main; the lanes' notes are in
       /mnt/data/cargo/temor-lanes/followups-dup2-*.md).
       - No test covers a Space chord refused while a Space is being renamed or edited
-        (`Desk::switch_to_number`). On Linux the terminal keymap binds no Space chord: chordkit's
+        (`Desk::switch_to_number`). On Linux the terminal keymap binds no Space chord: keymap's
         GNOME and CUA conventions leave Switch to Space unbound, and only mac and KDE bind it. A
         test needs one of those keymaps in the harness, or a way to open the Space's Rename from
         a test.
@@ -1732,13 +1732,13 @@ rows in the bar, `block.lens` and `agent.adapter` host sides). Left:
       `ime_commit`, carries it whole), and the harness has no Option/Cmd key host, so
       Option-as-Alt and Cmd chords are covered by `temor-vt` tests only. Not exercised: Keychain,
       Dock badge, fullscreen and touchpad scrolling against the real system.
-- [ ] Menu clicks on macOS: a click on a quire menu item (every pop-up, the tab's menu) never picks
+- [ ] Menu clicks on macOS: a click on a UI-kit menu item (every pop-up, the tab's menu) never picks
       in a real window; it starts a text selection and the Click is dropped (blitz-dom
       `handle_pointerup`: `do_click` is false after a stale `Selecting` drag, left because a press
       whose default action is cancelled, as every menu item's is, did not reset the drag state).
       Fixed in blitz 67eb1509 (branch `prevented-pointerdown-resets-drag` of PoHsuanLai/blitz, on top
       of the pinned 4b236792); checked in a running window (a font and a cursor-shape pick wrote
-      settings.toml). quire v0.3.40 (a980364a, blitz 0be21979) carries it and temor is pinned to it;
+      settings.toml). The UI kit (then v0.3.40; a980364a, blitz 0be21979) carries it and temor is pinned to it;
       still to check in a real window. The harness cannot show it: its clicks do not move between
       press and release.
 - [ ] Font picker (Settings > Appearance): a pop-up of every installed family with "System default"
@@ -1746,7 +1746,7 @@ rows in the bar, `block.lens` and `agent.adapter` host sides). Left:
       `temor-render/src/font/catalog.rs`). The harness cannot open the pop-up's menu in the settings
       window, so the list is tested through the pop-up's sizers and the pick was checked by hand in a
       running window. The row is chosen by the key path `font.family`; use `control = "font"` once
-      the quire pin has the attribute. Line height is a setting (`font.line_height`, percent of the
+      the UI kit pin has the attribute. Line height is a setting (`font.line_height`, percent of the
       font's own line, 80 to 200, default 100, live in open panes); macOS still raises the font's line
       to 1.25 em first (`MIN_LINE_EM`), so 100 is that floor there. A bundled default font is still
       open (Ghostty and WezTerm embed JetBrains Mono).
@@ -1821,6 +1821,6 @@ rows in the bar, `block.lens` and `agent.adapter` host sides). Left:
 - [ ] CI after the merge: `a_running_program_is_detached_into_its_own_pane_and_the_old_pane_gets_a_new_shell`
       timed out once on Arch (the screen still showed the parked program after the click on the
       left pane); it passes locally. The macOS window tests failed one each run, a different one each
-      time (sidebar right-click, tab menu while resizing). On c74048f (quire v0.3.53) three failed
+      time (sidebar right-click, tab menu while resizing). On c74048f (the UI kit, then v0.3.53) three failed
       at once (those two and the sidebar's pin from the row's menu: a click on a menu item did
       nothing) and all passed on a rerun: flaky menu clicks in the macOS harness, for the owner.

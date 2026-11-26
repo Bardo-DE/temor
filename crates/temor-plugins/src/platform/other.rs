@@ -1,4 +1,4 @@
-//! Systems without bayonet's run half: no plugin runs.
+//! Systems without plugin-host's run half: no plugin runs.
 //!
 //! TODO(platform:windows): the same methods as the Unix half, over job objects.
 

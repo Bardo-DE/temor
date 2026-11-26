@@ -8,7 +8,7 @@ use super::super::Action;
 use super::support::{GNOME, KDE, OURS, Went, check, keymap_for_any, went};
 
 #[test]
-fn our_desktop_takes_super_and_the_ctrl_shift_form_keycap_sends() {
+fn our_desktop_takes_super_and_the_ctrl_shift_form_key_remap_sends() {
     use Went::{Dropped, Program, Ran};
     #[rustfmt::skip]
     let rows: &[(&str, Went)] = &[
@@ -50,7 +50,7 @@ fn our_desktop_takes_super_and_the_ctrl_shift_form_keycap_sends() {
         // Shift+- is `_`, so Ctrl+Shift+- is the program's Ctrl+_ (undo in the shell).
         ("Ctrl+Shift+-", Program),
         ("Ctrl+Shift+0", Ran(Action::ActualSize)),
-        // keycap's ⌘= reads as Ctrl++, plain Ctrl: the program's (see FOLLOWUPS).
+        // key remap's ⌘= reads as Ctrl++, plain Ctrl: the program's (see FOLLOWUPS).
         ("Ctrl+Shift+=", Program),
         ("Super+Shift+T", Ran(Action::ReopenTab)),
         ("Super+Shift+U", Ran(Action::JumpToWaiting)),

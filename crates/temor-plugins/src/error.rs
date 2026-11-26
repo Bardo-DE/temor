@@ -9,7 +9,7 @@ pub enum PluginError {
     Failed {
         /// The plugin's id.
         plugin: String,
-        /// What happened, in bayonet's words.
+        /// What happened, in plugin-host's words.
         reason: String,
     },
     /// The request was cancelled (a newer keystroke, the person closed the bar).

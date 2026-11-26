@@ -6,35 +6,35 @@ Date: 2026-10-09. Plan refs: D13, §10, §11 P0(d).
 
 | Project | What |
 |---|---|
-| `base/` | Minimal quire consumer shaped like `quire/examples/consumer`: `ds`, `ds-settings` (`dioxus`), `ds-blitz`, `dioxus`; one `ds_blitz::launch`, a `Ds` root with `use_environment` and a paragraph. quire by git at v0.2.30 = `366dcd97ebc26003f466d20fa12123f783180653`. `[patch.crates-io]` copied from quire v0.2.30's root (vello/anyrender forks and the dioxus-core fork). |
+| `base/` | Minimal UI kit consumer shaped like the UI kit's `examples/consumer`: `ds`, `ui-settings` (`dioxus`), `ui-blitz`, `dioxus`; one `ui_blitz::launch`, a `Ds` root with `use_environment` and a paragraph. The UI kit by git at v0.2.30 = `366dcd97ebc26003f466d20fa12123f783180653`. `[patch.crates-io]` copied from the UI kit (then v0.2.30)'s root (vello/anyrender forks and the dioxus-core fork). |
 | `with-peek/` | The same plus `anyview-peek` and `anyview-core` by git at anyview `6f27d117269f514d69c4c4eaa64a5a72e5b96720` (default features, so `media` is on). `main` peeks `argv[1]` with `anyview_peek::peek` and draws `Pane { peeked }`. |
 | `with-peek-nomedia/` | Count-only (`cargo tree`, never built): `anyview-peek` with `default-features = false`. |
-| `base-pdf/` | Count-only: `base` with `ds-blitz` feature `pdf`, to split pdfrum's share from anyview's. |
+| `base-pdf/` | Count-only: `base` with `ui-blitz` feature `pdf`, to split pdfrum's share from anyview's. |
 
 Toolchain 1.98.1 everywhere (`rust-toolchain.toml`). Both apps compile. Neither was run.
 
-### The quire version mismatch, and how it was fixed
+### The UI kit version mismatch, and how it was fixed
 
-anyview pins quire at `db321897` (v0.2.28 plus 5 commits, an ancestor of v0.2.30) and spells the URL
-`https://github.com/PoHsuanLai/quire.git`. Without a fix the graph has two quires. A
-`[patch."…/quire.git"]` pointing at `…/quire` is refused: Cargo canonicalises both URLs to the same
+anyview pins the UI kit at `db321897` (v0.2.28 plus 5 commits, an ancestor of v0.2.30) and spells the URL
+the UI kit's repository URL with a `.git` suffix. Without a fix the graph has two copies of the UI kit. A
+`[patch."<URL>.git"]` pointing at `<URL>` is refused: Cargo canonicalises both URLs to the same
 source ("patch for `ds` points to the same source"). What worked, in `with-peek/Cargo.toml`:
 
 ```toml
-[patch."https://github.com/PoHsuanLai/quire"]   # covers both spellings
-ds = { git = "https://www.github.com/PoHsuanLai/quire", rev = "366dcd97…" }
-# … same line for ds-core, ds-core-derive, ds-style, ds-motion, ds-behaviour, ds-blitz,
-#     ds-settings, ds-settings-derive, ds-desktop, ds-intents
+[patch."<the UI kit's repository URL>"]   # covers both spellings
+ds = { git = "<the UI kit's repository URL, www. spelling>", rev = "366dcd97…" }
+# … same line for ds-core, ds-core-derive, ui-style, ds-motion, ds-behaviour, ui-blitz,
+#     ui-settings, ui-settings-derive, ui-desktop, ui-intents
 ```
 
 The `www.` host is a different canonical source, and GitHub redirects it to the same repo. Every
 `ds-*` crate in the lockfile now comes from one source at v0.2.30, and anyview-peek builds against
-v0.2.30 unchanged. For temor proper the better fix is for anyview and temor to pin the same quire rev
+v0.2.30 unchanged. For temor proper the better fix is for anyview and temor to pin the same UI kit rev
 **and the same URL spelling** (both with or both without `.git`). A rev-only mismatch can then be
 fixed with one ordinary patch, or not happen at all.
 
 Feature check: anyview's workspace enables `zbus/tokio`, but nothing `anyview-peek` pulls turns it on.
-zbus keeps its default `async-io` backend, as quire's CONSUMING.md §1 requires.
+zbus keeps its default `async-io` backend, as the UI kit's CONSUMING.md §1 requires.
 
 ## Numbers
 
@@ -53,10 +53,10 @@ Expect about ±20% noise: a later rebuild of `base` release by cargo-bloat took 
 | normal + build deps | 464 | 630 | +166 |
 | Cargo.lock packages | 600 | 773 | +173 |
 | with-peek, `media` off | | 563 | +149 |
-| base + `ds-blitz/pdf` only | 461 | | +47 |
+| base + `ui-blitz/pdf` only | 461 | | +47 |
 
-So anyview's "about 600" is mostly shared: about 414 come with any quire app. Of the 171 new crates:
-- **47** come from quire's own `ds-blitz` feature `pdf` (pdfrum plus its crypto and font-subsetting
+So anyview's "about 600" is mostly shared: about 414 come with any UI kit app. Of the 171 new crates:
+- **47** come from the UI kit's own `ui-blitz` feature `pdf` (pdfrum plus its crypto and font-subsetting
   stack). peek turns it on for `PdfThumb`. They are shared if temor ever enables `pdf` or `print` itself.
 - **124** come from anyview proper: archive (zip, 7z, tar, bzip2, lzma, zstd), book, font, image
   (jxl-oxide, exr, tiff, psd, qoi, resvg, **ravif + rav1e**, an AV1 *encoder*), text (syntect,
@@ -68,7 +68,7 @@ Added duplicate versions:
 - skrifa 0.42 and 0.47 (base has 0.44)
 - font-types 0.11
 - vello_common and vello_cpu 0.2.0: pdfrum's raster pins crates.io vello 0.2, which is **not**
-  covered by quire's vello fork patch (0.1). So two vellos are linked.
+  covered by the UI kit's vello fork patch (0.1). So two vellos are linked.
 - moxcms 0.9, weezl 0.2, digest 0.11, thiserror 1, hashbrown 0.13
 
 ### Clean build time (cargo "Finished")
@@ -163,7 +163,7 @@ Total rlib growth is 1226 → 1527 MB, +301 MB.
 ### Native / system libraries
 
 `ldd` of the two release binaries is **identical**: libc, libm, libgcc_s, fontconfig, freetype,
-harfbuzz, graphite2, glib, pcre2, png16, xml2, z, bz2, lzma, brotli. All of them come from the quire
+harfbuzz, graphite2, glib, pcre2, png16, xml2, z, bz2, lzma, brotli. All of them come from the UI kit
 baseline. peek adds **no** new shared library: no libasound, libdav1d, ffmpeg or libmpv. Every new
 codec is pure Rust; libbz2-rs-sys and zlib-rs are Rust ports. None of the new crates declares `links`.
 The new build scripts are rav1e, av-scenechange, pulp, ahash, getrandom, paste, pulldown-cmark,
@@ -195,12 +195,12 @@ Why:
 - D16 (single binary vs dylib at desktop level) is where the 18 MB gets shared with anyview, not here.
 
 Follow-ups, cheapest first:
-1. Pin temor's quire to the same rev and URL spelling anyview uses, or ask anyview to drop `.git`. The
+1. Pin temor's UI kit to the same rev and URL spelling anyview uses, or ask anyview to drop `.git`. The
    `www.` patch above is a spike workaround, not something to keep.
 2. Ask anyview to make the AVIF encoder (ravif/rav1e) optional in `anyview-image`, or move it out of
    the peek path. It is build time with no linked code.
-3. Ask quire/pdfrum to move pdfrum's raster onto the patched vello (0.1 fork). The vello 0.2 copy is
-   a quire-side duplicate that any `pdf` user pays for.
+3. Ask the UI kit/pdfrum to move pdfrum's raster onto the patched vello (0.1 fork). The vello 0.2 copy is
+   a UI-kit-side duplicate that any `pdf` user pays for.
 4. Optional: temor's `peek` feature can forward `anyview-peek/media`. With it off, 22 crates and all
    MPL code go away, and audio and video peek as facts only.
 5. Measure `anyview-pane` again when it lands. Expect it to share nearly all of this.

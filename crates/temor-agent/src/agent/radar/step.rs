@@ -200,7 +200,7 @@ fn strength(source: &StatusSource) -> u8 {
     match source {
         StatusSource::ProgramStatus => 0,
         StatusSource::Adapter(_) => 1,
-        StatusSource::Docket => 2,
+        StatusSource::Companion => 2,
         StatusSource::Notification => 3,
     }
 }

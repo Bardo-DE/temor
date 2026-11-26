@@ -8,7 +8,7 @@ use temor_wire::hello::{Capability, Hello, HelperVersion, ProtocolVersion};
 pub const PROTOCOL: ProtocolVersion = ProtocolVersion(2);
 
 /// The capabilities the daemon offers. Trial runs and the agent relay need the sandbox runner
-/// (bulkhead), which is not linked yet, so they are not offered.
+/// (the sandbox crates), which is not linked yet, so they are not offered.
 ///
 /// `Facts` (a session's folder read for the chips) was added without a new protocol version: a
 /// request and a reply nobody sends unless both ends agreed the capability change nothing for an

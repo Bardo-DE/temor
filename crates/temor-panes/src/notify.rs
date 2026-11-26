@@ -25,7 +25,7 @@ pub trait Notifier: Send {
 }
 
 /// The default until the toolkit's desktop feature provides a notification service (the toolkit has
-/// none: its notifications are in sill's shell kit). Notices are dropped.
+/// none: its notifications are in the shell's kit). Notices are dropped.
 // TODO(desktop): the freedesktop notification service through ds-desktop, with the
 // notification's activation raising the window (PLAN §8.1). Until then nothing is shown.
 #[derive(Debug, Default)]

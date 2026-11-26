@@ -29,35 +29,35 @@ ordered by dependency (§11), not split into versions.
 | # | Decision |
 |---|---|
 | D1 | Terminal core: **libghostty-vt**, at **Ghostty main pinned by commit** (spike P0(a): `7ec9e26`, with Zig 0.16). The crates.io `libghostty-vt` 0.2.2 pins a July commit that lacks the notification, progress, 7501, unknown-sequence, OSC 133-with-exit-code and render-hold callbacks and the snapshot API. temor owns its FFI: a `temor-vt-sys` crate (bindgen output generated from the pinned headers and checked in; build.rs adapted from libghostty-rs's `-sys`, MIT, with attribution; offline through `GHOSTTY_SOURCE_DIR`, `GHOSTTY_ZIG_SYSTEM_DIR` and `ZIG_GLOBAL_CACHE_DIR`). The safe API is our own `temor-vt`, whose single `ffi` module is the only `unsafe` and includes the `Send` wrapper. Ghostty's full embedded API is macOS/iOS only, so we render ourselves. Fixes go upstream (libghostty-rs, Ghostty) only with the owner's OK. |
-| D2 | **Spaces** use quire's kit (`ds_style::space::list::Spaces<P,R>`, `SpacesSource::Local`). A Space is a project and a mode switch: the sidebar shows only its tabs, and ⌃1–9 switches between Spaces. |
+| D2 | **Spaces** use the UI kit's Spaces kit (`ui_style::space::list::Spaces<P,R>`, `SpacesSource::Local`). A Space is a project and a mode switch: the sidebar shows only its tabs, and ⌃1–9 switches between Spaces. |
 | D3 | **Tabs persist** until closed. They can be pinned or grouped in folders. "Recently closed" keeps their scrollback. |
-| D4 | **Nested splits.** The tree is ported from Ghostty's `split_tree.zig` (MIT) and owned by temor. Dividers come from quire `SplitView`, extended with an axis, share-based sizes, nesting and an unfocused-dim token (whopper has queued this). |
+| D4 | **Nested splits.** The tree is ported from Ghostty's `split_tree.zig` (MIT) and owned by temor. Dividers come from the UI kit `SplitView`, extended with an axis, share-based sizes, nesting and an unfocused-dim token (whopper has queued this). |
 | D5 | **Blocks** come from OSC 133. While the shell waits at its prompt, the next command is typed in temor's composer card and sent to the shell as a paste and a Return (changed 2026-10-24, P20); while a command runs, keys go to the program as before. |
 | D6 | **The AI never guesses a mode.** The shell prompt is only ever shell. AI appears only (a) as a proposal you asked for, typed into your prompt, where your Enter is the approval, (b) as ⌘T rows you pick, (c) in agent panes, (d) through the desktop companion. |
 | D7 | **Proposals are trial-run first** in a bwrap overlay sandbox (spike: 21/21 bad commands caught, 0 false failures, about 10 ms overhead). There are no per-tool rules: flag checks against `--help`, path guessing and dry-run tables were dropped. |
-| D8 | **"New agent" opens the gated agent view** (an ACP session through docket, drawn with quire companion components). An agent's own CLI in a pane is opt-in and labelled "ungated, sandboxed". Claude Code's pre-tool hook is bridged to our gate as an agent-adapter plugin, which gates the CLI pane. |
+| D8 | **"New agent" opens the gated agent view** (an ACP session through the intents router, drawn with the UI kit companion components). An agent's own CLI in a pane is opt-in and labelled "ungated, sandboxed". Claude Code's pre-tool hook is bridged to our gate as an agent-adapter plugin, which gates the CLI pane. |
 | D9 | **Checkpoints:** a git snapshot of tracked and untracked files is taken before an agent writes. Ignored files are labelled as not covered. Writes inside the project then count as `UndoableWrite`. |
 | D10 | **Spaces carry profiles:** env vars, an SSH identity through a per-Space agent, and an optional dotenv. They apply to new shells only. |
 | D11 | **The ⌘T command bar** ranks results by fixed rules, with AI rows always last. |
 | D12 | **Downloads shelf:** the path is configurable, defaulting to XDG Downloads for now (owner, 2026-10-10; it was temor's own data dir). It is fed by kitty file transfer (OSC 5113), iTerm2 `File=` (OSC 1337), `temor get`/`save`/`view -`, and "Save output". |
 | D13 | **anyview:** `anyview-peek` is linked in-process. An embeddable viewer pane is being proposed by anyview to its owner. Both sit behind a default-on feature, and the fallback is D-Bus `Open`. |
-| D14 | **Plugins** follow `agent-spec/plugins.md`, using the shared crate in the new public repo **bayonet** (extracted by anyview). temor's capabilities: `block.lens`, `open.provider` (shaped to match sill's launcher providers), `agent.adapter`, `row.facts`. temor has no format plugins: viewing belongs to anyview. |
+| D14 | **Plugins** follow `agent-spec/plugins.md`, using the shared crate in the new public repo **plugin-host** (extracted by anyview). temor's capabilities: `block.lens`, `open.provider` (shaped to match the shell's launcher providers), `agent.adapter`, `row.facts`. temor has no format plugins: viewing belongs to anyview. |
 | D15 | **Portable core** (design/36): every desktop extra sits behind the `desktop` feature, and `--no-default-features` must build and pass. Off our desktop the trial says "not checked". |
 | D17 | **SSH, Tier A (nothing installed on the host):** hosts are first-class (⌘T, per-Space pins, `host:path` in tabs). Shell integration and terminfo are sent with every connection, as kitty's ssh kitten does. One shared connection per host, so a split or new tab opens instantly in the same remote folder. Remote files support peek, view, and edit-locally-then-write-back, plus upload by drop. Port forwarding from the running row. Consent per host. |
 | D18 | **SSH, Tier B (`temor-remote`, an optional helper uploaded to the host):** sessions survive disconnects and reattach with the exact screen; listening ports are detected and forwarded; remote file service for live viewer panes; trial runs on the host; local agents working on remote workspaces (the agent stays local, its file and terminal calls go to the host). Installed after consent per host; the version is pinned by hash, so it updates itself. Hosts that can't run it fall back to Tier A. |
 | D19 | **(Withdrawn 2026-10-26: temor keeps no git; worktrees, if anyone wants them, are a plugin's.)** **Agent worktrees are temor's, not the agent's.** Starting an agent offers "on a new branch" (first, the default) or "in this checkout"; nothing guesses. temor creates the worktree in its own data dir, sets it up from project facts (an include list for ignored files, the Space's setup command), pins the agent's workspace to it through the gate, warns early about overlapping changes between agents with a `git merge-tree` dry run, and owns review and merge (default **Squash**). It separates files, not processes or ports, and says so. §8.2 |
 | D20 | **Every agent pane shows its approval mode,** as two fixed facts read from the actual launch profile and gate session, never inferred: **Sandbox** (on/off) and **Asks** (everything / writes / nothing). A mode changes only by an explicit action on that pane and never carries over silently to other panes or windows. §8.2 |
 | D21 | **Nothing goes to a model unseen.** Every AI request temor makes (a proposal, a ⌘T AI row, "Ask about @tab") first shows exactly what it will send, as removable chips with sizes, and the sent list is kept with the request's log record. Nothing is attached implicitly. §8.3 |
-| D22 | **Tailscale through porter.** temor never talks to tailscaled. porter's accountd publishes `Tailnet1.Machines()`/`Changed` (typed reader in porter-client); the person's tailnet computers appear as SSH hosts in ⌘T ("Your computers", deduped against `~/.ssh/config`, offline ones dimmed). Connecting is still the system `ssh` to the MagicDNS name with the same sharing, bootstrap and helper; Tailscale SSH hosts need no keys, and its browser check shows as a running row with Open (never auto-opened). Tailnet ports open directly at `name:port` before offering a forward. Design: `~/rs-wt/accounts/tailnet-temor.md`. §9b |
-| D23 | **Layered crates, each a proper library.** L0 standalone libraries (vt, pty, shell, wire, transfer, ssh), L1 headless engines (render, term), L2 the pure app model (core, the base, with blocks, layout, hosts and agent over it; split 2026-10-29), L3 the services (client, panes, desktop, remote), L4 the app (ui, with how a pane is shown in pane-view, split 2026-10-29; bin). Dependencies point down only, checked in the gate. L0/L1 don't depend on quire: closed sets use plain `FromStr`/`Display`/serde instead of `ds-core`'s `Word` (a deliberate exception to quire's rule, for the library layers only). Each library has a small root API, crate docs with a runnable example, `#[non_exhaustive]` on growable enums, the standard traits, builders for wide constructors, injected defaults, and documented `Send`/`Sync`. §2 |
+| D22 | **Tailscale through the accounts service.** temor never talks to tailscaled. The accounts service (`bardo-accountd`) publishes `Tailnet1.Machines()`/`Changed` (typed reader in account-client); the person's tailnet computers appear as SSH hosts in ⌘T ("Your computers", deduped against `~/.ssh/config`, offline ones dimmed). Connecting is still the system `ssh` to the MagicDNS name with the same sharing, bootstrap and helper; Tailscale SSH hosts need no keys, and its browser check shows as a running row with Open (never auto-opened). Tailnet ports open directly at `name:port` before offering a forward. Design: `~/rs-wt/accounts/tailnet-temor.md`. §9b |
+| D23 | **Layered crates, each a proper library.** L0 standalone libraries (vt, pty, shell, wire, transfer, ssh), L1 headless engines (render, term), L2 the pure app model (core, the base, with blocks, layout, hosts and agent over it; split 2026-10-29), L3 the services (client, panes, desktop, remote), L4 the app (ui, with how a pane is shown in pane-view, split 2026-10-29; bin). Dependencies point down only, checked in the gate. L0/L1 don't depend on the UI kit: closed sets use plain `FromStr`/`Display`/serde instead of `ds-core`'s `Word` (a deliberate exception to the UI kit's rule, for the library layers only). Each library has a small root API, crate docs with a runnable example, `#[non_exhaustive]` on growable enums, the standard traits, builders for wide constructors, injected defaults, and documented `Send`/`Sync`. §2 |
 | D16 | **Packaging:** temor is a lib plus a thin `main.rs`. Single binary vs dylib is decided later at desktop level. |
 
 ### Rules inherited
-- Follow quire's `CONSUMING.md` coherence rules (§5): no literal
-  colours, durations, fonts or radii; quire components only; anything missing goes to quire
-  first; motion only through quire timers. Look: Mac-native (design/27).
+- Follow the UI kit's `CONSUMING.md` coherence rules (§5): no literal
+  colours, durations, fonts or radii; the UI kit components only; anything missing goes to the UI kit
+  first; motion only through the UI kit timers. Look: Mac-native (design/27).
 - No developer words in the UI: never "ACP", "MCP", "OSC", "PTY" or "CLI".
-- Tooltips: quire `Button { title }` for every icon-only or terse button, and `Tooltip`/`HoverTarget`
+- Tooltips: the UI kit `Button { title }` for every icon-only or terse button, and `Tooltip`/`HoverTarget`
   for everything else; never hand-rolled, never raw `title` attributes. Short Mac wording, no trailing
   period.
 - Commit identity comes from env vars (author and committer Po Hsuan Lai <pohsuanlai0208@gmail.com>),
@@ -78,14 +78,14 @@ ordered by dependency (§11), not split into versions.
 
 | Repo | Role for temor | Pin |
 |---|---|---|
-| quire | ds, ds-style (Spaces), ds-settings, ds-blitz (TextureLayer, launch), ds-desktop, ds-intents, ds-harness, ds-lint | `git = "https://github.com/PoHsuanLai/quire.git", rev = "<full sha>"  # vX.Y.Z` (the desktop-wide form; batch 7: `366dcd97ebc26003f466d20fa12123f783180653`, v0.2.30) |
-| blitz (fork, `quire-pin`) / blitz-kit | through quire's `[patch]` block, copied verbatim from `docs/workspace-deps.toml` | as quire |
+| The UI kit | ds, ui-style (Spaces), ui-settings, ui-blitz (TextureLayer, launch), ui-desktop, ui-intents, ui-harness, ui-lint | `git = "<the UI kit's repository>", rev = "<full sha>"  # vX.Y.Z` (the desktop-wide form then; batch 7: `366dcd97ebc26003f466d20fa12123f783180653`, v0.2.30) |
+| blitz (fork, the UI kit's pin) / blitz-embed | through the UI kit's `[patch]` block, copied verbatim from `docs/workspace-deps.toml` | as the UI kit |
 | ghostty | libghostty-vt source, through the `libghostty-vt` crate (`GHOSTTY_SOURCE_DIR` for offline builds) | one commit, bumped by hand behind `temor-vt` tests |
-| docket | `docket-dbus` proxies (Intents1, Confirm1, Companion1, IntentProvider1), `docket-ds`, docket-launch profiles | batch protocol |
-| **bulkhead** (public; split from `docket/crates/docket-shell` by the agent session) | bwrap runner: `AgentRun`, `Overlay`, plus our new trial module | batch protocol |
-| bayonet (public) | plugin envelope, discovery, framing, process handling. temor implements `manifest::Provides` and `run::Protocol`, then uses `discover::<P>(&Search::new("temor", …))`, `registry.serving(cap, fit)` and `Runner::new("temor", Timeouts::default()).open(..)`. The process side is Unix-only. Start from `docs/capabilities.md`, `examples/shapes/mod.rs` and `examples/demo_plugin.rs` | v0.2.0, rev `a91c515a90331f4d0596d342fa8dd925105edeba` (pin this in P11). Its `testing` feature gives `bayonet::testing::{Fake, Fault, Conversation, Step, Ending, fault_argument}`, a fake plugin with the eight wire faults, for temor's plugin tests. Error and result enums are `#[non_exhaustive]`, `Rejected::new`, `Runner` is Clone, and `with_log` takes a closure |
+| The intents router | the intents router's D-Bus proxies (Intents1, Confirm1, Companion1, IntentProvider1), its UI part, the intents router's launch profiles | batch protocol |
+| **The sandbox crates** (public; split from the intents router's shell crate by the agent session) | bwrap runner: `AgentRun`, `Overlay`, plus our new trial module | batch protocol |
+| plugin-host (public) | plugin envelope, discovery, framing, process handling. temor implements `manifest::Provides` and `run::Protocol`, then uses `discover::<P>(&Search::new("temor", …))`, `registry.serving(cap, fit)` and `Runner::new("temor", Timeouts::default()).open(..)`. The process side is Unix-only. Start from `docs/capabilities.md`, `examples/shapes/mod.rs` and `examples/demo_plugin.rs` | v0.2.0, rev `a91c515a90331f4d0596d342fa8dd925105edeba` (pin this in P11). Its `testing` feature gives `plugin-host::testing::{Fake, Fault, Conversation, Step, Ending, fault_argument}`, a fake plugin with the eight wire faults, for temor's plugin tests. Error and result enums are `#[non_exhaustive]`, `Rejected::new`, `Runner` is Clone, and `with_log` takes a closure |
 | anyview | `anyview-peek`, `anyview-core::Sequence`, later the embeddable viewer pane | batch protocol |
-| porter | `prov::{SpaceId, Actor, Effect}` types (through docket) | through docket |
+| The accounts service | `prov::{SpaceId, Actor, Effect}` types (through the intents router) | through the intents router |
 
 ## 2. Workspace layout
 
@@ -95,7 +95,7 @@ APIs (D23). Dependencies point downward only.
 ```
 temor/
   crates/
-    # L0: standalone libraries (no temor deps outside L0, no quire deps)
+    # L0: standalone libraries (no temor deps outside L0, no UI kit deps)
     temor-vt-sys/     bindgen output (checked in) plus a build.rs that builds the pinned Ghostty with Zig
     temor-vt/         the only libghostty-vt user: Terminal, RenderState, encoders, callbacks
                       → typed events
@@ -119,7 +119,7 @@ temor/
     temor-client/     every operation on temor's data, and the services: ssh and the remote
                       links, transfers, facts, viewers, the desktop port (§2b)
     temor-panes/      the running terminals: each pane's engine, marks, blocks and notices
-    temor-desktop/    feature `desktop`: IntentProvider1, docket and companion clients,
+    temor-desktop/    feature `desktop`: IntentProvider1, the intents router and companion clients,
                       LauncherEntry badge, anyview D-Bus fallback, checkpoint and trial callers
     temor-remote/     Tier B helper binary (static, Linux x86_64 and aarch64 musl): session
                       daemon on temor-pane, ports, files, trial, agent relay
@@ -135,17 +135,17 @@ temor/
                       systemd unit `org.bardo.Temor.service`, intents manifest, skills)
 ```
 
-**Boundary rules** (checked by `scripts/check-layers.sh` from `cargo metadata`, and quire's
+**Boundary rules** (checked by `scripts/check-layers.sh` from `cargo metadata`, and the UI kit's
 `check-portable.sh`):
-- A crate depends only on crates in its own or lower layers. L0 and L1 never depend on quire
-  (`ds-*`), Dioxus or docket; only L4 names Dioxus views.
+- A crate depends only on crates in its own or lower layers. L0 and L1 never depend on the UI kit
+  (`ds-*`), Dioxus or the intents router; only L4 names Dioxus views.
 - `temor-core` has no I/O, no Dioxus, and no FFI. No L2 crate links I/O: they name no
   temor-pty, temor-transfer or temor-vt, and name temor-shell, temor-ssh and temor-pane without
   their default features (`io`, and `engine` for temor-pane), which hold the process, file and
   socket code. A crate that runs things opts in with `features = ["io"]`.
 - Only `temor-vt` names libghostty (through `temor-vt-sys`). `unsafe` is allowed only in `temor-vt-sys`
   and in `temor-vt`'s `ffi` module; the rest of the workspace keeps `unsafe_code = "deny"`.
-- Only `temor-desktop` names zbus or docket. Nothing in the core reaches `desktop/`.
+- Only `temor-desktop` names zbus or the intents router. Nothing in the core reaches `desktop/`.
 
 ## 2b. Data, store, client, window (target, P23–P24)
 
@@ -156,7 +156,7 @@ say so. Four stages, each a crate, each reaching only the one below it, as mailo
 ```
 temor-schema   the data, as types (pure, serde, versioned)          ← every crate may name it
 temor-store    where the data is kept: SQLite (rusqlite, bundled, FTS5), WAL, one writer
-temor-client   every operation on the data, on threads of its own; no Dioxus, no quire widgets
+temor-client   every operation on the data, on threads of its own; no Dioxus, no UI kit widgets
 temor-panes    the running terminals, beside the client: each pane's engine, marks, blocks,
                shell state and notices; knows no store (decided 2026-10-28)
 temor-ui-base, temor-hub, temor-views, temor-ui
@@ -232,7 +232,7 @@ the client.
 pub struct PaneId(u64);  pub struct TabId(u64);  pub struct BlockId(u64);
 
 /// What a Space keeps (the `P` of `Spaces<P, R>`). Written flat beside the look.
-pub struct Project { root: ProjectRoot, profile: Profile, routes: Vec<Route> }   // the desktop link is the quire kit's
+pub struct Project { root: ProjectRoot, profile: Profile, routes: Vec<Route> }   // the desktop link is the UI kit's
 pub struct Profile { env: Vec<(EnvKey, EnvValue)>, ssh_identity: Option<KeyPath>, dotenv: Option<RelPath> }
 pub struct Route { pattern: RoutePattern }            // e.g. `ssh prod-*`, a path prefix
 
@@ -257,12 +257,12 @@ pub struct Block { id: BlockId, prompt: GridSpan, command: CommandText, output: 
                    exit: Option<ExitCode>, by: Author, started: Stamp, ended: Option<Stamp> }
 pub enum Author { Person, Proposal { turn: TurnRef, taint: Taint }, Agent(AgentLabel) }
 
-/// Per-pane agent state, mapped to quire's CompanionPresence for display.
+/// Per-pane agent state, mapped to the UI kit's CompanionPresence for display.
 pub enum AgentState { Idle, Working, Waiting(WaitKind), Done(Seen), Failed(Seen) }
 pub enum WaitKind { Permission, Question, SignIn }
 pub enum Seen { Unseen, Seen }
 pub struct StatusReport { pane: PaneId, state: AgentState, seq: Seq, source: StatusSource, note: Option<Note> }
-pub enum StatusSource { ProgramStatus /* OSC 7501 */, Adapter(PluginId), Docket, Notification }
+pub enum StatusSource { ProgramStatus /* OSC 7501 */, Adapter(PluginId), Companion, Notification }
 
 pub struct Proposal { text: SanitisedLine, turn: TurnRef, taint: Taint, verdict: TrialVerdict }
 pub enum TrialVerdict { Clean { changes: FileChanges }, Failed { exit: ExitCode, first_error: ErrorLine },
@@ -327,7 +327,7 @@ shell would get.
   then `end_update` outside it. Only dirty rows are walked, then the pane's texture is uploaded and
   `handle.redraw()` is called.
   `RENDER_HOLD` (mode 2026) defers the frame.
-- **Workers** (tokio, injected through quire's `Spawner`) handle the model calls, trial runs, plugin
+- **Workers** (tokio, injected through the UI kit's `Spawner`) handle the model calls, trial runs, plugin
   processes, transfers and peeks. Library crates never spawn threads themselves.
 
 ## 4c. Data flow (decided 2026-11-02, P25)
@@ -364,7 +364,7 @@ Spike P0(b): two libghostty panes plus kitty images plus an anyview peek, each i
 `TextureLayer`, run in one real window with no conflicts. Both strategies below were measured.
 
 - **Two renderers behind one `Renderer` trait:**
-  - **CPU (the default until quire's render hook lands):**
+  - **CPU (the default until the UI kit's render hook lands):**
     - swash glyphs are kept by name in the glyph cache, and drawn straight from it
     - only dirty rows are composed into a premultiplied RGBA buffer, then `TextureLayer` uploads it
     - measured p50 2–3 ms per pane per frame and about 0.1 ms from a key to a ready texture
@@ -377,57 +377,57 @@ Spike P0(b): two libghostty panes plus kitty images plus an anyview peek, each i
       of rows that do
     - 13–22% CPU, and 82–408 KB uploaded per frame instead of about 5 MB
     - **Never `queue.submit` from a pane thread:** it stalls up to one refresh against the window's
-      present. It turns on when quire ships a render hook that encodes into the layer's texture on the
+      present. It turns on when the UI kit ships a render hook that encodes into the layer's texture on the
       window's render thread before its submit.
 - **Fonts:**
-  - fontique finds the fonts; the default is the system `monospace` until quire adds a terminal
+  - fontique finds the fonts; the default is the system `monospace` until the UI kit adds a terminal
     code-face token (Space Mono has no box drawing, CJK or emoji, and a line height of about 1.5).
   - Box drawing and block elements are drawn procedurally.
   - **Colour emoji:** Fedora's Noto Color Emoji is COLRv1 only, which swash can't draw. Rasterise
-    COLRv1 through skrifa's colour paint with vello_cpu (already in quire's tree) into a colour glyph.
+    COLRv1 through skrifa's colour paint with vello_cpu (already in the UI kit's tree) into a colour glyph.
     Fall back to monochrome.
 - **Kitty images:**
   - read `placement_render_info` in the locked begin phase, since it needs `&Terminal`
   - textures cached per image `generation`, drawn by z-layer (`BELOW_BG`, `BELOW_TEXT`, `ABOVE_TEXT`)
   - an image's anchor after reflow follows libghostty
-- **Grid colours** come from quire's terminal palette tokens (v0.2.31), so light/dark and the Space
+- **Grid colours** come from the UI kit's terminal palette tokens (v0.2.31), so light/dark and the Space
   theme apply.
 - **Sizing:**
   - panes snap to whole cells, and the leftover pixels are padding
   - fractional scale comes from winit (checked crisp at 1.5x and 2x)
-  - the app's container sets full height itself until quire's root fills the window
+  - the app's container sets full height itself until the UI kit's root fills the window
 - **Build:** temor-vt-sys chooses Zig's optimize mode from `OPT_LEVEL`, never from `DEBUG`. A Debug
   libghostty makes `vt_write` about 8000x slower.
 - **Known limits:**
   - `AppConfig` cannot request wgpu features (no timestamp queries), and there is no presented-frame
-    signal; both are asked of quire.
+    signal; both are asked of the UI kit.
   - Clicks on custom widgets are lost until v0.2.31, so each pane's input is caught on the containing
     element, and the drawn grid gets `pointer-events: none` (verified in the harness).
 
 ## 6. Input
 
-- **Keys:** quire `EditSurface`-style focus, IME and clipboard hosting, then libghostty's `KeyEncoder`,
+- **Keys:** the UI kit `EditSurface`-style focus, IME and clipboard hosting, then libghostty's `KeyEncoder`,
   which honours the kitty keyboard flags.
 - **Mouse:** libghostty's `MouseEncoder`, using pointer capture from `use_pointer_capture`.
   `data-keys="capture"` and `data-wheel="capture"` keep the scroll engine away from the grid.
 - **Paste:** bracketed paste, with libghostty's unsafe-paste check.
-- **Clipboard:** OSC 52 through `ds_blitz::clipboard`; a read asks once per tab.
-- **Keyboard profile:** the desktop file says `Categories=TerminalEmulator` so keycap applies its
+- **Clipboard:** OSC 52 through `ui_blitz::clipboard`; a read asks once per tab.
+- **Keyboard profile:** the desktop file says `Categories=TerminalEmulator` so the key remapper applies its
   terminal profile, and ⌘ is never remapped to Ctrl in temor.
 - **Spike P0(c) findings:**
   - libghostty's encoder plus real fcitx5 IME (text-input-v3) work in a v0.2.30 window.
-  - temor currently carries copies of quire's private IME machine and focus helper; these are asked
+  - temor currently carries copies of the UI kit's private IME machine and focus helper; these are asked
     upstream.
   - The unshifted key comes from a US table until the Blitz fork passes winit's
     `key_without_modifiers`.
   - temor corrects the modifier lag in its own keymap.
-  - Keys are **configurable** (ds-settings). On KDE, KWin takes Meta+T/W/D/V globally; the desktop's
+  - Keys are **configurable** (ui-settings). On KDE, KWin takes Meta+T/W/D/V globally; the desktop's
     reserved chords have been asked of whopper.
-- **Keys are chordkit's** (the desktop's portable keymap core, pinned in the workspace
+- **Keys are keymap's** (the desktop's portable keymap core, pinned in the workspace
   `Cargo.toml`). temor owns no chord, modifier, keymap or Command-versus-Ctrl type or rule:
   - **Platform and source:** the L3 edge (`temor_ui::edge::load_keymap`) reads
-    `chordkit::detect_process()` once, loads the desktop's keymap through quire's
-    `ds_blitz::system_key_source` (kdeglobals on Plasma, a dconf dump on GNOME, the platform's
+    `keymap::detect_process()` once, loads the desktop's keymap through the UI kit's
+    `ui_blitz::system_key_source` (kdeglobals on Plasma, a dconf dump on GNOME, the platform's
     conventions elsewhere, our desktop included), lays the
     person's changes over them (`Overrides::parse` + `with_overrides`), then registers temor's
     actions (`temor_pane::keys::build_keymap`, pure).
@@ -436,10 +436,10 @@ Spike P0(b): two libghostty panes plus kitty images plus an anyview peek, each i
     always stays the program's. A Primary chord that already uses Shift takes Alt as well on the
     Ctrl+Shift platforms (split down is Ctrl+Shift+Alt+D); one that uses Alt too has no terminal
     form.
-  - **The Ours alias:** on our desktop keycap remaps ⌘ to Ctrl+Shift for terminal windows, so
+  - **The Ours alias:** on our desktop the key remapper remaps ⌘ to Ctrl+Shift for terminal windows, so
     `resolve` accepts Super+D and Ctrl+Shift+D as one chord. Other platforms have no alias. Menus
     show the platform's own form (`chord.display(platform)`, `⌘D` on Ours and macOS).
-  - **Routing** (`temor_ui::input::route`): the window's key event becomes a `chordkit::KeyInput`
+  - **Routing** (`temor_ui::input::route`): the window's key event becomes a `keymap::KeyInput`
     (physical modifiers, the logical key without Shift, AltGr from the toolkit's flag) and
     `keymap.resolve(&input, Context::Terminal)` decides: an action temor acts on runs; otherwise a
     key in the Primary form (`is_primary_form`: a letter, digit or symbol with the Primary
@@ -452,8 +452,8 @@ Spike P0(b): two libghostty panes plus kitty images plus an anyview peek, each i
     keymap entry), and the system's Cancel does the same; the find chords (find next, previous) act
     only while it is open and are otherwise the program's or dropped like any key.
   - **Ctrl+1–9 is the desktop's** Space switch and is never bound by temor. Super alone, Super+Space
-    and Super+Tab are the shell's; chordkit reserves them and `register` refuses them.
-  - **Test:** tables over platforms, with `chordkit::detect` or explicit `Platform` values and
+    and Super+Tab are the shell's; keymap reserves them and `register` refuses them.
+  - **Test:** tables over platforms, with `keymap::detect` or explicit `Platform` values and
     never the real environment: Ours takes Super and Ctrl+Shift, Ctrl+D reaches the program, an
     unbound Ctrl+Shift+K or Super+K is dropped; Windows and KDE use the Ctrl+Shift form (split
     down is Ctrl+Shift+Alt+D) and leave Super alone; macOS uses Super; AltGr characters type.
@@ -471,19 +471,19 @@ Spike P0(b): two libghostty panes plus kitty images plus an anyview peek, each i
     temor's (the desktop owns Ctrl+digit; the command bar and the Spaces menu reach it)
   - ⌘T opens a plain tab until the command bar lands (P5), then the bar; ⌘⇧U jumps to the
     waiting agent
-  - Every binding is configurable in the settings file in chordkit's line form:
+  - Every binding is configurable in the settings file in keymap's line form:
     `temor.split-right = Primary+Alt+N`, `copy = Primary+Alt+C`, `temor.zoom = none` to unbind.
     A change replaces the action's defaults, which gives a chord back to the program. A line the
     keymap refuses (a chord the desktop keeps, or one that is not a key) is reported with its line
     number and skipped; an action's refused default is reported once at start and leaves only that
-    action unbound until the person binds it (chordkit lets a person's chord revive it).
+    action unbound until the person binds it (keymap lets a person's chord revive it).
 
 ## 7. Browser-like structure
 
-**Sidebar** (quire `Sidebar`, at least `SIDEBAR_MIN_WIDTH`):
+**Sidebar** (the UI kit `Sidebar`, at least `SIDEBAR_MIN_WIDTH`):
 - **Head:** `SpaceHead`.
 - **Body:** pinned tabs, then folders, then the other tabs.
-- **A tab row** shows title, cwd and agent status (quire `CompanionPresence` orb at Inline size), plus an
+- **A tab row** shows title, cwd and agent status (the UI kit `CompanionPresence` orb at Inline size), plus an
   unread dot.
 - **A tab with splits** shows a miniature of its layout. Each tile has a title and status, and clicking a
   tile focuses that pane.
@@ -502,10 +502,10 @@ Spike P0(b): two libghostty panes plus kitty images plus an anyview peek, each i
 - A Space is a project root plus a profile plus routes.
 - New tabs open at the root with the profile's environment. A per-Space ssh-agent holds only that
   Space's identity.
-- Credentials (API keys) come from porter's account store, never from plain text in the profile.
+- Credentials (API keys) come from the accounts service's account store, never from plain text in the profile.
 - Routes send new sessions to a Space, for example `ssh prod-*` to Ops.
 
-**⌘T bar** (fixed ranking, `bar_step`). It is built on quire v0.2.31's generic palette machine
+**⌘T bar** (fixed ranking, `bar_step`). It is built on the UI kit's generic palette machine (v0.2.31)
 (`ds::prelude::{PaletteState, PaletteIn, PaletteOut, PaletteParams}`):
 - `bar_step` produces the ranked rows. The palette machine never re-ranks.
 - When provider rows change, temor sends `PaletteIn::Refreshed`.
@@ -536,9 +536,9 @@ The ranking rules:
   1. OSC 7501 program status (parsed by libghostty)
   2. `agent.adapter` plugins reporting over temor's socket (`TEMOR_PANE_ID`, `TEMOR_SOCKET`, monotonic
      `seq`)
-  3. docket's `Companion1` roster and `roster_changed` for agent-view sessions
+  3. The intents router's `Companion1` roster and `roster_changed` for agent-view sessions
   4. OSC 9/99/777 notifications and BEL
-- **Display:** status uses quire `CompanionPresence`, so a waiting agent in temor looks like a waiting
+- **Display:** status uses the UI kit `CompanionPresence`, so a waiting agent in temor looks like a waiting
   companion anywhere else.
 - **Attention:**
   - Done and Failed stay until the pane is seen.
@@ -549,31 +549,31 @@ The ranking rules:
 
 ### 8.2 Agent panes
 - **Agent view (default for "new agent"):**
-  - A `PaneKind::AgentView` drives an ACP session through docket (the `docket-agent` / `docket-launch`
+  - A `PaneKind::AgentView` drives an ACP session through the intents router (its agent part and its launch part
     profiles `claude-code` and `agy`; `agents.toml` labels).
-  - It is drawn with quire companion components: `AnswerCard`, `PlanList`, and `RunRow` controls
+  - It is drawn with the UI kit companion components: `AnswerCard`, `PlanList`, and `RunRow` controls
     (Watch, Take over, Hand back, Pause, Stop, Undo all). The agent's commands show as blocks.
   - Every file, terminal and permission request goes through the router and `Confirm1`.
-  - Built together with docket and quire, as a desktop-wide agent view.
+  - Built together with the intents router and the UI kit, as a desktop-wide agent view.
 - **Agent CLI pane (opt-in):**
-  - The agent's own interface runs in a terminal pane, launched through docket-launch (bwrap).
+  - The agent's own interface runs in a terminal pane, launched through the intents router's launch profile (bwrap).
   - It is labelled `Sandboxed`, or `HookBridged` once the Claude Code adapter forwards each
-    PreToolUse to docket.
+    PreToolUse to the intents router.
   - **Hook bridge (agreed with the agent session):**
     - The adapter calls `Intents1.Request.Session.Open` once, then
       `JudgeToolCall(session, call) -> Allow | Deny{reason} | Ask` for each tool call.
     - `call` is `{program, label?, tool, kind: PermissionKind, input, cwd, space}`.
-    - `Ask` raises `Confirm1` inside docket, and the hook waits for the person's answer.
+    - `Ask` raises `Confirm1` inside the intents router, and the hook waits for the person's answer.
     - The caller is `CallerRole::AcpAgent`, so every `acpagent.*` rule and the R10–R12 taint rules
       apply.
     - The adapter must set the CLI's own permissions to "ask for everything", since pre-allowed
       tools bypass hooks.
-    - docket builds its side after the agy lane, once the adapter's shape is fixed.
+    - The intents router builds its side after the agy lane, once the adapter's shape is fixed.
 - **Approval mode, always visible (D20):**
   - Every agent pane (agent view and CLI pane) has a mode line in its header with two facts:
-    - **Sandbox:** On (docket-launch bwrap) or Off.
+    - **Sandbox:** On (the intents router's launch profile, bwrap) or Off.
     - **Asks:** Everything, Writes, or Nothing, from the gate's session for that agent.
-  - Both come from the launch profile and docket's session, never from what the agent says. If temor
+  - Both come from the launch profile and the intents router's session, never from what the agent says. If temor
     can't read them (an unbridged CLI), the line says **Not gated**.
   - Changing a mode is an explicit action on that pane (a menu on the mode line, with the
     consequence spelled out). It applies to that pane only; a new agent starts from the Space's
@@ -600,7 +600,7 @@ The ranking rules:
       (unverified), temor reads the same file name.
     - Then the Space profile's optional setup command runs (for example `pnpm install`) as a block in
       a pane, so its output and exit are visible.
-  - **Pinning:** the agent's pane cwd and its workspace root are the worktree. docket's workspace
+  - **Pinning:** the agent's pane cwd and its workspace root are the worktree. The intents router's workspace
     path check then refuses or asks for writes outside it, including an agent that tries to make its
     own worktree elsewhere. The CLI pane gets the cwd only; the agent view is told its root. Processes
     and ports stay shared, and the tab's details say so ("separate files, shared ports").
@@ -644,12 +644,12 @@ The ranking rules:
   - the "Explain · Fix" chip on a failed block (it does not retry by itself)
   - the ⌘T row "Suggest a command for: …"
 - **Model:** inferd's `text` slot (local, private). The context is the block, cwd, shell, the installed
-  tool's version, and earlier successful commands in this Space (almanac).
+  tool's version, and earlier successful commands in this Space (the memory service).
 - **Before it is shown:**
   1. Sanitise: strip newlines and control characters; it will be typed by bracketed paste.
   2. Syntax check (`bash -n`, or the shell's own check) and command resolution through the live
      shell.
-  3. **Trial run** (D7), as the trial module in bulkhead:
+  3. **Trial run** (D7), as the trial module in the sandbox crates:
      - bwrap with an overlay on `$HOME` and the cwd, everything else read-only
      - no network, fresh `/tmp` and `/run`, a separate session keyring, stdin from `/dev/null`
      - a 2 s limit with a process-group kill, plus rlimits (process count, file size, address space)
@@ -662,7 +662,7 @@ The ranking rules:
   - A marker shows when the model's turn read untrusted text ("suggested from the output above").
   - **The person's Enter is the approval**, under Cedar rule `user-launcher`, so no `Confirm1`.
 - **Logged:** to the companion session record as the person's act. The record is `ProposalRun`,
-  added by docket in companion-wire:
+  added by the intents router in companion-wire:
   - `space`, `pane`
   - `text` (stored after sanitising) and `sanitised: Changed{removed} | Unchanged`
   - `suggested_by: TurnRef` and `model: ModelRef`
@@ -671,7 +671,7 @@ The ranking rules:
   - `ran_at: prov::UnixSeconds`, from the injected clock
 - One switch turns off all AI. When it is off, nothing reaches a model.
 
-### 8.4 temor's actions (ds-intents manifest `dist/intents/<app-id>.toml`, `IntentProvider1`)
+### 8.4 temor's actions (ui-intents manifest `dist/intents/<app-id>.toml`, `IntentProvider1`)
 | Action | Effect | Notes |
 |---|---|---|
 | `terminal.pane.list` / `pane.cwd` | Read | |
@@ -682,14 +682,14 @@ The ranking rules:
 | `context(scope)` | | focused pane, cwd, last block, selection, Space id |
 
 - **Space mapping** (owner decision: per app, linkable):
-  - temor's Spaces are its own. Each one can be linked to a desktop-wide Space through quire's kit
+  - temor's Spaces are its own. Each one can be linked to a desktop-wide Space through the UI kit's Spaces kit
     (v0.2.31: an opaque link per Space and a "Link to…" menu item). Only linked Spaces share memory
     and consent with other apps.
   - Every request and `context()` carry
-    `porter_core::SpaceId::for_app(&AppName, LocalSpace(space.0), space.link.as_deref())`
-    (porter `209aaaf`, on the desktop in batch 8). temor never formats the u64 itself.
+    `account_core::SpaceId::for_app(&AppName, LocalSpace(space.0), space.link.as_deref())`
+    (the accounts service `209aaaf`, on the desktop in batch 8). temor never formats the u64 itself.
   - The desktop Spaces available for linking come from `org.bardo.Spaces1` on accountd, through
-    porter-client `DbusTransport::spaces()` (`list`, `create`, `watch`). This is a desktop extra in
+    account-client `DbusTransport::spaces()` (`list`, `create`, `watch`). This is a desktop extra in
     `temor-desktop`.
   - When a linked desktop Space is removed, temor clears the link and falls back to its own Space.
 - **Companion @tab:** the companion can take any tab's blocks as `ContextChip`s. What isn't shown
@@ -712,10 +712,10 @@ The ranking rules:
   - newest first, each item with its thumbnail (the freedesktop cache, otherwise a peek) and its
     origin
   - "Show in its tab" jumps back to where it came from
-  - the path is configurable (`ds-settings`), defaulting to temor's own data dir
+  - the path is configurable (`ui-settings`), defaulting to temor's own data dir
 
 ## 9b. SSH
-- **Tailscale (D22):** tailnet machines come from porter's `Tailnet1.Machines()` (node id, name,
+- **Tailscale (D22):** tailnet machines come from the accounts service's `Tailnet1.Machines()` (node id, name,
   MagicDNS name, addresses, online/last seen, Tailscale SSH on/off, host keys, owner) and its
   `Changed()` signal. They join the ⌘T host list as "Your computers"; an ssh_config alias whose
   HostName is a machine's MagicDNS name or 100.x address is shown once (the person's alias wins).
@@ -724,14 +724,14 @@ The ranking rules:
   pre-shell output becomes a "Confirm it's you in your browser" row with Open. Tier B ports offer
   "Open at <name>:<port>" before "Forward port…". With no Tailscale account, the group is absent.
   Tests use a fake `Tailnet1` on a private bus and the throwaway sshd printing the check URL.
-  Landed in porter master `a7c11d2a48919c1ffa6766dcc98b9b3ca43c4ad2`: porter-client (feature
-  `dbus`) `DbusTransport::over(conn).tailnet().await?` then `machines() -> Vec<porter_core::Machine>`
+  Landed in the accounts service master `a7c11d2a48919c1ffa6766dcc98b9b3ca43c4ad2`: account-client (feature
+  `dbus`) `DbusTransport::over(conn).tailnet().await?` then `machines() -> Vec<account_core::Machine>`
   and `watch()` (a stream of `()` per Changed). `Machine { node, name, dns (no trailing dot),
   addresses, os, online, last_seen: Option<UnixSeconds>, ssh, ssh_host_keys, owner: Mine|Shared|Tagged }`;
   this computer is left out. Errors `TailnetError {Denied, Unreachable, Malformed}`; no account or a
   stopped tailscaled gives an empty list, not an error. Wire: `org.bardo.Tailnet1` at
   `/org/bardo/Tailnet1` on `org.bardo.Accounts1`, `Machines() -> a(sa{sv})`, `Changed()` (keys in
-  porter FINDINGS "Lane tailnet-account"). porter's `dist/callers.toml` gives temor (app
+  the accounts service FINDINGS "Lane tailnet-account"). The accounts service's `dist/callers.toml` gives temor (app
   `org.bardo.Temor`, unit `org.bardo.Temor.service`) role "terminal": Tailnet1 only.
 
 ### Tier A: nothing installed on the host
@@ -788,13 +788,13 @@ The ranking rules:
   on the shared connection, optionally automatically, as VS Code does.
 - **Files:** list, stat, read, write and watch. Viewer panes on remote files reload live, and
   write-back uses the remote file's mtime and hash as the check.
-- **Trial runs on the host:** the helper links bulkhead's trial module. If the host has bwrap and
+- **Trial runs on the host:** the helper links the sandbox crates' trial module. If the host has bwrap and
   unprivileged user namespaces, proposals in SSH panes get real verdicts; otherwise "not checked
   (remote)".
 - **Remote agents: the agent runs locally, and only its hands are on the host.**
   - In the agent view, a session's workspace can be `host:path`. The agent process, its sign-in,
-    docket's gate, `Confirm1`, memory and checkpoints all stay on the person's machine.
-  - ACP already lets the client serve the agent's file and terminal calls. docket routes that
+    the intents router's gate, `Confirm1`, memory and checkpoints all stay on the person's machine.
+  - ACP already lets the client serve the agent's file and terminal calls. The intents router routes that
     session's `fs/*` and `terminal/*` to temor, which carries them out on the host through
     temor-remote:
     - file reads and writes go to the file service
@@ -805,13 +805,13 @@ The ranking rules:
     agent sees is the host.
   - Checkpoints are taken on the host through the helper, with the same hidden-ref rule.
   - **Agreed shape with the agent session (for P14):**
-    - **Executor:** a second performer in docket-acp, next to `client/perform.rs`, chosen when the
+    - **Executor:** a second performer in the intents router's ACP part, next to `client/perform.rs`, chosen when the
       session opens. It talks to temor-remote through temor, over a typed transport, and can report
       "the host refused".
     - **Guarantees on the host:** the workspace path check, output limits and redaction run on the
-      host, from bulkhead's shared code linked into temor-remote, so remote calls get the same
+      host, from the sandbox crates' shared code linked into temor-remote, so remote calls get the same
       guarantees as local ones.
-    - **Gate:** a new `site: Site::Local | Remote { host: HostId }` on docket's `Call` and on the ACP
+    - **Gate:** a new `site: Site::Local | Remote { host: HostId }` on the intents router's `Call` and on the ACP
       session's opening, never encoded in the cwd. `HostId` is the ssh host-key fingerprint plus the
       shown name. A remote write counts as `UndoableWrite` only while a host-side checkpoint is held.
       The host's network is outside our reach rules, so Cedar can say "remote destructive always
@@ -823,9 +823,9 @@ The ranking rules:
       adapter version is checked live before remote workspaces are offered for it.
   - Agents that can't hand their tools to the client (the CLI pane) aren't offered for remote
     workspaces. As an explicit fallback, the CLI can run *on* the host through the helper, with
-    `JudgeToolCall` relayed back to local docket and labelled "runs on host".
+    `JudgeToolCall` relayed back to the local intents router and labelled "runs on host".
 - **Maintenance budget:**
-  - two Linux targets, one protocol crate with an explicit version handshake (bayonet's framing rules)
+  - two Linux targets, one protocol crate with an explicit version handshake (plugin-host's framing rules)
   - no per-distro packaging
   - macOS and BSD hosts are a later decision (§14)
 
@@ -841,7 +841,7 @@ The ranking rules:
   - **Keys:** temor owns every modifier chord, ⌘K, ⌘W and split navigation. The pane takes plain keys
     only while focused. Esc unwinds inside the pane, then sends `PaneRequest::Unfocus`, which returns
     focus to the terminal.
-  - **Commands:** `PaneHandle::commands()` and `run(cmd)` merge into temor's quire `CommandPalette`.
+  - **Commands:** `PaneHandle::commands()` and `run(cmd)` merge into temor's UI kit `CommandPalette`.
   - **Requests temor handles:**
     - `SizeHint`
     - `ClosePane`
@@ -857,28 +857,28 @@ The ranking rules:
 
 | Phase | Content | Needs |
 |---|---|---|
-| **P0 Spikes** | (a) build: Zig 0.16 plus the `libghostty-vt` crate pinned, offline through `GHOSTTY_SOURCE_DIR`, in the lane's build dir. (b) render: two panes side by side, libghostty output plus a kitty image in two `TextureLayer`s, with an `anyview-peek` texture beside them in one window. (c) input: IME plus the key encoder through an `EditSurface`-style host. (d) measure what `anyview-peek` actually adds to the build. | quire v0.2.29 |
-| **P1 Single terminal** (done) | PTY, `temor-vt`, renderer, keys/mouse/paste/clipboard, scrollback, search, selection, hyperlinks, fonts, settings, desktop file, keycap profile | P0 |
+| **P0 Spikes** | (a) build: Zig 0.16 plus the `libghostty-vt` crate pinned, offline through `GHOSTTY_SOURCE_DIR`, in the lane's build dir. (b) render: two panes side by side, libghostty output plus a kitty image in two `TextureLayer`s, with an `anyview-peek` texture beside them in one window. (c) input: IME plus the key encoder through an `EditSurface`-style host. (d) measure what `anyview-peek` actually adds to the build. | the UI kit (then v0.2.29) |
+| **P1 Single terminal** (done) | PTY, `temor-vt`, renderer, keys/mouse/paste/clipboard, scrollback, search, selection, hyperlinks, fonts, settings, desktop file, the key remapper profile | P0 |
 | **P2 Shell integration and blocks** (done) | bash/zsh/fish scripts (OSC 133/7), blocks and their actions, jump between prompts, exit marks, command-finished notifications, progress | P1 |
 | **R0 Test cut** (done) | the desktop test-cut rule (`~/rs-wt/test-cut/RUBRIC.md`): a read-only audit to `~/rs-wt/test-cut/temor.md` (every cut and merge as `file test → code → why`, with counts and gate time before), then a cut lane applies it. Delete T1–T8, merge M1–M3 into tables, scenarios or property loops, never touch K1–K5, add the include-guard test to each `tests/it/main.rs`. Each deleted test names the test that still reaches its code. One commit for cuts, one for the guards, with before/after counts. Runs before R1 so R1 moves fewer tests | P2 |
-| **R1 Layers** (done) | Two lanes in turn: R1a (the quire bump, fork-patch guard, library hygiene) and R1b (extract `temor-pane` and `temor-shell`, `scripts/check-layers.sh`). First the quire bump to **v0.3.1** (`rev = "b9b9c03bf166f0e2be834518b2dd1ee76b4de7f5"`, additive over v0.3.0; v0.3.0 broke: `launch` returns `Result<(), LaunchError>`, seams behind `ds-blitz/testing`, settings structs built with setters; `SignInFault` is `#[non_exhaustive]`), so the fork-patch guard can use `scripts/fork-patches.sh check Cargo.toml` from that rev. Then D23 plus the desktop layering audit (`~/rs-wt/layering-audit/temor.md`): extract `temor-pane` (the pane engine: `PaneSpec`, start, `PaneHandle`, the PTY I/O thread, `Term` under one lock, reaping, the paste queue, blocks, selection, search, keymap and terminal settings, `shell_pane`; from temor-ui's pane/session and temor-core's terminal/block code) with **no Dioxus and no tokio** (events through `std::sync::mpsc` or a caller-supplied sink trait), so anyview or sill can embed a terminal pane; extract `temor-shell` from temor-pty; drop `ds-core` from L0/L1 (temor-core keeps `Word` and `ds-style`: quire's `Spaces<P,R>` is the persisted Spaces file format, and L2 may use quire's model crates, never its views); `#[non_exhaustive]` on public types that will grow (wire messages and events, `VtEvent`, error enums, transfer events); doctests for every library's main entry point (not temor-vt-sys: generated bindings); fakes behind a `testing` feature, not `cfg(test)`; `Wrap` enum for `row.rs` `wraps: bool`; workspace deps only (temor-ssh's `path` dep); drop the unused `ds-settings` entry; document in temor-render that consumers need quire's fork `[patch]` block; git revs only, with no override files inside the repo (sibling `[patch]` overrides live one level up, in the work dir that holds the siblings, e.g. `~/rs-wt/<lane>/.cargo/config.toml`; the tracked `.cargo/config.toml` keeps only build settings), and a guard that temor's fork `[patch]` block matches quire's canonical `docs/fork-patches.toml` at the pinned quire rev (read with `git show <rev>:docs/fork-patches.toml` or from the cargo git checkout, or via quire's `scripts/fork-patches.sh check`; never a vendored copy; lands once quire tags it); `scripts/check-layers.sh` in the gate. No behaviour change; the full suite stays green | R0 |
-| **P3 Window structure** (done) | two lanes in turn: P3a (quire v0.3.x features and the §6 keys, one pane) then P3b (tabs, splits, restore). The quire v0.3.x features (SplitView axis, RawKey, palette tokens, IME area, `use_environment`, `use_window_title`, `use_space_look`/`use_space_frame`) and the §6 two-path ⌘ keys first; sidebar tabs (persistent, pinned, folders), split tree plus `SplitView`, split miniatures, drag to split and tear off, recently closed through snapshots, session restore | P1; quire `SplitView` batch |
+| **R1 Layers** (done) | Two lanes in turn: R1a (the UI kit bump, fork-patch guard, library hygiene) and R1b (extract `temor-pane` and `temor-shell`, `scripts/check-layers.sh`). First the UI kit bump to **v0.3.1** (`rev = "b9b9c03bf166f0e2be834518b2dd1ee76b4de7f5"`, additive over v0.3.0; v0.3.0 broke: `launch` returns `Result<(), LaunchError>`, seams behind `ui-blitz/testing`, settings structs built with setters; `SignInFault` is `#[non_exhaustive]`), so the fork-patch guard can use `scripts/fork-patches.sh check Cargo.toml` from that rev. Then D23 plus the desktop layering audit (`~/rs-wt/layering-audit/temor.md`): extract `temor-pane` (the pane engine: `PaneSpec`, start, `PaneHandle`, the PTY I/O thread, `Term` under one lock, reaping, the paste queue, blocks, selection, search, keymap and terminal settings, `shell_pane`; from temor-ui's pane/session and temor-core's terminal/block code) with **no Dioxus and no tokio** (events through `std::sync::mpsc` or a caller-supplied sink trait), so anyview or the shell can embed a terminal pane; extract `temor-shell` from temor-pty; drop `ds-core` from L0/L1 (temor-core keeps `Word` and `ui-style`: the UI kit's `Spaces<P,R>` is the persisted Spaces file format, and L2 may use the UI kit's model crates, never its views); `#[non_exhaustive]` on public types that will grow (wire messages and events, `VtEvent`, error enums, transfer events); doctests for every library's main entry point (not temor-vt-sys: generated bindings); fakes behind a `testing` feature, not `cfg(test)`; `Wrap` enum for `row.rs` `wraps: bool`; workspace deps only (temor-ssh's `path` dep); drop the unused `ui-settings` entry; document in temor-render that consumers need the UI kit's fork `[patch]` block; git revs only, with no override files inside the repo (sibling `[patch]` overrides live one level up, in the work dir that holds the siblings, e.g. `~/rs-wt/<lane>/.cargo/config.toml`; the tracked `.cargo/config.toml` keeps only build settings), and a guard that temor's fork `[patch]` block matches the UI kit's canonical `docs/fork-patches.toml` at the pinned the UI kit rev (read with `git show <rev>:docs/fork-patches.toml` or from the cargo git checkout, or via the UI kit's `scripts/fork-patches.sh check`; never a vendored copy; lands once the UI kit tags it); `scripts/check-layers.sh` in the gate. No behaviour change; the full suite stays green | R0 |
+| **P3 Window structure** (done) | two lanes in turn: P3a (the UI kit's v0.3.x features and the §6 keys, one pane) then P3b (tabs, splits, restore). The UI kit's v0.3.x features (SplitView axis, RawKey, palette tokens, IME area, `use_environment`, `use_window_title`, `use_space_look`/`use_space_frame`) and the §6 two-path ⌘ keys first; sidebar tabs (persistent, pinned, folders), split tree plus `SplitView`, split miniatures, drag to split and tear off, recently closed through snapshots, session restore | P1; the UI kit `SplitView` batch |
 | **P4 Spaces** (done: Batch 2) | kit integration, `Project` payload, profiles (env, ssh-agent, dotenv), routes, ⌃1–9 | P3 |
 | **P5 Command bar and quick terminal** (done: Batch 2) | providers, fixed ranking, Run row, quick terminal | P4 |
 | **P6 Desktop integration** (done: Batches 1–2) | intents manifest, `IntentProvider1`, `context()`, D-Bus activation and systemd unit, dock badge, `desktop` boundary gate | P2 |
-| **P7 Agents** (done, except the hook bridge and the D20 gate readers, which wait on docket; agent worktrees and restore points removed 2026-10-26, the radar kept for the row's one dot; the unused D20 approval mode line code removed 2026-10-29) | `presence_step` and the radar, OSC 7501, `TEMOR_PANE_ID` socket, checkpoints, the CLI pane through docket-launch, the agent view (with docket and quire), the hook bridge (with docket), the approval mode line (D20), agent worktrees (D19; overlap spike done) | P3, P6, P10 (review view); docket |
-| **P8 Proposals** (blocked: bulkhead split; the unused proposal machine, sanitising and D21 context card code removed 2026-10-29, to be written again when it unblocks) | the context card (D21), the trial module in bulkhead, sanitising, the model call, the verdict UI, the Fix chip, the taint marker, the log record | P2, P6; bulkhead split |
+| **P7 Agents** (done, except the hook bridge and the D20 gate readers, which wait on the intents router; agent worktrees and restore points removed 2026-10-26, the radar kept for the row's one dot; the unused D20 approval mode line code removed 2026-10-29) | `presence_step` and the radar, OSC 7501, `TEMOR_PANE_ID` socket, checkpoints, the CLI pane through the intents router's launch part, the agent view (with the intents router and the UI kit), the hook bridge (with the intents router), the approval mode line (D20), agent worktrees (D19; overlap spike done) | P3, P6, P10 (review view); the intents router |
+| **P8 Proposals** (blocked: the sandbox crates split; the unused proposal machine, sanitising and D21 context card code removed 2026-10-29, to be written again when it unblocks) | the context card (D21), the trial module in the sandbox crates, sanitising, the model call, the verdict UI, the Fix chip, the taint marker, the log record | P2, P6; the sandbox crates split |
 | **P9 Transfers and shelf** (done, except upload by drop) | OSC 5113/1337, `temor get/save/view`, shelf UI, upload by drop | P2 |
 | **P10 Viewers** (done; peek in Batch 5) | peek, Sequence, viewer pane | P2; anyview pane API |
-| **P11 Plugins** (blocked: bayonet) | bayonet; `block.lens`, `open.provider`, `agent.adapter`, `row.facts`; the built-in adapters (Claude Code status and hook bridge, git facts) written as plugins | P5, P7; bayonet |
-| **P13 SSH Tier A** (done: Batch 2) | host list (plus tailnet machines from porter, D22), connection sharing, bootstrap (integration, terminfo, `temor get/open`), splits on the same host, remote files and write-back, forwards, consent per host | P2, P3, P9 |
-| **P14 SSH Tier B** (done: Batches 1, 3, 4 and 5, except the remote trial and remote workspaces, which wait on bulkhead and docket) | `temor-wire`, `temor-remote` (session daemon with libghostty-vt, snapshot and reattach, `link_step`), port detection (direct tailnet open first), the file service, remote trial, remote workspaces for local agents (plus the on-host CLI fallback) | P13; bulkhead; docket's `JudgeToolCall` |
+| **P11 Plugins** (blocked: plugin-host) | plugin-host; `block.lens`, `open.provider`, `agent.adapter`, `row.facts`; the built-in adapters (Claude Code status and hook bridge, git facts) written as plugins | P5, P7; plugin-host |
+| **P13 SSH Tier A** (done: Batch 2) | host list (plus tailnet machines from the accounts service, D22), connection sharing, bootstrap (integration, terminfo, `temor get/open`), splits on the same host, remote files and write-back, forwards, consent per host | P2, P3, P9 |
+| **P14 SSH Tier B** (done: Batches 1, 3, 4 and 5, except the remote trial and remote workspaces, which wait on the sandbox crates and the intents router) | `temor-wire`, `temor-remote` (session daemon with libghostty-vt, snapshot and reattach, `link_step`), port detection (direct tailnet open first), the file service, remote trial, remote workspaces for local agents (plus the on-host CLI fallback) | P13; the sandbox crates; the intents router's `JudgeToolCall` |
 | **P12 Companion context** (blocked: companion) | @tab chips, `context()` scopes, the ⌘T "Ask about" row with the context card (D21) | P6; companion |
 | **P15 Look** (done; the cards over the grid replaced by P20) | Warp-style command cards, studied from Warp's design (AGPL, so no code was copied). The shell's prompt is replaced by a dim folder-and-branch line above an empty typing line, whatever the person's startup files or theme set, as Warp's default prompt does; right-side prompts are cleared (`TEMOR_PROMPT=shell` keeps the person's own; changed 2026-10-11 from "stock prompts only", because distro startup files such as Fedora's /etc/bashrc set PS1 and so the cards never showed). Cards are drawn as renderer row bands: a 1px rule, a failed tint plus a stripe, a selected tint, and the typing line shaded like an input. Exit 130 and 141 count as stopped. The command line stays pinned while its output scrolls, a toolbar appears on hover, and nothing is drawn on the alternate screen. D5 stays: no input box of temor's own | P2 |
 | **P16 Context chips** (done: Batches 3 and 5; the chips replaced by P20; git, the folder lines and the branch removed 2026-10-26: what a repository says is a plugin's to tell, and facts are the virtualenv and runtime versions only) | Facts for the pane's folder, computed by the app at each prompt or folder change (git runs in the background, no lock): branch, uncommitted changes, +N −M lines, changed files, Python virtualenv, Node version. They showed as chips at the right end of the prompt's header line; now the folder heads each section of the block list and the composer, and the rest is on the tab's sidebar row (the `row.facts` shape, built in ahead of P11) | P15 |
 | **P17 Shell offer** (done: Batches 3 and 5) | Warpify-style: a typed `ssh`, `docker exec`, `sudo -i` and the like (a fixed list, editable in settings) gets a one-time offer to load temor's shell integration in the inner shell, so its commands become cards. Never automatic (no mode guessing) | P15 |
 | **P18 Finish Batch 2** (done: Batches 3 and 5) | dock badge = agents waiting on the person; agent- and intent-opened panes don't take the keyboard; a second launch raises the window; the ⌘T bar lists SSH hosts from the hub; one file opener | Batch 2 |
-| **P19 Checkpoints on docket** (done: Batches 14 and 15; removed 2026-10-26 with the agent worktrees: temor keeps no file history) | temor drops its own snapshots and uses docket's frozen interface (`~/rs-wt/checkpoints/DESIGN.md` §3, §5): CheckpointList / CheckpointPlan, restore through `checkpoints.restore`, `undo_ref` to `refs/temor/undo/<n>`, and old `refs/temor/checkpoints/*` pruned after 14 days with no import | docket sha from the agent session |
+| **P19 Checkpoints on the intents router** (done: Batches 14 and 15; removed 2026-10-26 with the agent worktrees: temor keeps no file history) | temor drops its own snapshots and uses the intents router's frozen interface (`~/rs-wt/checkpoints/DESIGN.md` §3, §5): CheckpointList / CheckpointPlan, restore through `checkpoints.restore`, `undo_ref` to `refs/temor/undo/<n>`, and old `refs/temor/checkpoints/*` pruned after 14 days with no import | the intents router sha from the agent session |
 | **P20 Block list** (done 2026-10-24, branch `block-list`) | Replaces P15's cards laid over the grid and P16's chips. On the shell's screen the pane is a list of blocks, each a card with its own drawing of its output (`Terminal::styled_row`, `render_rows`), the running one live, expanded by default with a chevron to fold; status by tint only (failed red with "exit N", running amber). A folder line heads each section, the head of the card scrolled into sticks to the top, and a lens's picture sits in its block's card. The list ends in a composer card (folder, field in the grid's family; Enter sends, ⇧Enter starts a new line and the card grows to hold its lines, ↑/↓ step through the pane's commands while it holds one line, Ctrl+C empties; Tab completes the line with the shell's own completion (bash 4+, zsh, fish; temor presses U+E000, the script answers in OSC 7504; several words are listed above the field to pick from); a paste, a drop and Re-run go into it). A block's time is from when the pane read its marks. A bookmarked card shows a star. The wheel over the running block's rows goes to its program as mouse reports when it asked for the mouse. A full-screen program's screen is drawn whole. Gone: the overlay cards, header, toolbar, chips, stripe and first-launch hint, and `TEMOR_BLOCK_LIST`. Open: shells still draw their prompt into the grid (hidden by the list, so `TEMOR_COMPOSER` blanking was not needed); the branch and changes show on the tab's hover only, as the design has it; temor-render's row bands, temor-core's overlay `Frame` parts (sticky header, tools spot, card spans), chip fitting and `RowLayout`'s inserts are deleted (it still lays out folds) | P15, P16 |
 | **P21 Completion sources** (the interface and nushell's source done 2026-10-25; the AI source and ghost text open) | Tab in the composer asks sources (`temor_shell::suggest`: `CompletionSource`, `Ask`, `Suggestion`) and merges what they say into one list. A suggestion replaces the line's characters `from..to` with a word, so a source can finish the last word (a shell) or put a whole command in place of what was typed (a model); it can carry a short detail shown beside it, and a space follows it or not (a folder goes on). A source answers once, from any thread, as late as it likes; the first answer completes the line (one suggestion) or lists what to pick from (several, with what they share put in), and later ones add to the list; an answer to an old request is dropped. The running shell's own completion (bash 4+, zsh, fish; OSC 7504) is held by the session because it needs the pane; sources that stand on their own implement the trait: **nushell's** runs `nu --ide-complete` on the line in the pane's folder. **Next:** an AI source (the line, folder, shell and recent commands to a model; opt-in, and what it sends goes through the shell-state secret rules: a command typed with a leading space, or holding a secret, is never sent), and ghost text (one best suggestion shown faintly in the field, taken with →) as a source's optional second answer. Bash 3 (macOS's own) and a remote host's nushell have no source | P20 |
 | **P22 Tab icons** (open: the app, the pack with `icons.toml` and the letter tile are in, the app's icon drawn as it is; a folder's own icon at the prompt (Finder's, a KDE `.directory`'s, GNOME's metadata) and a Linux app's (its `.desktop` file's, from the icon theme) are in, each looked up once on the client's `temor-icons` thread; the program's `icon` slot waits on P11) | A tab's icon is the first of: what the program says (an `icon` slot on the provider escape, so a tool or a project can name its own); the icon of the Mac app the foreground executable belongs to (its real path inside a `.app`, asked of the system: `code`, `cursor`, `zed`, `docker`, `ollama` and anything else installed that way, with no list); an icon pack, an editable provider that maps a program name or argv to a glyph and a brand colour (agent CLIs such as `claude`, `codex`, `gemini`, `copilot`, `cursor-agent`, `aider`, `opencode`; runtimes and build tools; git, containers, clouds, databases, editors), drawn as a white glyph on the brand colour, from Simple Icons (CC0) where it has the brand; the runtime when argv names one (`python train.py` takes Python's); and else the letter tile coloured from the name. A shell at its prompt shows its folder's own icon when the folder has one set, else the letter tile; a project-type icon (Cargo.toml, pyproject) is an extension's to add, not temor's. Open: whether an app's full-colour icon is drawn as it is (as the Dock does) or redrawn as a tile from its main colour | P11 |
@@ -886,31 +886,31 @@ The ranking rules:
 | **P24 The client** (open: a's crate, `Live`, the registry, the read and change threads, the external watch, the queries `Sessions`, `Commands`, `History` and `OnShelf`, and the window's `use_live` are in; the sidebar's Favourites read through it; b's first part is in: the window's rows, Spaces and hosts are kept in the store's `layout` through `Command::Lay`, the old `session*.json` and `spaces.json` read in once and left in place; a pane brought back at launch goes on with its history session, its new commands numbered after the kept ones; checkpoints and screens are still files, keyed by pane, good for the next launch; c's first part is in: what a pane is apart from how the window shows it (`PaneCore`: its engine, title, commands, shell state, completion sources, clipboard question, notices) is `temor-panes`, with its rules: opening the pane, hearing its events (`PaneCore::hear`: marks, commands, title, folder, shell reports, desktop notices) and what is kept of it; the window's `Session` shares the core under a lock and the client's `temor-hear` thread hears every pane's events, handing the window only what is left (`Heard`); every Space's workspace is the client's (`spaces::Book`: the one on screen and the parked ones, pane ids kept apart across them, a step, a switch, a tab carried to another Space, a pane adopted, deleted Spaces answered), each answered at once on the window's thread, which carries out what it says; what is kept between launches is the client's (`keep`: the layout in the store, the older files read in once, each pane's checkpoint and screen files, the save pace, and which Spaces and panes a launch brings back), the window starting the panes and handing over their state; d's first part and e are in: the services are a layer (L3: client, panes, desktop, remote; the window and the binary L4), their I/O the client's (`ssh`, `remote`, `viewer_host`, `desktop`, `space`, `facts`, `shelf`, `plugins`) and what feeds a pane from a helper, with the pane report sockets, temor-panes'; `temor-ui` names only `temor-client`, `temor-panes` and `temor-schema` (`check-layers.sh` says so; its tests may name more), the terminal engine through temor-panes and temor-core's rules through `temor_client::model` (decided 2026-10-28); the client's modules name what the window uses of the crates under them, and what a host pane is for the person (which session it gets, how its link and session read, which way an edit goes, the host and helper views) is the client's (`remote::session`, `remote::edit_way`, `ssh::view`); the hub, `Desk` and `HubRef` stay the window's, as they hold the running panes and the window's signals (the client builds no terminal, decided 2026-10-28); the window's loops stay what they are, each a drain of one of the client's channels into the hub, as they carry events and ticks and no store query, which is what `Live` is for; and a session going on reads its start and last block from the store on the window's thread, once as its pane starts, which moving to the act thread would trade for state kept there (decided 2026-10-29)) | `temor-client` between the store and the window (§2b), in stages, each leaving the app working: **a.** the crate, `Live`, the registry, the read workers, store publishing, tests; queries `Sessions`, `History`, `Pins`, `Favourites`; the history page and the sidebar read through it. **b.** commands through `act` (open, spawn, close, reopen, pin, favourite); the window keeps undo and toasts. **c.** panes: the hub, the pane sessions and the edge move in; `PaneFeed` and `PaneInput`; the console reads `Blocks`. **d.** the rest: facts, completions, ssh and remote, transfers, viewers, the desktop port. **e.** the fence: `temor-ui` names only `temor-client` and `temor-schema`, and `check-layers.sh` says so. Follows mailo's `mail-client`, so the two apps share one shape | P23 |
 | **P25 Pipeline** (steps 0–7 are in, 4e as pieces (decided 2026-11-03): what the hub says is handed back by `Hub::said`, whether the session file is owed a write follows from what it keeps, the keyboard is followed once per request (`sync_focus`), and the Space board is watch channels; the one `apply` with a model and an edge was dropped. 4a left the radar and the shelf's downloads whole: the radar answers across panes and forgets one on close, and a download outlives its pane. 4d left `with_space`'s swap around a run in another Space, and `starting_at_home` still sets the cwd outside the step: through the step it is a field on every split input. 5 reads the hub through `use_hub` memos, the hub saying when it changed (no view bumps the window), and a pane through one `PaneShown`; a block list still draws on each change the window hears, as it reads the session as it draws, and draws its tiles then (a cache of pixels that same draw shows). Step 7 is in: the glyph cache names glyphs by what they are drawn from, the CPU path draws from it with no atlas, and the GPU path resolves a frame's glyphs into the atlases once, with no epoch or retries) | §4c's rules applied where the code still keeps state by hand, each step leaving the app working: **0.** the rules and the check; **1.** the bugs that hand-kept state caused (a block-list pane redrawn whole on every paint, a closed pane's offer state kept, only the last of several notices shown, a drag released outside the pane kept, the quick terminal reusing a pane id, the shelf losing an update between processes); **2.** the model crates: one id counter, focus kept in its tab, the bar's step reading no files, the marks' anchors released by what is held, states as enums; **3.** a pane's core answers with effects (desktop notices, finished commands, anchors) and history is recorded from them; one way to write to the store; **4.** the hub: one record per pane, a step for a host pane, an edit's state in its step, what an action is asked with passed in, one `apply` giving effects; **5.** the views write nothing while drawing and send messages (the composer, the list's scroll and the pane's events as steps); **6.** the daemon's sessions as one owner each with a step; **7.** the renderer's rows keyed by what they show, its glyphs apart from the atlas | P24 |
 
-**Status (2026-10-11):** every phase not blocked on another project has landed. Open: P8 (bulkhead), P11 (bayonet), P12 (companion), the docket-side parts of P7 and P14, and the follow-ups in FOLLOWUPS.md "Open now". P3 to P5 can run alongside P6 and P9 once P2 lands. P14's window side (Tier B sessions in the window, plus the temor-wire revision: WriteFile offset/append, Ping, cell size and Palette) runs with P16 to P18 as Batch 3. Version pins arrive in account-wide batches (Batch 13: porter's `Machine.link` / `Machine.ssh`) and are applied when the full set comes.
+**Status (2026-10-11):** every phase not blocked on another project has landed. Open: P8 (the sandbox crates), P11 (plugin-host), P12 (companion), the intents router-side parts of P7 and P14, and the follow-ups in FOLLOWUPS.md "Open now". P3 to P5 can run alongside P6 and P9 once P2 lands. P14's window side (Tier B sessions in the window, plus the temor-wire revision: WriteFile offset/append, Ping, cell size and Palette) runs with P16 to P18 as Batch 3. Version pins arrive in account-wide batches (Batch 13: the accounts service's `Machine.link` / `Machine.ssh`) and are applied when the full set comes.
 
 ## 12. Work in other repos
 
 | Repo | Ask | Status |
 |---|---|---|
-| quire | `SplitView` axis plus fractional shares plus nesting tests plus unfocused-dim token | done (used by the split tree) |
-| quire | terminal palette token set (16 ANSI colours plus foreground, background, cursor, selection), for each appearance and following the Space look | queued, v0.2.31 |
-| quire | v0.2.31: clicks on custom widgets | queued |
-| docket | `JudgeToolCall` hook bridge; `ProposalRun` in companion-wire; the agent view as a desktop component | bridge and record agreed; view to propose |
-| quire / porter | the kit's per-Space link and "Link to…" (v0.2.31); porter `SpaceId = Desktop(id) \| App{app, local}` plus a helper | decided by the owner; account confirming the shape |
-| docket → bulkhead | split out `docket-shell`, keeping `Overlay{from,to}`, `resolver_binds()` and `AgentRun` stable; temor adds the trial module there | agent session splitting; trial module after it lands |
+| The UI kit | `SplitView` axis plus fractional shares plus nesting tests plus unfocused-dim token | done (used by the split tree) |
+| The UI kit | terminal palette token set (16 ANSI colours plus foreground, background, cursor, selection), for each appearance and following the Space look | queued, v0.2.31 |
+| The UI kit | v0.2.31: clicks on custom widgets | queued |
+| The intents router | `JudgeToolCall` hook bridge; `ProposalRun` in companion-wire; the agent view as a desktop component | bridge and record agreed; view to propose |
+| The UI kit / the accounts service | the kit's per-Space link and "Link to…" (v0.2.31); the accounts service `SpaceId = Desktop(id) \| App{app, local}` plus a helper | decided by the owner; account confirming the shape |
+| The intents router → the sandbox crates | split out the intents router's shell part, keeping `Overlay{from,to}`, `resolver_binds()` and `AgentRun` stable; temor adds the trial module there | agent session splitting; trial module after it lands |
 | anyview | `anyview-pane` (`ViewerPane`); `SequenceOrigin::Output` for block output; the resume store safe across two processes | done (P10, Batch 5) |
-| quire | generic palette machine (anyview writes the quire patch), shared by temor's palette and ⌘T bar | queued, v0.2.31 |
-| anyview → bayonet | extract the plugin crate; shape `open.provider` to match sill's launcher providers | done: v0.1.0, with temor's four capabilities in its examples |
-| docket | remote workspaces: a remote performer in docket-acp, `Site` on `Call`, profiles that deny local tools, a canary smoke flow, `JudgeToolCall` with `Site` (fallback) | shape agreed; after batch 7 and agy |
-| bulkhead | the trial module plus the path check, output limits and redaction build for musl and run inside `temor-remote` | with the trial module |
-| detent | Extensions page | queued after bayonet |
-| keycap | none if `Categories=TerminalEmulator` is enough; otherwise `X-Keycap-Profile` | check in P1 |
+| The UI kit | generic palette machine (anyview writes the UI kit patch), shared by temor's palette and ⌘T bar | queued, v0.2.31 |
+| anyview → plugin-host | extract the plugin crate; shape `open.provider` to match the shell's launcher providers | done: v0.1.0, with temor's four capabilities in its examples |
+| The intents router | remote workspaces: a remote performer in the intents router's ACP part, `Site` on `Call`, profiles that deny local tools, a canary smoke flow, `JudgeToolCall` with `Site` (fallback) | shape agreed; after batch 7 and agy |
+| The sandbox crates | the trial module plus the path check, output limits and redaction build for musl and run inside `temor-remote` | with the trial module |
+| Settings app | Extensions page | queued after plugin-host |
+| The key remapper | none if `Categories=TerminalEmulator` is enough; otherwise `X-Key-Remap-Profile` | check in P1 |
 
 ## 13. Verification
 
 - **Lane gate:**
   - `cargo fmt --check`, `clippy -D warnings`, tests (one `tests/it/main.rs` per crate)
-  - `check-boundary.sh`, quire `check-portable.sh`, `cargo check --workspace --no-default-features`
+  - `check-boundary.sh`, the UI kit `check-portable.sh`, `cargo check --workspace --no-default-features`
   - `cargo deny check licenses`, `check-intents.sh`
   - coherence tests from CONSUMING.md §5
 - **temor-core:** tree, presence, proposal, bar and transfer machines tested on `Clock::Virtual`.
@@ -918,7 +918,7 @@ The ranking rules:
 - **temor-vt:** conformance against recorded byte streams (vttest captures, kitty graphics and
   keyboard fixtures, 7501 and 133 sequences). A pin bump must pass them.
 - **temor-render:** golden images from a headless wgpu adapter for a fixed grid and image set.
-- **UI:** `ds-harness` scenarios with a fake `Vt` and a fake PTY: sidebar, split minis, bar
+- **UI:** `ui-harness` scenarios with a fake `Vt` and a fake PTY: sidebar, split minis, bar
   ranking, shelf.
 - **Trial module:** the 50-command corpus from the spike (kept as a fixture) runs under a scratch
   HOME. The fixture hash stays unchanged, and verdicts are identical across three runs.
@@ -927,16 +927,16 @@ The ranking rules:
   - **Tier A:** bootstrap marks, splits on a shared connection, transfers and write-back conflicts.
   - **Tier B:** kill the ssh process mid-output, reattach, and require the snapshot to restore the
     exact screen; port detection; helper upgrade by hash; fallback on a `noexec` home.
-- **Desktop:** a private session bus with fake docket and companion services. Never the real bus.
+- **Desktop:** a private session bus with fake the intents router and companion services. Never the real bus.
 
 ## 14. Open decisions (defaults chosen, not blocking)
 
 | Question | Default |
 |---|---|
 | Shells with integration | bash, zsh and fish in P2; nushell later |
-| Font | quire's code face; any installed monospace font can be chosen |
+| Font | the UI kit's code face; any installed monospace font can be chosen |
 | Zig in packaging | Zig 0.16 pinned together with Ghostty; offline builds need the full Zig package store (Ghostty's `fetch-zig-cache.sh`, 39 packages / about 540 MB with Zig 0.16, which extracts into `zig-pkg/`; temor-vt-sys's `scripts/fetch-ghostty.sh` builds the store) through `GHOSTTY_ZIG_SYSTEM_DIR` |
-| cargo-deny allow list | quire's list plus `bzip2-1.0.6` (copied from anyview's deny.toml) |
+| cargo-deny allow list | the UI kit's list plus `bzip2-1.0.6` (copied from anyview's deny.toml) |
 | Trial limits | 2 s, 256 processes, 1 GiB file size; settings under R13 "at your own risk" |
 | Remote transfer consent | ask once per host, remembered per Space |
 | Recently closed depth | 20 tabs per Space |

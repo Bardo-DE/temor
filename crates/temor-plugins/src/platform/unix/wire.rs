@@ -1,4 +1,4 @@
-//! temor's protocol on bayonet's runner.
+//! temor's protocol on plugin-host's runner.
 
 use plugin_host::run::{Greeting, Protocol};
 

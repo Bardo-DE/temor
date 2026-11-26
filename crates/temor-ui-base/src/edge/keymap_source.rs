@@ -2,8 +2,8 @@
 //! (`ui_blitz::system_key_source`), the one every toolkit app's window takes: kdeglobals on Plasma,
 //! dconf on GNOME, the platform's conventions everywhere else, each watched for changes. temor
 //! builds its own keymap on it (terminal keys, `keys.conf`), so it asks for the source with the
-//! config home its `Ambient` names rather than the process's. Our desktop's keycap is not linked:
-//! the desktop entry's `X-Keycap-Profile=keymap-aware` is all temor says to it.
+//! config home its `Ambient` names rather than the process's. Our desktop's key remap is not linked:
+//! the desktop entry's `X-Key-Remap-Profile=keymap-aware` is all temor says to it.
 //!
 //! The person's own file, `keys.conf`, is watched here too ([`watch_file`]): a thread looks at its
 //! modified time and calls back when it moves, and the window loads the keymap again

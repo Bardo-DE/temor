@@ -5,10 +5,10 @@ Date: 2026-10-09. Machine: Fedora 44, KDE Plasma (KWin Wayland), fcitx5 as KWin'
 
 ## Verdict
 
-**Go.** Real keyboard and IME events in a quire window reach libghostty's `KeyEncoder`, the bytes
+**Go.** Real keyboard and IME events in a UI-kit window reach libghostty's `KeyEncoder`, the bytes
 reach a real bash on a PTY, and the output comes back through libghostty onto the screen. The
 kitty keyboard protocol, bracketed paste, SGR mouse and DECCKM all follow what the app pushed,
-through `set_options_from_terminal`. Nothing needs a quire change to work. A few quire seams are
+through `set_options_from_terminal`. Nothing needs a UI-kit change to work. A few UI kit seams are
 crate-private, and Blitz drops winit's `text` and `key_without_modifiers`; temor works around both
 today (asks below).
 
@@ -18,8 +18,8 @@ client sees them (see "Desktop findings").
 ## What was built
 
 `spikes/input/` is a standalone Cargo project with its own `[workspace]` and toolchain 1.98.1. It
-pins quire `366dcd97` (v0.2.30) by git with `.git`, with the `[patch.crates-io]` block from
-quire's root. It uses `libghostty-vt` 0.2.2 from crates.io (Ghostty a887df4, Zig 0.15.2, offline
+pins the UI kit `366dcd97` (v0.2.30) by git with `.git`, with the `[patch.crates-io]` block from
+the UI kit's root. It uses `libghostty-vt` 0.2.2 from crates.io (Ghostty a887df4, Zig 0.15.2, offline
 through `env.sh`). `CARGO_TARGET_DIR=/mnt/data/cargo/p0-temor/target-input`. No `unsafe`
 (`unsafe_code = "deny"`).
 
@@ -29,8 +29,8 @@ through `env.sh`). `CARGO_TARGET_DIR=/mnt/data/cargo/p0-temor/target-input`. No 
 | `src/keymap.rs` | Pure mapping from a Blitz/Dioxus key event to a libghostty key event, plus the routing (PTY, paste, app shortcut). 5 unit tests. |
 | `src/term.rs` | libghostty `Terminal` plus its key and mouse encoders, the PTY, and a log of every byte sent and why. |
 | `src/pty.rs` | `rustix` openpt/grantpt/unlockpt, then `env -i HOME=<scratch> … setsid -c bash --norc --noprofile -i`. `setsid -c` makes the slave the controlling tty, so no `pre_exec`/`unsafe` is needed. Resize is `tcsetwinsize` (TIOCSWINSZ). A reader thread feeds a tokio channel. |
-| `src/ime.rs` | A copy of quire's `on_ime`/`settle` composition machine (it is `pub(crate)` in quire). |
-| `tests/harness.rs` | The event-level tier: the same `App` in ds-harness, with a real PTY and bash. 5 tests. |
+| `src/ime.rs` | A copy of the UI kit's `on_ime`/`settle` composition machine (it is `pub(crate)` in the UI kit). |
+| `tests/harness.rs` | The event-level tier: the same `App` in ui-harness, with a real PTY and bash. 5 tests. |
 | `scripts/uinput_keys.py` | The real-OS-input driver: a uinput virtual keyboard with a focus guard. |
 | `scripts/probe.py` | Runs inside the shell. It turns a mode on (kitty, kitty 31, mouse, bracketed paste, DECCKM), prints every stdin chunk raw, then turns the mode off. |
 | `scripts/run_live.sh`, `steps/*.txt` | One live run: open the window (it closes itself after 6–15 s), drive it, keep the log. |
@@ -85,7 +85,7 @@ predates every run).
 ## Verification
 
 Legend: **Real**: real OS input on the live KDE Wayland desktop (uinput, KWin, fcitx5, winit).
-**Harness**: ds-harness dispatching Blitz events into the same `App` with a real PTY.
+**Harness**: ui-harness dispatching Blitz events into the same `App` with a real PTY.
 
 | Check | Real | Harness | Evidence (run: what the shell got or showed) |
 |---|---|---|---|
@@ -108,17 +108,17 @@ the window (the owner's, apparently): `mouse Press Some(Left) at=(688.4,347.3) t
 and with no tracking mode the encoder correctly produced nothing. SGR reporting from a real mouse
 was not verified.
 
-## How a custom region gets its input (quire v0.2.30)
+## How a custom region gets its input (UI kit v0.2.30)
 
 `EditSurface` is the model, but it cannot be used as is: it hands the app only `Key` plus
 `Modifiers`. The region rebuilds it from the same public host seams:
 
 - **Element.** A plain `div` with `tabindex=0`, `data-keys="capture"` and
-  `data-wheel="capture"`. Its own `onkeydown` already makes blitz-kit's scroll engine leave keys
+  `data-wheel="capture"`. Its own `onkeydown` already makes blitz-embed's scroll engine leave keys
   alone (`key_focus`); `data-keys="capture"` says the same explicitly.
 - **Focus.** Use `use_document_host().focus().focus(el)`, retried while `Busy`. Blitz's
   `set_focus_to` sends **no focus event**, so the region runs its own focus-in after the write
-  succeeds. quire's `focus_soon_told` does exactly this, but it is `pub(crate)`. A press on the
+  succeeds. The UI kit's `focus_soon_told` does exactly this, but it is `pub(crate)`. A press on the
   region focuses it the same way.
 - **Raw keys.** Use `onkeydown` and `onkeyup` on the region.
   - Dioxus's `KeyboardEvent` has `key()` (logical), `code()` (physical), `modifiers()`,
@@ -155,7 +155,7 @@ was not verified.
 
 | libghostty field | Source | Notes |
 |---|---|---|
-| `key` (`key::Key`, W3C-code-shaped) | Physical `Code`, one-to-one by name (`KeyA` → `A`, `Digit1` → `Digit1`, `BracketLeft`, `Numpad*`, `F1`–`F24`, `ArrowUp`, `ControlLeft`, …). `MetaLeft`/`MetaRight` → `MetaLeft`/`MetaRight` | When `Code::Unidentified` (ds-harness sends that for punctuation), fall back to the logical key on a US layout |
+| `key` (`key::Key`, W3C-code-shaped) | Physical `Code`, one-to-one by name (`KeyA` → `A`, `Digit1` → `Digit1`, `BracketLeft`, `Numpad*`, `F1`–`F24`, `ArrowUp`, `ControlLeft`, …). `MetaLeft`/`MetaRight` → `MetaLeft`/`MetaRight` | When `Code::Unidentified` (ui-harness sends that for punctuation), fall back to the logical key on a US layout |
 | `mods` | `Modifiers::SHIFT/CONTROL/ALT` → `SHIFT/CTRL/ALT`, plus `CAPS_LOCK`, `NUM_LOCK` | `SUPER`/`META` never reach the encoder: they route to the app. **Modifier keys themselves:** winit sends the key before `ModifiersChanged`, so a Shift press arrives without Shift and its release with it. temor sets the key's own bit on press and clears it on release (kitty: `57441;2u` … `57441;1:3u`) |
 | side bits | `Location::Right` of the modifier key itself | The side of *other* held modifiers is unknown: winit has no sides on Wayland |
 | `consumed_mods` | `SHIFT` when Shift is held and the event has text | |
@@ -167,7 +167,7 @@ was not verified.
 
 Observed Blitz values (real input): `Key::Character("A")` with `SHIFT` and `KeyA`;
 `Character("A")` with `CONTROL|SHIFT` for Ctrl+Shift+A; the Super key is `Key::Meta` with
-`MetaLeft`, and chords carry `Modifiers::SUPER`. ds-harness's `ShortcutKey::Super` sets `META`
+`MetaLeft`, and chords carry `Modifiers::SUPER`. ui-harness's `ShortcutKey::Super` sets `META`
 instead (problem 5).
 
 ## Problems
@@ -176,13 +176,13 @@ instead (problem 5).
    dioxus-native-dom's `BlitzKeyboardData` is `pub(crate)`. Without them the unshifted codepoint
    is a US-layout guess, and dead keys or compose sequences outside the IME have no text.
 2. **Blitz's programmatic focus sends no focus event.** The app must run its own focus-in, as
-   quire's crate-private `focus_soon_told` does.
+   the UI kit's crate-private `focus_soon_told` does.
 3. **Modifier-key state lags** by one event (problem 1's sibling). Fixed in `keymap.rs`; without
    the fix, kitty `REPORT_ALL` reports were wrong.
 4. **A focus race at startup.** Keys sent before the host focus write lands are dropped: in the
    harness, the first `p` of a command was lost. temor must focus the pane before it shows a
    prompt it expects typing into.
-5. **ds-harness and the window disagree on Super:** `ShortcutKey::Super` sets `Modifiers::META`,
+5. **ui-harness and the window disagree on Super:** `ShortcutKey::Super` sets `Modifiers::META`,
    while Blitz's winit conversion sets `Modifiers::SUPER`. temor checks both.
 6. **`EncoderSize` holds integers**; see the mouse notes.
 7. **`std::process::exit` from a task aborted** with "thread local panicked on drop". Ending the
@@ -200,13 +200,13 @@ instead (problem 5).
   - Meta+D is Peek at Desktop (⌘D split)
   - Meta+V is the clipboard popup (⌘V paste)
 
-  None of these reach a client. Before P1, temor needs the keycap terminal profile or a KDE
+  None of these reach a client. Before P1, temor needs the key remapper's terminal profile or a KDE
   shortcut plan. These chords were not sent live, deliberately.
 - **fcitx5 swallows Ctrl+Space** (its trigger) whenever text-input is on, so the shell never gets
   NUL (Emacs set-mark). The terminal profile should cover it.
 - **The KWin Overview can grab the keyboard while a window stays "active"** (the incident above).
 
-## Quire asks
+## UI kit asks
 
 1. **Export the composition machine**: `ds::edit::composition::{on_ime, settle, Composing}` is
    `pub(crate)`, so temor copied it.
@@ -217,10 +217,10 @@ instead (problem 5).
    **text**, and **key without modifiers**, plus `on_ime` steps and paste. It would keep the IME
    switching, cursor area and paste that EditSurface already does. That needs the Blitz-fork
    change in ask 4.
-4. **Blitz fork (`quire-pin`)**: carry winit's `text` and `key_without_modifiers` into
+4. **Blitz fork (the UI kit's pin)**: carry winit's `text` and `key_without_modifiers` into
    `BlitzKeyEvent`, and expose them to Dioxus. Either make `BlitzKeyboardData` public for
    `downcast`, or add accessors.
-5. **ds-harness**:
+5. **ui-harness**:
    - `Input::RawKey(BlitzKeyEvent)`, for punctuation codes, F-keys, key-up only, repeat and
      location
    - make `ShortcutKey::Super` set `SUPER`, as the window does

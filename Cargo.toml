@@ -13,7 +13,7 @@ unsafe_code = "deny"
 missing_debug_implementations = "warn"
 
 [workspace.dependencies]
-# quire, pinned the desktop-wide way (.git + full rev; the tag is a comment).
+# bardo, pinned by tag (.git + tag).
 ui-components = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 ui-core = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 base-words = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
@@ -30,7 +30,7 @@ settings-store = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 settings-store-fs = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 ui-settings-page = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 ui-emoji = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
-# Copied from quire/docs/workspace-deps.toml at the rev above.
+# Copied from bardo's crates/ui/docs/workspace-deps.toml at the tag above.
 dioxus = { version = "0.8.0-alpha.3", default-features = false, features = ["macro", "html", "hooks", "signals"] }
 serde = { version = "1", features = ["derive"] }
 unicode-width = "0.2"
@@ -43,9 +43,9 @@ png = { version = "0.18" }
 # temor-vt (lane vt).
 temor-vt-sys = { path = "crates/temor-vt-sys", default-features = false }
 temor-vt = { path = "crates/temor-vt", default-features = false }
-# temor-render (lane render). Versions are the ones quire's tree resolves at the pin above:
+# temor-render (lane render). Versions are the ones bardo's UI kit resolves at the pin above:
 # fontique as parley 0.11 uses it, swash on the same skrifa (0.44) as vello's glifo, vello_cpu 0.1
-# (the patched fork below; no second vello), wgpu 29 as quire's render stack.
+# (the patched fork below; no second vello), wgpu 29 as the UI kit's render stack.
 fontique = { version = "0.13" }
 swash = "0.2"
 vello_cpu = { version = "0.4", features = ["std", "text", "u8_pipeline"], default-features = false }
@@ -69,7 +69,7 @@ rusqlite = { version = "0.43", features = ["bundled", "hooks"] }
 bitflags = { version = "2" }
 parking_lot = "0.12"
 # temor-client: another process's commits are heard by watching the store's file. The version
-# quire's ds-settings already locks.
+# bardo's ui-settings already locks.
 notify = { version = "8.2" }
 temor-pty = { path = "crates/temor-pty" }
 temor-shell = { path = "crates/temor-shell", default-features = false }
@@ -79,7 +79,7 @@ temor-ui-base = { path = "crates/temor-ui-base" }
 temor-hub = { path = "crates/temor-hub" }
 temor-views = { path = "crates/temor-views" }
 temor-pane-view = { path = "crates/temor-pane-view" }
-# temor-plugins (lane plugins): P11 on bayonet. A plugin is run, never linked.
+# temor-plugins (lane plugins): P11 on bardo's plugin-host. A plugin is run, never linked.
 plugin-host = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 temor-plugins = { path = "crates/temor-plugins" }
 # temor-transfer (lane blocks): the downloads shelf's store, for "Save output".
@@ -92,7 +92,7 @@ temor-wire = { path = "crates/temor-wire" }
 # temor-ui (lane remote): the helper's client, for Tier B sessions in the window.
 temor-remote = { path = "crates/temor-remote", default-features = false }
 sha2 = { version = "0.10" }
-# anyview's viewer pane and peeks (PLAN §10, D13). Same quire as above.
+# anyview's viewer pane and peeks (PLAN §10, D13). Same bardo tag as above.
 anyview-core = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 anyview-fs = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 anyview-peek = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
@@ -101,9 +101,9 @@ anyview-pane = { git = "https://github.com/Bardo-DE/anyview.git", rev = "6c0b5d5
 # The desktop's portable keymap core (actions, chords, Primary per platform); temor owns no keymap.
 keymap = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 
-# temor-desktop (lane desktop): the only crate that names zbus, docket or porter-client (PLAN §2).
-# docket 41ddb1c7 locks porter dcc16ada (as anyview 849c0735 does), so docket and porter-client share
-# one porter-core. porter-client is feature `dbus` only: no inference, no stoker.
+# temor-desktop (lane desktop): the only crate that names zbus and bardo's intents and accounts clients (PLAN §2).
+# Both come from the one bardo tag, so they share one account-core. The accounts client is
+# feature `dbus` only: no inference, no model layer.
 temor-desktop = { path = "crates/temor-desktop", default-features = false }
 action-provider = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2", features = ["dbus"], default-features = false }
 action-vocab = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
@@ -113,7 +113,7 @@ account-tailscale = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" 
 caller-role-types = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 base-ids = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 action-core = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
-# Who may call temor's provider (intentd's unit), and the stand-in a test names for it.
+# Who may call temor's provider (the intents router's unit), and the stand-in a test names for it.
 action-dbus = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 provenance = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 account-core = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
@@ -121,9 +121,9 @@ account-client = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 account-client-dbus = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 # The Secret Service store a Space's secrets are kept in (temor-desktop only), under temor's own name.
 account-secrets = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2", features = ["oo7"] }
-# zbus on tokio, as docket and porter build it (quire CONSUMING §1: a program that owns a tokio runtime).
-# peephole: which program is calling (a pinned process judged against a table), as porter and
-# docket use it, by the same tag; temor-desktop checks the caller of `org.bardo.Temor1.Run` with it.
+# zbus on tokio, as bardo's intents and accounts crates build it (bardo's crates/ui/CONSUMING.md §1: a program that owns a tokio runtime).
+# caller identity: which program is calling (a pinned process judged against a table), as bardo's
+# accounts and intents crates use it, by the same tag; temor-desktop checks the caller of `org.bardo.Temor1.Run` with it.
 caller-identity-dbus = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2", features = ["tokio"], default-features = false }
 caller-identity-core = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
 zbus = { version = "5.19", default-features = false, features = ["tokio"] }
@@ -131,7 +131,7 @@ toml = { version = "1" }
 # The tests of temor-desktop read bus signals as streams.
 futures-util = { version = "0.3", default-features = false, features = ["std"] }
 
-# temor-pty: openpty, spawn, resize and process groups without `unsafe` (rustix is already in quire's tree).
+# temor-pty: openpty, spawn, resize and process groups without `unsafe` (rustix is already in bardo's tree).
 # temor-pty: the person's login shell through the system's account lookup (NSS: files, LDAP, sssd,
 # systemd-homed), not by reading /etc/passwd.
 nix = { version = "0.31", default-features = false, features = ["user", "term", "process", "socket"] }
